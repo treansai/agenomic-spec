@@ -1,0 +1,73 @@
+apiVersion: agentlock.dev/v0.1
+kind: AgentLock
+metadata:
+  specVersion: 0.1.0
+  generatedAt: "2026-04-29T12:00:00Z"
+bundle:
+  name: claims-triage-agent
+  version: 0.1.0
+digests:
+  genome: "sha256:0f5d8b6c2e194cbdd9f47a7f9fa38a8bc4bb0d9d091e0c4f97029a9f7b9c3001"
+  behaviorContract: "sha256:b8a5c69942c8b6c3c3fd17bf249abdc2df9541f5b8d66781f4fca946f2ef3003"
+  replayManifest: "sha256:c4d8f4ae5577db230d42cc5c7d88b9803a5b9f8f861e6ec0a1d6585a1f9ef004"
+resolvedArtifacts:
+  prompts:
+    - path: urn:agentlock:prompt:claims-triage-system:1.0.0
+      digest: "sha256:3ad7562dc6b786a0d5f4425f75656f0dce31c2d8a93f9f8f1147b1e6d75a0404"
+    - path: urn:agentlock:prompt:claims-routing-rules:1.0.0
+      digest: "sha256:4be3e0f0cd7260f6338df8fc07edab5f7251890d77dbe272b5f73d4365eb0505"
+    - path: urn:agentlock:prompt:claims-approval-thresholds:1.0.0
+      digest: "sha256:5cf47b2e1d2af28d73358ef998b53f4a2cae06a2872be7fb9d7d0fb4e95c0606"
+  tools:
+    - id: claim-history
+      serverRef: mcp://synthetic-claims/history
+      serverVersion: 1.4.2
+      schemaHash: "sha256:8a91e9f9342087cb1e2b4ad0bf0db530d7f6edb70bf29d8d3e8a3b87fd620101"
+      permissionScopes:
+        - claims.read
+    - id: coverage-checker
+      serverRef: mcp://synthetic-claims/coverage
+      serverVersion: 2.1.0
+      schemaHash: "sha256:9bf2db827b119ebea36d8a2d9fe3ca89c7781d6a7ee76d4092688d0fd7a10202"
+      permissionScopes:
+        - coverage.read
+    - id: approval-gateway
+      serverRef: mcp://synthetic-governance/approvals
+      serverVersion: 1.2.3
+      schemaHash: "sha256:a18c6f0a9364b7b97f3db985db7d4ecf4c1323c98704f69bc5d0b2a7ce840303"
+      permissionScopes:
+        - settlement.recommendation
+        - payout.adjustment
+  knowledge:
+    - id: claims-policy-handbook
+      digest: "sha256:11c0f09ae2774bf46c65c96a79e68c59e358f2dd9ce4d6a94198f1b3dbcb0404"
+    - id: fraud-signal-playbook
+      digest: "sha256:22d7e82093ab41f0a2616af7bfc28fc88c32b26a4af6a724090f99df8ad20505"
+  designMemory:
+    - id: claims-rubric-pack
+      schemaRef: urn:agentlock:design-memory:claims-rubric-pack:1.1.0
+      version: 1.1.0
+      digest: "sha256:61ab5ed7be8ae977abf6170d70a0743d1fd2e65a4cb6c989788f179b1e8b0707"
+compatibility:
+  runtimeMemorySchema:
+    currentVersion: 2.0.0
+    compatibleWith:
+      - 1.9.0
+      - 1.10.0
+    breakingChanges:
+      - New evidence-summary field is required when a claim is escalated.
+  rollback:
+    allowedBundleVersions:
+      - 0.1.0-rc.1
+    blockedWhen:
+      - Runtime memory contains fields unknown to schema versions below 1.9.0.
+      - Approval policy depends on tool scopes unavailable before approval-gateway 1.2.0.
+    dependencyConstraints:
+      - component: coverage-checker
+        constraint: ">=2.1.0 <3.0.0"
+      - component: approval-gateway
+        constraint: ">=1.2.0 <2.0.0"
+provenance:
+  lockGenerator: agentlock-cli/0.1.0
+  sourceCommit: 7c2ab31e45f0
+  createdBy: synthetic-release-bot

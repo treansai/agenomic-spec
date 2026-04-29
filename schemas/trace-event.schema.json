@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentlock.dev/schemas/v0.1/trace-event.schema.json",
+  "title": "AgentLock Trace Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "traceId",
+    "sequence",
+    "occurredAt",
+    "eventType",
+    "actor",
+    "bundle",
+    "payload"
+  ],
+  "properties": {
+    "apiVersion": {
+      "const": "agentlock.dev/v0.1"
+    },
+    "kind": {
+      "const": "TraceEvent"
+    },
+    "traceId": {
+      "type": "string",
+      "minLength": 8
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "eventType": {
+      "type": "string",
+      "enum": [
+        "run_started",
+        "prompt_applied",
+        "tool_call_requested",
+        "tool_call_completed",
+        "approval_requested",
+        "approval_resolved",
+        "policy_decision",
+        "message_emitted",
+        "run_finished",
+        "error"
+      ]
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "id"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": [
+            "agent",
+            "runtime",
+            "tool",
+            "approver",
+            "evaluator"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "minLength": 2
+        }
+      }
+    },
+    "bundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version",
+        "genomeDigest",
+        "lockDigest"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{2,63}$"
+        },
+        "version": {
+          "$ref": "#/$defs/semver"
+        },
+        "genomeDigest": {
+          "$ref": "#/$defs/sha256"
+        },
+        "lockDigest": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "summary"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 3
+        },
+        "promptRef": {
+          "type": "string",
+          "minLength": 3
+        },
+        "toolCall": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "toolId",
+            "serverRef",
+            "permissionScope",
+            "requestDigest"
+          ],
+          "properties": {
+            "toolId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9-]{1,63}$"
+            },
+            "serverRef": {
+              "type": "string",
+              "pattern": "^(mcp|urn):.+"
+            },
+            "permissionScope": {
+              "type": "string",
+              "pattern": "^[a-z0-9_.:-]+$"
+            },
+            "requestDigest": {
+              "$ref": "#/$defs/sha256"
+            },
+            "responseDigest": {
+              "$ref": "#/$defs/sha256"
+            }
+          }
+        },
+        "approval": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "approvalId",
+            "policyRef",
+            "required",
+            "outcome"
+          ],
+          "properties": {
+            "approvalId": {
+              "type": "string",
+              "minLength": 3
+            },
+            "policyRef": {
+              "type": "string",
+              "minLength": 3
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "approved",
+                "rejected",
+                "timeout"
+              ]
+            }
+          }
+        },
+        "policyDecision": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policyId",
+            "result"
+          ],
+          "properties": {
+            "policyId": {
+              "type": "string",
+              "minLength": 2
+            },
+            "result": {
+              "type": "string",
+              "enum": [
+                "allow",
+                "deny",
+                "escalate"
+              ]
+            }
+          }
+        },
+        "outputDigest": {
+          "$ref": "#/$defs/sha256"
+        },
+        "errorCode": {
+          "type": "string",
+          "minLength": 2
+        }
+      }
+    }
+  },
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(-[0-9A-Za-z.-]+)?(\\+[0-9A-Za-z.-]+)?$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  }
+}

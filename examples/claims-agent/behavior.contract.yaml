@@ -1,0 +1,87 @@
+apiVersion: agentlock.dev/v0.1
+kind: BehaviorContract
+metadata:
+  name: claims-triage-contract
+  version: 0.1.0
+  description: Release criteria for synthetic claim triage recommendations.
+scope:
+  bundleName: claims-triage-agent
+  bundleVersion: 0.1.0
+  criticality: high
+deterministicChecks:
+  - id: contract-schema-validity
+    description: All required bundle artifacts must validate against the published AgentLock schemas.
+    type: schema_validity
+    target: bundle/*
+    enforcement: must_pass
+    rule:
+      schemas:
+        - schemas/genome.schema.json
+        - schemas/agent-lock.schema.json
+        - schemas/behavior-contract.schema.json
+  - id: approval-before-payout
+    description: Recommendations above the payout threshold must request human approval before release.
+    type: mandatory_approval
+    target: settlement.recommendation
+    enforcement: must_pass
+    rule:
+      approvalScope: settlement.recommendation
+      requiredWhen:
+        payoutAmountGreaterThan: 5000
+  - id: output-format-json
+    description: Final recommendations must conform to the claim recommendation output contract.
+    type: output_format
+    target: final.message
+    enforcement: must_pass
+    rule:
+      schemaRef: urn:agentlock:output-schema:claim-recommendation:1.0.0
+  - id: tool-policy
+    description: Only the declared MCP tools may be used during evaluation and replay.
+    type: tool_policy
+    target: tool.call
+    enforcement: must_pass
+    rule:
+      allowedTools:
+        - claim-history
+        - coverage-checker
+        - approval-gateway
+      forbidUnknownTools: true
+  - id: runtime-memory-boundary
+    description: Runtime memory must be represented by schema and access policy only, not user content.
+    type: memory_boundary
+    target: bundle/runtime-memory
+    enforcement: must_pass
+    rule:
+      bundleInclusion: schema-only
+probabilisticChecks:
+  - id: grounded-coverage-rationale
+    dimension: hallucination_risk
+    description: Coverage rationale should stay grounded in the referenced synthetic policy material.
+    judge:
+      method: hybrid
+      model: instruct-medium-judge-2026-02
+      sampleSize: 24
+      passThreshold: 0.9
+  - id: calm-claimant-tone
+    dimension: tone
+    description: Responses should remain calm and procedural even when the claimant is upset.
+    judge:
+      method: llm_judge
+      model: style-reviewer-2026-01
+      sampleSize: 24
+      passThreshold: 0.92
+  - id: escalation-judgment
+    dimension: policy_interpretation
+    description: Borderline claims should escalate when the policy evidence is incomplete or contradictory.
+    judge:
+      method: hybrid
+      model: policy-reviewer-2026-01
+      sampleSize: 24
+      passThreshold: 0.85
+releaseGates:
+  minimumDeterministicPassRate: 1.0
+  minimumProbabilisticPassRate: 0.88
+  maxOpenSeverity: low
+datasets:
+  - id: claims-regression-suite
+    description: Synthetic intake scenarios covering property, injury, and fraud-review paths.
