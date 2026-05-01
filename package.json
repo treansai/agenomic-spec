@@ -1,0 +1,18 @@
+{
+  "name": "agentlock-spec-tooling",
+  "private": true,
+  "version": "0.1.0-experimental",
+  "description": "Tooling devDependencies for validating the AgentLock specification (schemas, examples, conformance fixtures). Not published to any registry.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "validate": "bash scripts/validate.sh",
+    "lint": "bash scripts/lint-rfcs.sh && markdownlint-cli '**/*.md' --ignore node_modules --ignore CODE_OF_CONDUCT.md"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.0",
+    "ajv-cli": "^5.0.0",
+    "ajv-formats": "^3.0.1",
+    "js-yaml": "^4.1.0",
+    "markdownlint-cli": "^0.41.0"
+  }
+}
