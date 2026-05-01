@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentlock.dev/spec/v0.1/release-attestation.schema.json",
+  "title": "AgentLock Release Attestation (v0.1)",
+  "description": "Signed evidence summarizing a release decision. Binds the bundle hash, optionally the replay report and ATEP root, the approval status, and the issuer signature.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "attestation_type",
+    "agent_id",
+    "release_id",
+    "bundle_logical_hash",
+    "bundle_archive_hash",
+    "bundle_hash_algorithm",
+    "approval_status",
+    "approvals",
+    "issued_at",
+    "issuer"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "attestation_type": {
+      "type": "string",
+      "enum": ["release", "replay", "compliance", "drift", "rollback"]
+    },
+    "agent_id": {
+      "type": "string",
+      "pattern": "^agent://[a-z0-9-]+/[a-z0-9-]+$"
+    },
+    "release_id": { "type": "string", "minLength": 1 },
+    "bundle_logical_hash": {
+      "type": "string",
+      "pattern": "^(blake3-merkle-v1|sha256|blake3):[0-9a-f]{32,128}$"
+    },
+    "bundle_archive_hash": {
+      "type": "string",
+      "pattern": "^(sha256|blake3):[0-9a-f]{32,128}$"
+    },
+    "bundle_hash_algorithm": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifier of the hashing algorithm that produced bundle_logical_hash. For v0.1 the canonical value is 'blake3-merkle-v1' (see RFC 0002)."
+    },
+    "replay_job_id": { "type": "string", "minLength": 1 },
+    "replay_report_hash": {
+      "type": "string",
+      "pattern": "^(sha256|blake3):[0-9a-f]{32,128}$"
+    },
+    "atep_root_hash": {
+      "type": "string",
+      "pattern": "^(sha256|blake3):[0-9a-f]{32,128}$",
+      "description": "Optional. Pinning this seals the agent's causal history at release time (see RFC 0003 and RFC 0008)."
+    },
+    "contract_passed": { "type": "boolean" },
+    "approval_status": {
+      "type": "string",
+      "enum": ["approved", "rejected", "pending"]
+    },
+    "approvals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["approver_role", "status", "user_id", "at"],
+        "properties": {
+          "approver_role": { "type": "string", "minLength": 1 },
+          "status": {
+            "type": "string",
+            "enum": ["approved", "rejected", "pending"]
+          },
+          "user_id": { "type": "string", "minLength": 1 },
+          "comment": { "type": "string" },
+          "at": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "issuer": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["key_id", "algorithm"],
+      "properties": {
+        "key_id": { "type": "string", "minLength": 1 },
+        "algorithm": {
+          "type": "string",
+          "enum": ["ed25519", "ecdsa-p256", "rsa-pss-sha256"]
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "description": "Optional in the schema for development workflows. Unsigned attestations MUST NOT be used in production (see docs/attestations.md).",
+      "additionalProperties": true,
+      "required": ["algorithm", "value", "public_key_pem"],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "enum": ["ed25519", "ecdsa-p256", "rsa-pss-sha256"]
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Base64-encoded signature bytes."
+        },
+        "public_key_pem": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
