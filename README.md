@@ -1,120 +1,131 @@
 # AgentLock Specification
 
-AgentLock is an open standard for packaging, versioning, replaying, and attesting AI agents.
+> Status: **Experimental — v0.1**
+>
+> Open standard for packaging, versioning, replaying, and attesting AI agents.
+> Apache-2.0 licensed. Vendor-neutral. Implementable by anyone.
 
-An AgentLock bundle captures more than source code. It describes the full agent artifact set required to reason about behavior over time: prompts, model configuration, MCP-native tools, policies, memory schema, evaluation contracts, replay manifests, and signed release attestations.
+[![ci](https://github.com/treansai/agentlock-spec/actions/workflows/ci.yml/badge.svg)](https://github.com/treansai/agentlock-spec/actions/workflows/ci.yml)
 
-Status: experimental `v0.1`
+AgentLock defines:
 
-## Why Git Is Not Enough For Agents
+- a portable **agent bundle** layout (genome, lockfile, contract, prompts,
+  tools, policies, knowledge, memory schemas, evals, attestations);
+- a **canonical hashing** scheme so the bundle has a stable logical identity
+  across machines;
+- a **trace event** envelope so production runs can be recorded and replayed;
+- a **replay report** shape that captures both deterministic and statistical
+  evaluation;
+- a **release attestation** that signs the bundle hash, the replay report,
+  and the causal history;
+- the **Agentic Trajectory Event Protocol (ATEP)** — an event-sourced log of
+  the agent's life, hash-linked and signed, suitable for governance and
+  forensics.
 
-Git is effective at tracking code and text files, but an agent release is not only code.
+This repository is the **specification only**. It contains schemas, RFCs,
+documentation, synthetic examples, and a conformance suite. It contains
+**no implementation code**. Anyone can build a compatible runtime, signer,
+or verifier from this repo.
 
-For a meaningful agent version you also need to know:
+## Why this exists
 
-- which prompts were active
-- which model and inference settings were used
-- which tools were reachable, with what schema hashes and permission scopes
-- which policy and approval rules applied
-- which memory schema the agent expected
-- which evaluations and replay evidence supported the release
-- which attestation summarized the release decision
+Git versions files. AgentLock versions agent _behavior_:
 
-Without those artifacts, two commits can refer to materially different agents.
+- which prompts were active for a given run,
+- which model and inference settings were used,
+- which tools were reachable, with what schema hashes and permission scopes,
+- which policies and approval rules applied,
+- which memory schema the agent expected,
+- which evaluations and replay evidence supported the release,
+- which attestation summarized the release decision,
+- and which causal events shaped the agent's trajectory between releases.
 
-## Why Agent Bundles Exist
+Two commits in a Git repo can refer to materially different agents.
+AgentLock makes that difference explicit, hashable, and verifiable.
 
-An `agent-bundle` gives teams a portable unit for:
+## What this repo IS
 
-- packaging an agent definition
-- locking resolved dependencies and compatibility constraints
-- replaying historical traces against later versions
-- comparing behavior statistically instead of promising determinism
-- attaching signed release evidence
+- Normative JSON Schemas (Draft 2020-12) under [`schemas/v0.1/`](schemas/v0.1/).
+- RFCs describing protocol decisions and tradeoffs in [`rfcs/`](rfcs/).
+- Synthetic, validating example bundles in [`examples/`](examples/).
+- A conformance suite in [`conformance/`](conformance/) with positive and
+  negative fixtures.
+- Tutorial documentation in [`docs/`](docs/).
 
-AgentLock does **not** claim deterministic LLM behavior. The standard is designed to record, replay, and compare behavior with deterministic checks plus probabilistic judgments.
+## What this repo IS NOT
 
-## Repository Layout
+- Not a Rust, Python, TypeScript, Go, or any-other-language implementation.
+- Not tied to any commercial product, hosted service, or vendor.
+- Not a stable v1 — `v0.1` is explicitly experimental and may break.
 
-This repository defines the public specification and reference artifacts for the `v0.1` bundle format.
+## Status table
 
-```text
-.
-├── README.md
-├── LICENSE
-├── schemas/
-│   ├── genome.schema.json
-│   ├── agent-lock.schema.json
-│   ├── behavior-contract.schema.json
-│   ├── trace-event.schema.json
-│   ├── replay-manifest.schema.json
-│   └── release-attestation.schema.json
-├── examples/
-│   ├── claims-agent/
-│   ├── support-agent/
-│   └── trading-risk-agent/
-├── docs/
-│   ├── concepts.md
-│   ├── bundle-format.md
-│   ├── genome.md
-│   ├── lockfile.md
-│   ├── behavior-contracts.md
-│   ├── trace-events.md
-│   ├── attestations.md
-│   ├── non-determinism.md
-│   ├── mcp-native-tools.md
-│   ├── memory-model.md
-│   ├── rollback-safety.md
-│   └── ai-act-evidence-mapping.md
-└── rfcs/
-    └── 0001-agent-bundle-v0.1.md
+| Version | Status        | Notes                                                                  |
+|---------|---------------|------------------------------------------------------------------------|
+| `v0.1`  | Experimental  | May break. Schemas and RFCs may change between minor revisions.        |
+| `v1.0`  | Target        | Stable, semver applies. Frozen when 3 independent implementations pass the conformance suite. |
+
+See [`docs/versioning.md`](docs/versioning.md) for the full policy.
+
+## Quick start
+
+```bash
+git clone https://github.com/treansai/agentlock-spec
+cd agentlock-spec
+npm ci
+npm run validate    # validates examples/ and conformance/ against schemas/v0.1/
+npm run lint        # markdownlint + RFC front-matter lint
 ```
 
-## Core Concepts
+## Reading order
 
-- A versioned agent includes prompts, tools, policies, model configuration, memory schema, knowledge references, eval contracts, and attestations.
-- Design memory is bundleable and versionable. Runtime or user memory is not bundled; only its schema and access policy are versioned.
-- MCP-native tools are first-class dependencies. Bundles record server references, versions, schema hashes, and permission scopes.
-- Behavior contracts include deterministic checks and probabilistic checks.
-- Rollback is compatibility-aware. Reverting an agent must consider memory schema compatibility and dependency constraints.
-- Attestations are signed summaries of replay results, approvals, and release status.
+1. [`docs/concepts.md`](docs/concepts.md) — five-minute overview.
+2. [`rfcs/0001-agent-bundle-format.md`](rfcs/0001-agent-bundle-format.md) — what a bundle is.
+3. [`examples/claims-agent/genome.yaml`](examples/claims-agent/genome.yaml) — a real-shaped synthetic agent.
+4. [`rfcs/0002-canonical-merkle-hashing.md`](rfcs/0002-canonical-merkle-hashing.md) — how bundles are hashed.
+5. [`rfcs/0003-atep-binary-event-protocol.md`](rfcs/0003-atep-binary-event-protocol.md) — the causal event log.
+6. [`rfcs/0008-release-attestations.md`](rfcs/0008-release-attestations.md) — how releases are signed.
 
-## How To Implement The Spec
+## RFC index
 
-Implementers can adopt AgentLock without using any specific runtime or SaaS product.
+| RFC | Title                                              | Status   |
+|-----|----------------------------------------------------|----------|
+| 0001 | Agent Bundle Format                               | Accepted |
+| 0002 | Canonical Merkle Hashing                          | Accepted |
+| 0003 | ATEP — Agentic Trajectory Event Protocol         | Accepted |
+| 0004 | MCP-Native Tools                                  | Accepted |
+| 0005 | Statistical vs Deterministic Replay              | Accepted |
+| 0006 | Design vs Runtime Memory                          | Accepted |
+| 0007 | Rollback Safety                                   | Accepted |
+| 0008 | Release Attestations                              | Accepted |
 
-1. Produce a `genome.yaml` that describes the intended agent.
-2. Resolve the bundle into `agent.lock.yaml` with digests and compatibility metadata.
-3. Define release criteria in `behavior.contract.yaml`.
-4. Emit trace events during execution.
-5. Build replay manifests from recorded traces and evaluation suites.
-6. Generate a signed release attestation once replay and approval policies complete.
+## Schemas
 
-Projects can implement the spec in any language. The JSON Schemas in [`schemas/`](schemas/) are intended as the validation baseline; the docs describe the semantics that a conforming implementation should preserve.
-
-## What This Repository Is
-
-This repository contains:
-
-- format definitions
-- reference schemas
-- synthetic examples
-- specification docs
-- an initial RFC for `v0.1`
-
-This repository does **not** implement the AgentLock control plane, hosted execution environment, or any SaaS product.
-
-## Roadmap
-
-Potential `v0.2` work includes:
-
-- a canonical JSON replay report format
-- stronger interoperability rules for MCP tool contract hashing
-- explicit memory migration descriptors and compatibility levels
-- a conformance test suite for bundle producers and verifiers
-- DSSE or in-toto attestation profiles
-- signed trace chunk manifests for large replay sets
+| Schema                                                                   | Purpose                                  |
+|--------------------------------------------------------------------------|------------------------------------------|
+| [`genome.schema.json`](schemas/v0.1/genome.schema.json)                  | Agent design declaration.                |
+| [`agent-lock.schema.json`](schemas/v0.1/agent-lock.schema.json)          | Pinned, reproducible dependencies.       |
+| [`behavior-contract.schema.json`](schemas/v0.1/behavior-contract.schema.json) | Verifiable behavior invariants.       |
+| [`trace-event.schema.json`](schemas/v0.1/trace-event.schema.json)        | Single agent run envelope.               |
+| [`replay-report.schema.json`](schemas/v0.1/replay-report.schema.json)    | Output of a replay job.                  |
+| [`release-attestation.schema.json`](schemas/v0.1/release-attestation.schema.json) | Signed release evidence.        |
+| [`atep-event.schema.json`](schemas/v0.1/atep-event.schema.json)          | JSON projection of an ATEP event.        |
 
 ## Contributing
 
-The format is experimental. Issues and RFCs that tighten semantics, improve interoperability, or contribute additional synthetic examples are in scope.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md). RFCs follow the template in
+[`rfcs/0000-template.md`](rfcs/0000-template.md).
+
+## Governance
+
+See [`GOVERNANCE.md`](GOVERNANCE.md). Currently BDFL-maintained, with a
+documented path to multi-stakeholder governance once the spec stabilizes.
+
+## Security
+
+See [`SECURITY.md`](SECURITY.md) for how to report vulnerabilities in the
+specification or in the conformance suite.
+
+## License
+
+[Apache License 2.0](LICENSE).
