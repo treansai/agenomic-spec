@@ -1,0 +1,56 @@
+spec_version: agentlock/v0.1
+
+agent:
+  id: agent://example/trading-risk
+  name: Example Trading Risk Flagger
+  domain: trading-risk
+  criticality: life_critical
+
+runtime:
+  model_provider: example-llm
+  model_id: example-llm-large-2026-01
+  temperature: 0.0
+
+tools:
+  - name: read_open_positions
+    protocol: mcp
+    server: mcp://example/positions-mcp
+    version: 3.1.0
+  - name: read_market_snapshot
+    protocol: mcp
+    server: mcp://example/marketdata-mcp
+    version: 4.0.2
+
+skills:
+  - id: flag_risk
+    version: 1.0.0
+    prompt_path: prompts/skills/flag_risk.md
+
+knowledge:
+  - name: risk_thresholds_kb
+    snapshot_hash: blake3:e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2
+    source_uri: s3://example-risk/thresholds/2026-04-25.yaml
+
+policies:
+  - id: never_modify_state
+    path: policies/no_state_change.md
+    severity: critical
+  - id: max_flagged_position
+    path: policies/no_state_change.md
+    severity: critical
+
+memory:
+  design_memory: memory/memory.schema.yaml
+  runtime_memory_schema_version: 0.1.0
+
+forbidden_decisions:
+  - place_order
+  - cancel_order
+  - modify_order
+  - move_funds
+  - change_risk_limits
+  - assert_market_direction
+
+labels:
+  team: risk-platform
+  data_classification: market-internal

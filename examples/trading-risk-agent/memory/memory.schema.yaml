@@ -1,0 +1,10 @@
+memory_schema_version: 0.1.0
+description: >
+  Stateless agent. The memory schema exists only to satisfy the bundle
+  format and to declare explicitly that no user-specific data is retained
+  between runs.
+
+fields: []
+
+apis_required:
+  - schema_version() -> string
