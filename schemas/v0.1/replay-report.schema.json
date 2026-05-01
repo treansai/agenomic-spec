@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentlock.dev/spec/v0.1/replay-report.schema.json",
+  "title": "AgentLock Replay Report (v0.1)",
+  "description": "Output of a replay job. Captures the bundle under test, the contract evaluated, and aggregated results in either deterministic or statistical mode (see RFC 0005).",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "report_version",
+    "bundle_logical_hash",
+    "bundle_archive_hash",
+    "contract_id",
+    "total_traces",
+    "total_runs",
+    "mode",
+    "contract_passed",
+    "violations",
+    "aggregates",
+    "generated_at"
+  ],
+  "properties": {
+    "report_version": {
+      "type": "string",
+      "const": "agentlock-replay/v0.1"
+    },
+    "bundle_logical_hash": {
+      "type": "string",
+      "pattern": "^(blake3-merkle-v1|sha256|blake3):[0-9a-f]{32,128}$",
+      "description": "Logical Merkle root of the bundle under test. See RFC 0002."
+    },
+    "bundle_archive_hash": {
+      "type": "string",
+      "pattern": "^(sha256|blake3):[0-9a-f]{32,128}$",
+      "description": "Hash of the .tar.zst archive bytes. Used for download integrity, NOT for signing."
+    },
+    "contract_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "total_traces": { "type": "integer", "minimum": 0 },
+    "total_runs": { "type": "integer", "minimum": 0 },
+    "mode": {
+      "type": "string",
+      "enum": ["deterministic_offline", "statistical"]
+    },
+    "contract_passed": { "type": "boolean" },
+    "violations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["rule_id", "severity", "trace_id", "run_index", "detail"],
+        "properties": {
+          "rule_id": { "type": "string", "minLength": 1 },
+          "severity": {
+            "type": "string",
+            "enum": ["info", "low", "medium", "high", "critical"]
+          },
+          "trace_id": { "type": "string", "minLength": 1 },
+          "run_index": { "type": "integer", "minimum": 0 },
+          "detail": { "type": "string" }
+        }
+      }
+    },
+    "aggregates": {
+      "type": "object",
+      "description": "Per-metric aggregates. The spec does not standardize the metric list at v0.1; that is a per-domain concern. Each entry SHOULD provide either a numeric value or a distribution.",
+      "additionalProperties": {
+        "oneOf": [
+          { "type": "number" },
+          { "type": "boolean" },
+          {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "mean": { "type": "number" },
+              "std": { "type": "number", "minimum": 0 },
+              "count": { "type": "integer", "minimum": 0 },
+              "ci_low": { "type": "number" },
+              "ci_high": { "type": "number" }
+            }
+          }
+        ]
+      }
+    },
+    "model_fingerprints_observed": {
+      "type": "array",
+      "description": "Distinct provider fingerprints observed during the replay job. Used to detect silent provider drift (see RFC 0005).",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
