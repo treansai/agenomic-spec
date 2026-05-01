@@ -1,0 +1,7 @@
+{
+  "description": "`agent.id` does not match the required URI pattern.",
+  "match": {
+    "keyword": "pattern",
+    "instancePath": "/agent/id"
+  }
+}

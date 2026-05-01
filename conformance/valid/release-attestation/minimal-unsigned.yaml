@@ -1,0 +1,14 @@
+# Minimal UNSIGNED attestation. Schema-valid; NOT for production.
+schema_version: 1
+attestation_type: release
+agent_id: agent://example/min-bot
+release_id: v0.0.1
+bundle_logical_hash: blake3-merkle-v1:0000000000000000000000000000000000000000000000000000000000000010
+bundle_archive_hash: blake3:0000000000000000000000000000000000000000000000000000000000000011
+bundle_hash_algorithm: blake3-merkle-v1
+approval_status: pending
+approvals: []
+issued_at: "2026-05-01T12:35:00Z"
+issuer:
+  key_id: dev-key-0
+  algorithm: ed25519

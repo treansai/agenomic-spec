@@ -1,0 +1,16 @@
+spec_version: agentlock/v0.1
+agent:
+  id: agent://example/min-bot
+  name: Minimal Bot
+  domain: minimal
+  criticality: standard
+runtime:
+  model_provider: example-llm
+  model_id: example-llm-mini
+tools: []
+skills: []
+knowledge: []
+policies: []
+memory:
+  design_memory: memory/memory.schema.yaml
+  runtime_memory_schema_version: 0.0.0

@@ -1,0 +1,11 @@
+report_version: agentlock-replay/v0.1
+bundle_logical_hash: blake3-merkle-v1:0000000000000000000000000000000000000000000000000000000000000010
+bundle_archive_hash: blake3:0000000000000000000000000000000000000000000000000000000000000011
+contract_id: minimal-contract
+total_traces: 0
+total_runs: 0
+mode: deterministic_offline
+contract_passed: true
+violations: []
+aggregates: {}
+generated_at: "2026-05-01T12:30:00Z"

@@ -1,0 +1,18 @@
+# `model.temperature` exceeds the maximum of 2.0.
+lock_version: agentlock-lock/v0.1
+agent_id: agent://example/min-bot
+model:
+  provider: example-llm
+  model_id: example-llm-mini
+  provider_fingerprint: fp_min_0
+  temperature: 5.0
+  top_p: 1.0
+tools: []
+knowledge: []
+memory:
+  schema_version: 0.0.0
+  stores_user_specific_data: false
+  retention_days: 0
+  gdpr_exportable: false
+  deletion_supported: true
+policies: []

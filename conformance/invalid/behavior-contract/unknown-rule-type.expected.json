@@ -1,0 +1,7 @@
+{
+  "description": "`rules[0].type` is not in the {deterministic, probabilistic} enum.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/rules/0/type"
+  }
+}

@@ -1,0 +1,19 @@
+# `tool_calls[0].protocol` is not in the {mcp, http, grpc, local} enum.
+trace_id: 01HZ8K8YNJ5T2ABCDEFGH1JKLM
+run_id: r-0001
+agent_id: agent://example/min-bot
+timestamp: "2026-05-01T12:00:00Z"
+input:
+  type: text
+  payload_ref: blob://traces/0001/input
+model_calls: []
+tool_calls:
+  - tool: secret_tool
+    protocol: telepathy
+    input_hash: blake3:0000000000000000000000000000000000000000000000000000000000000004
+    output_hash: blake3:0000000000000000000000000000000000000000000000000000000000000005
+    status: success
+final_output:
+  hash: blake3:0000000000000000000000000000000000000000000000000000000000000003
+labels: {}
+metadata: {}
