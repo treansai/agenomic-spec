@@ -146,8 +146,7 @@ spec.
 Rejected. The two modes have very different cost and meaning;
 collapsing them hides the distinction operators must reason about.
 
-### Bayesian credible intervals instead of frequentist confidence
-intervals
+### Bayesian credible intervals instead of frequentist confidence intervals
 
 Considered. Either is acceptable in practice; the field of agent
 evaluation is unsettled. v0.1 picks frequentist for familiarity and

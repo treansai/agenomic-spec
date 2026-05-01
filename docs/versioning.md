@@ -62,7 +62,7 @@ prepared to live unchanged for a long time.
   `docs(rfc-NNNN):` commit and explicit note in the PR.
 - Substantive change requires a **new** RFC that supersedes the
   prior one. The old RFC is updated to set `Status: Superseded`
-  and a `Supersedes: ` link to the new RFC.
+  and a `Supersedes:` link to the new RFC.
 
 ## Tag and release naming
 

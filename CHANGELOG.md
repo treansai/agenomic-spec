@@ -10,6 +10,7 @@ documented here.
 ## [Unreleased]
 
 ### Added
+
 - Initial public scaffolding of the AgentLock specification.
 - JSON Schemas (Draft 2020-12) for `genome`, `agent-lock`, `behavior-contract`,
   `trace-event`, `replay-report`, `release-attestation`, and `atep-event` under

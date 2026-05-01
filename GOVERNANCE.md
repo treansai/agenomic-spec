@@ -56,8 +56,8 @@ The charter will, at minimum, define:
 - **Documentation, examples, conformance fixtures:** one maintainer approval.
 - **Schema changes (additive):** RFC + one maintainer approval + 7-day
   comment window.
-- **Schema changes (breaking):** RFC + BDFL approval + 14-day comment window
-  + accompanying schema directory bump (`schemas/v0.X/`).
+- **Schema changes (breaking):** RFC, BDFL approval, 14-day comment window,
+  and an accompanying schema directory bump (`schemas/v0.X/`).
 - **New RFC accepted:** maintainer approval + BDFL approval + 7-day comment
   window with no blocking objections.
 - **Releases (tags):** BDFL only.

@@ -62,9 +62,9 @@ has:
 
 - a node for each release;
 - a directed edge from `Ri` to `Rj` if and only if:
-    - `memory.schema_version(Rj)` ∈ `compatible_memory_schemas(Ri)`,
-      **and**
-    - `Rj ∉ incompatible_with(Ri)`.
+  - `memory.schema_version(Rj)` ∈ `compatible_memory_schemas(Ri)`,
+    **and**
+  - `Rj ∉ incompatible_with(Ri)`.
 
 A controller may switch the agent from `Ri` to `Rj` for a given user
 session iff there is a path `Ri → … → Rj` in the graph.

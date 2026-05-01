@@ -7,7 +7,7 @@
 > AgentLock-compatible implementation can produce the artifacts
 > listed below. This page does **not** mention any specific
 > commercial product.
-
+>
 > **Disclaimer.** This is a technical mapping, not legal advice.
 > Conformance with the AI Act depends on facts, deployment context,
 > and competent authorities' interpretations. Use this as a starting
