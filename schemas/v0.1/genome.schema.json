@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentlock.dev/spec/v0.1/genome.schema.json",
+  "title": "AgentLock Genome (v0.1)",
+  "description": "Declarative description of an agent's design: identity, runtime, capabilities, knowledge references, policies, and memory references. The primary indexable artifact in an agent bundle.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "spec_version",
+    "agent",
+    "runtime",
+    "tools",
+    "skills",
+    "knowledge",
+    "policies",
+    "memory"
+  ],
+  "properties": {
+    "spec_version": {
+      "type": "string",
+      "const": "agentlock/v0.1",
+      "description": "Pins the AgentLock specification version this genome targets."
+    },
+    "agent": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "name", "domain", "criticality"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^agent://[a-z0-9-]+/[a-z0-9-]+$",
+          "description": "Stable agent identifier of the form agent://<org>/<name>."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "domain": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Free-form domain tag (e.g. claims, support, trading-risk)."
+        },
+        "criticality": {
+          "type": "string",
+          "enum": [
+            "standard",
+            "sensitive",
+            "regulated_customer_facing",
+            "life_critical"
+          ]
+        }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["model_provider", "model_id"],
+      "properties": {
+        "model_provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "temperature": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["name", "protocol", "server", "version"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "protocol": {
+            "type": "string",
+            "enum": ["mcp", "http", "grpc", "local"]
+          },
+          "server": { "type": "string", "minLength": 1 },
+          "version": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["id", "version", "prompt_path"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "version": { "type": "string", "minLength": 1 },
+          "prompt_path": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "knowledge": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["name", "snapshot_hash", "source_uri"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "snapshot_hash": {
+            "type": "string",
+            "pattern": "^(sha256|blake3):[0-9a-f]{32,128}$"
+          },
+          "source_uri": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "policies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["id", "path", "severity"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
+          "severity": {
+            "type": "string",
+            "enum": ["info", "low", "medium", "high", "critical"]
+          }
+        }
+      }
+    },
+    "memory": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["design_memory", "runtime_memory_schema_version"],
+      "properties": {
+        "design_memory": {
+          "description": "Reference to the bundled design memory artifact (e.g. file path, URI, or structured ref).",
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "object", "additionalProperties": true }
+          ]
+        },
+        "runtime_memory_schema_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Version string of the runtime memory schema this agent expects (e.g. 1.4.0). Runtime memory itself is NEVER bundled; only its schema version is referenced."
+        }
+      }
+    },
+    "forbidden_decisions": {
+      "type": "array",
+      "description": "Optional list of decisions this agent must never take, used by behavior contracts and policies.",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    }
+  }
+}
