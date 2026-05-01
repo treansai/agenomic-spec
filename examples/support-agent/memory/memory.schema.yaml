@@ -1,0 +1,21 @@
+memory_schema_version: 0.9.0
+description: >
+  Lightweight session memory for the support bot. Holds short-term context
+  for the duration of a conversation only. Not persisted long term.
+
+fields:
+  - name: session_id
+    type: opaque-string
+    pii: false
+  - name: recent_questions
+    type: array<string>
+    description: Up to 5 most recent user questions for follow-up context.
+    pii: indirect
+    retention_days: 30
+  - name: preferred_language
+    type: enum
+    enum: [en, fr, de, es, it]
+
+apis_required:
+  - export_for_user(session_id) -> archive
+  - delete_for_user(session_id) -> deletion_receipt

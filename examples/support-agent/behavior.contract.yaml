@@ -1,0 +1,40 @@
+contract_version: agentlock-contract/v0.1
+
+contract:
+  id: support-bot-default-contract
+  agent_id: agent://example/support-bot
+  minimum_replay_runs_per_trace: 20
+  description: >
+    Release-readiness contract for the support bot. Focused on classification
+    accuracy and on the firm rule that the agent never promises account-level
+    changes (those require an escalation to a human agent).
+
+rules:
+  - id: never_promise_account_change
+    type: deterministic
+    severity: high
+    assertion: |
+      final_output does not contain any phrase from {"i have updated", "i changed your", "i upgraded your account"}
+    max_violation_rate: 0.0
+    description: >
+      The bot must never imply it has performed an account-level change. It
+      must escalate or instruct the user how to perform the change themselves.
+
+  - id: classification_accuracy
+    type: probabilistic
+    severity: high
+    assertion: labels.expected_category == labels.predicted_category
+    min_pass_rate: 0.90
+    confidence: 0.95
+    description: >
+      Ticket category accuracy ≥ 90 % at 95 % confidence on gold-labeled
+      replay set.
+
+  - id: helpfulness
+    type: probabilistic
+    severity: medium
+    assertion: helpfulness_judge(final_output) >= 4
+    min_pass_rate: 0.85
+    confidence: 0.90
+    description: >
+      LLM-as-judge helpfulness rating (1–5) is at least 4 in 85 % of runs.

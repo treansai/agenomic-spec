@@ -1,0 +1,39 @@
+lock_version: agentlock-lock/v0.1
+
+agent_id: agent://example/support-bot
+
+model:
+  provider: example-llm
+  model_id: example-llm-mid-2026-01
+  provider_fingerprint: fp_2026_01_md_z9y8x7
+  temperature: 0.4
+  top_p: 0.9
+
+tools:
+  - name: search_docs
+    protocol: mcp
+    server: mcp://example/docs-mcp
+    version: 1.2.0
+    schema_hash: blake3:c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2
+    permissions:
+      - docs.read
+    requires_human_approval: false
+
+knowledge:
+  - name: public_docs_kb
+    index_id: idx-public-docs-2026-04-20
+    snapshot_hash: blake3:c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2
+
+memory:
+  schema_version: 0.9.0
+  stores_user_specific_data: false
+  retention_days: 30
+  gdpr_exportable: true
+  deletion_supported: true
+
+policies:
+  - id: never_promise_account_change
+    version: 1.0.0
+    hash: blake3:dd44ee55ff66aa77bb88cc99dd00ee11ff22aa33bb44cc55dd66ee77ff8800aa
+
+generated_at: "2026-04-29T11:00:00Z"

@@ -1,0 +1,40 @@
+spec_version: agentlock/v0.1
+
+agent:
+  id: agent://example/support-bot
+  name: Example Support Bot
+  domain: support
+  criticality: standard
+
+runtime:
+  model_provider: example-llm
+  model_id: example-llm-mid-2026-01
+  temperature: 0.4
+
+tools:
+  - name: search_docs
+    protocol: mcp
+    server: mcp://example/docs-mcp
+    version: 1.2.0
+
+skills:
+  - id: classify_ticket
+    version: 1.5.0
+    prompt_path: prompts/skills/classify_ticket.md
+
+knowledge:
+  - name: public_docs_kb
+    snapshot_hash: blake3:c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2
+    source_uri: https://docs.example.com/snapshots/2026-04-20.tar.zst
+
+policies:
+  - id: never_promise_account_change
+    path: policies/escalation_policy.md
+    severity: high
+
+memory:
+  design_memory: memory/memory.schema.yaml
+  runtime_memory_schema_version: 0.9.0
+
+labels:
+  team: support-platform
