@@ -1,0 +1,59 @@
+spec_version: agentlock/v0.1
+
+agent:
+  id: agent://acme/claims-bot
+  name: Acme Claims Triage Bot
+  domain: claims
+  criticality: regulated_customer_facing
+
+runtime:
+  model_provider: example-llm
+  model_id: example-llm-large-2026-01
+  temperature: 0.2
+
+tools:
+  - name: get_claim_details
+    protocol: mcp
+    server: mcp://acme/claims-mcp
+    version: 2.4.1
+  - name: lookup_policy
+    protocol: mcp
+    server: mcp://acme/policy-mcp
+    version: 1.7.0
+  - name: propose_compensation
+    protocol: mcp
+    server: mcp://acme/compensation-mcp
+    version: 0.9.3
+
+skills:
+  - id: classify_claim
+    version: 3.1.0
+    prompt_path: prompts/skills/classify_claim.md
+  - id: compensation_reasoning
+    version: 2.0.4
+    prompt_path: prompts/skills/compensation_reasoning.md
+
+knowledge:
+  - name: claim_categories_kb
+    snapshot_hash: blake3:9b0a4c1f2e6d8a7b3c5f0e1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c
+    source_uri: s3://acme-knowledge/claim_categories/2026-04-15.jsonl
+
+policies:
+  - id: never_auto_authorize_payout
+    path: policies/compensation_policy.md
+    severity: critical
+  - id: pii_minimization
+    path: policies/compensation_policy.md
+    severity: high
+
+memory:
+  design_memory: memory/memory.schema.yaml
+  runtime_memory_schema_version: 1.4.0
+
+forbidden_decisions:
+  - authorize_payout_without_human_review
+  - share_full_policy_text_with_customer
+
+labels:
+  team: claims-platform
+  data_classification: regulated
