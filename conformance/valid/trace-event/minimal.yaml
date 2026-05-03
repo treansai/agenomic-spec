@@ -1,0 +1,21 @@
+trace_id: 01HZ8K8YNJ5T2ABCDEFGH1JKLM
+run_id: r-0001
+agent_id: agent://example/min-bot
+timestamp: "2026-05-01T12:00:00Z"
+input:
+  type: text
+  payload_ref: blob://traces/0001/input
+model_calls:
+  - provider: example-llm
+    model: example-llm-mini
+    fingerprint: fp_min_0
+    temperature: 0.0
+    prompt_hash: blake3:0000000000000000000000000000000000000000000000000000000000000001
+    output_hash: blake3:0000000000000000000000000000000000000000000000000000000000000002
+    latency_ms: 120
+    cost_estimate: 0.0001
+tool_calls: []
+final_output:
+  hash: blake3:0000000000000000000000000000000000000000000000000000000000000003
+labels: {}
+metadata: {}

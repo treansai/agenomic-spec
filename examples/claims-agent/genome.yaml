@@ -1,109 +1,59 @@
-apiVersion: agentlock.dev/v0.1
-kind: AgentGenome
-metadata:
-  name: claims-triage-agent
-  displayName: Claims Triage Agent
-  version: 0.1.0
-  description: Triage synthetic claim submissions and propose a next action for human review.
-  status: experimental
-  owners:
-    - synthetic-risk-ops
-purpose:
-  summary: Extract claim facts, evaluate likely coverage, and prepare a recommendation with approval gates.
-  objectives:
-    - Classify synthetic claim intake into a structured loss category.
-    - Identify missing evidence before recommending an action.
-    - Escalate payout recommendations above configured thresholds.
-  nonObjectives:
-    - Issue final payments without human approval.
-    - Persist runtime user memory inside the released bundle.
-model:
-  provider: example-model-vendor
-  model: instruct-medium-2026-02
-  inferenceProfile:
-    temperature: 0.2
-    topP: 0.95
-    maxOutputTokens: 1400
-prompts:
-  systemPromptRef: urn:agentlock:prompt:claims-triage-system:1.0.0
-  developerPromptRefs:
-    - urn:agentlock:prompt:claims-routing-rules:1.0.0
-    - urn:agentlock:prompt:claims-approval-thresholds:1.0.0
-  operatingPrinciples:
-    - Prefer requesting missing evidence over inferring missing facts.
-    - Treat payout guidance as advisory until approval is recorded.
-    - Cite the policy clause identifier used for each recommendation.
+spec_version: agentlock/v0.1
+
+agent:
+  id: agent://acme/claims-bot
+  name: Acme Claims Triage Bot
+  domain: claims
+  criticality: regulated_customer_facing
+
+runtime:
+  model_provider: example-llm
+  model_id: example-llm-large-2026-01
+  temperature: 0.2
+
 tools:
-  - id: claim-history
-    kind: mcp
-    description: Fetch prior synthetic claim events for the same policy identifier.
-    mcp:
-      serverRef: mcp://synthetic-claims/history
-      serverVersion: 1.4.2
-      transport: streamable_http
-      schemaHash: "sha256:8a91e9f9342087cb1e2b4ad0bf0db530d7f6edb70bf29d8d3e8a3b87fd620101"
-      permissionScopes:
-        - claims.read
-  - id: coverage-checker
-    kind: mcp
-    description: Resolve synthetic coverage clauses against claim facts.
-    mcp:
-      serverRef: mcp://synthetic-claims/coverage
-      serverVersion: 2.1.0
-      transport: streamable_http
-      schemaHash: "sha256:9bf2db827b119ebea36d8a2d9fe3ca89c7781d6a7ee76d4092688d0fd7a10202"
-      permissionScopes:
-        - coverage.read
-  - id: approval-gateway
-    kind: mcp
-    description: Request human approval for payout recommendations and exception handling.
-    mcp:
-      serverRef: mcp://synthetic-governance/approvals
-      serverVersion: 1.2.3
-      transport: sse
-      schemaHash: "sha256:a18c6f0a9364b7b97f3db985db7d4ecf4c1323c98704f69bc5d0b2a7ce840303"
-      permissionScopes:
-        - settlement.recommendation
-        - payout.adjustment
-policies:
-  approvals:
-    defaultMode: on_threshold
-    requiredScopes:
-      - settlement.recommendation
-      - payout.adjustment
-  dataHandling:
-    runtimeMemoryBundling: schema-only
-    piiHandling: masked
-    retentionClass: ninety_days
-  toolUse:
-    allowUnknownTools: false
-    maxConcurrentCalls: 2
-memory:
-  designMemory:
-    schemaRef: urn:agentlock:design-memory:claims-rubric-pack:1.1.0
-    version: 1.1.0
-    artifacts:
-      - urn:agentlock:knowledge:claims-coverage-rubric:2026-01
-      - urn:agentlock:knowledge:fraud-signals-catalog:2026-01
-  runtimeMemory:
-    schemaRef: urn:agentlock:runtime-memory:claim-session:2.0.0
-    accessPolicyRef: urn:agentlock:policy:claim-session-memory-access:1.0.0
-    bundleInclusion: schema-only
-    compatibilityClass: backward-compatible
+  - name: get_claim_details
+    protocol: mcp
+    server: mcp://acme/claims-mcp
+    version: 2.4.1
+  - name: lookup_policy
+    protocol: mcp
+    server: mcp://acme/policy-mcp
+    version: 1.7.0
+  - name: propose_compensation
+    protocol: mcp
+    server: mcp://acme/compensation-mcp
+    version: 0.9.3
+
+skills:
+  - id: classify_claim
+    version: 3.1.0
+    prompt_path: prompts/skills/classify_claim.md
+  - id: compensation_reasoning
+    version: 2.0.4
+    prompt_path: prompts/skills/compensation_reasoning.md
+
 knowledge:
-  references:
-    - id: claims-policy-handbook
-      description: Synthetic policy interpretation handbook for claim triage scenarios.
-      digest: "sha256:11c0f09ae2774bf46c65c96a79e68c59e358f2dd9ce4d6a94198f1b3dbcb0404"
-      license: CC-BY-4.0
-      uri: urn:agentlock:knowledge:claims-policy-handbook:2026-01
-    - id: fraud-signal-playbook
-      description: Synthetic escalation guide for suspicious claim characteristics.
-      digest: "sha256:22d7e82093ab41f0a2616af7bfc28fc88c32b26a4af6a724090f99df8ad20505"
-      license: CC-BY-4.0
-      uri: urn:agentlock:knowledge:fraud-signal-playbook:2026-01
-eval:
-  behaviorContractRef: behavior.contract.yaml
-  replayProfile:
-    sampleCount: 24
-    variancePolicy: stratified
+  - name: claim_categories_kb
+    snapshot_hash: blake3:9b0a4c1f2e6d8a7b3c5f0e1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c
+    source_uri: s3://acme-knowledge/claim_categories/2026-04-15.jsonl
+
+policies:
+  - id: never_auto_authorize_payout
+    path: policies/compensation_policy.md
+    severity: critical
+  - id: pii_minimization
+    path: policies/compensation_policy.md
+    severity: high
+
+memory:
+  design_memory: memory/memory.schema.yaml
+  runtime_memory_schema_version: 1.4.0
+
+forbidden_decisions:
+  - authorize_payout_without_human_review
+  - share_full_policy_text_with_customer
+
+labels:
+  team: claims-platform
+  data_classification: regulated

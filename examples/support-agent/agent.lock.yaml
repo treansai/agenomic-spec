@@ -1,71 +1,39 @@
-apiVersion: agentlock.dev/v0.1
-kind: AgentLock
-metadata:
-  specVersion: 0.1.0
-  generatedAt: "2026-04-29T12:00:00Z"
-bundle:
-  name: support-resolution-agent
-  version: 0.1.0
-digests:
-  genome: "sha256:6d8e700a18c04d3aa7f6de5b82c41da534a92771a1b28143a9e8f7a2b0e11818"
-  behaviorContract: "sha256:7e9f811b29d15e4bb8a7ef6c93d52eb645ba3882b2c39254baf908b3c1f22919"
-resolvedArtifacts:
-  prompts:
-    - path: urn:agentlock:prompt:support-resolution-system:1.0.0
-      digest: "sha256:8fa0822c3ae26f5cc9a80f7da4e63fc756cb4993c3d4a365c0fa19c4d2032a20"
-    - path: urn:agentlock:prompt:support-routing-policy:1.0.0
-      digest: "sha256:90b1933d4bf3706dda09108eb5f740d867dc5aa4d4e5b476d10b2ad5e3143b21"
-    - path: urn:agentlock:prompt:support-refund-rules:1.0.0
-      digest: "sha256:a1c2a44e5c04817eeb1a219fc60851e978ed6bb5e5f6c587e21c3be6f4254c22"
-  tools:
-    - id: knowledge-search
-      serverRef: mcp://synthetic-support/knowledge
-      serverVersion: 1.7.0
-      schemaHash: "sha256:2d7a2b6f7e7b9af261e0c4720c72bdc239e0d650d8c67d2cf5b773d295ea1313"
-      permissionScopes:
-        - kb.read
-    - id: ticket-system
-      serverRef: mcp://synthetic-support/tickets
-      serverVersion: 3.0.1
-      schemaHash: "sha256:3e8b3c708f8c0b0372f1d5831d83ced34af1e761e9d78e3d06c884e3a6fb1414"
-      permissionScopes:
-        - tickets.read
-        - tickets.write
-    - id: approval-gateway
-      serverRef: mcp://synthetic-governance/support-approvals
-      serverVersion: 1.1.0
-      schemaHash: "sha256:4f9c4d81909d1c148302e6942e94dfe45bf2f872fad89f4e17d995f4b70c1515"
-      permissionScopes:
-        - account.change
-        - refund.override
-  knowledge:
-    - id: support-catalog
-      digest: "sha256:51ad5e92a1ae2d259413f7a53fa5ef067c03f9830be9af5f28ea06f5c81d1616"
-    - id: escalation-matrix
-      digest: "sha256:62be6fa3b2bf3e36a52408b640b6f0178d14fa941cfa0b6039fb1766d92e1717"
-  designMemory:
-    - id: support-playbooks
-      schemaRef: urn:agentlock:design-memory:support-playbooks:1.0.0
-      version: 1.0.0
-      digest: "sha256:b2d3b55f6d15928ffc2b320ad71962fa89fe7cc6f607d698f32d4cf7a5365d23"
-compatibility:
-  runtimeMemorySchema:
-    currentVersion: 1.3.0
-    compatibleWith:
-      - 1.2.0
-      - 1.2.1
-    breakingChanges: []
-  rollback:
-    allowedBundleVersions:
-      - 0.1.0-rc.1
-    blockedWhen:
-      - Runtime sessions include approval markers introduced in support-session schema 1.3.0.
-    dependencyConstraints:
-      - component: ticket-system
-        constraint: ">=3.0.0 <4.0.0"
-      - component: approval-gateway
-        constraint: ">=1.1.0 <2.0.0"
-provenance:
-  lockGenerator: agentlock-cli/0.1.0
-  sourceCommit: 9d4c2b8aa6f1
-  createdBy: synthetic-release-bot
+lock_version: agentlock-lock/v0.1
+
+agent_id: agent://example/support-bot
+
+model:
+  provider: example-llm
+  model_id: example-llm-mid-2026-01
+  provider_fingerprint: fp_2026_01_md_z9y8x7
+  temperature: 0.4
+  top_p: 0.9
+
+tools:
+  - name: search_docs
+    protocol: mcp
+    server: mcp://example/docs-mcp
+    version: 1.2.0
+    schema_hash: blake3:c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2
+    permissions:
+      - docs.read
+    requires_human_approval: false
+
+knowledge:
+  - name: public_docs_kb
+    index_id: idx-public-docs-2026-04-20
+    snapshot_hash: blake3:c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2
+
+memory:
+  schema_version: 0.9.0
+  stores_user_specific_data: false
+  retention_days: 30
+  gdpr_exportable: true
+  deletion_supported: true
+
+policies:
+  - id: never_promise_account_change
+    version: 1.0.0
+    hash: blake3:dd44ee55ff66aa77bb88cc99dd00ee11ff22aa33bb44cc55dd66ee77ff8800aa
+
+generated_at: "2026-04-29T11:00:00Z"

@@ -1,0 +1,16 @@
+# Knowledge index snapshot references.
+#
+# Snapshots are pinned by name, index id, and content hash so a release can
+# bind to a specific frozen view of the knowledge corpus. The actual index
+# contents are NOT bundled.
+
+snapshots:
+  - name: claim_categories_kb
+    description: >
+      Curated taxonomy and example narratives for claim categorization,
+      synthetic. Refreshed quarterly.
+    index_id: idx-claim-categories-2026q2
+    snapshot_hash: blake3:9b0a4c1f2e6d8a7b3c5f0e1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c
+    source_uri: s3://acme-knowledge/claim_categories/2026-04-15.jsonl
+    license: internal-synthetic
+    created_at: 2026-04-15T00:00:00Z

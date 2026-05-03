@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentlock.dev/spec/v0.1/trace-event.schema.json",
+  "title": "AgentLock Trace Event (v0.1)",
+  "description": "Single-run agent trace envelope. One trace event captures one production execution: input, model calls, tool calls, and final output, with hashed references where appropriate to support redaction and replay.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "trace_id",
+    "run_id",
+    "agent_id",
+    "timestamp",
+    "input",
+    "model_calls",
+    "tool_calls",
+    "final_output",
+    "labels",
+    "metadata"
+  ],
+  "properties": {
+    "trace_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Globally unique trace identifier (ULID or UUID recommended)."
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifier of the execution run within the trace (e.g. attempt or replay index)."
+    },
+    "agent_id": {
+      "type": "string",
+      "pattern": "^agent://[a-z0-9-]+/[a-z0-9-]+$"
+    },
+    "release": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Release identifier under which this run was executed. Optional but strongly recommended."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 timestamp marking the start of the run."
+    },
+    "input": { "$ref": "#/$defs/payloadRef" },
+    "model_calls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "provider",
+          "model",
+          "fingerprint",
+          "temperature",
+          "prompt_hash",
+          "output_hash",
+          "latency_ms",
+          "cost_estimate"
+        ],
+        "properties": {
+          "provider": { "type": "string", "minLength": 1 },
+          "model": { "type": "string", "minLength": 1 },
+          "fingerprint": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Provider-reported fingerprint at the time of the call."
+          },
+          "temperature": { "type": "number", "minimum": 0, "maximum": 2 },
+          "prompt_hash": { "$ref": "#/$defs/contentHash" },
+          "output_hash": { "$ref": "#/$defs/contentHash" },
+          "latency_ms": { "type": "integer", "minimum": 0 },
+          "cost_estimate": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Estimated cost of the model call in arbitrary units (e.g. USD). The spec does not mandate a unit; producers should document it in metadata."
+          }
+        }
+      }
+    },
+    "tool_calls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["tool", "protocol", "input_hash", "output_hash", "status"],
+        "properties": {
+          "tool": { "type": "string", "minLength": 1 },
+          "protocol": {
+            "type": "string",
+            "enum": ["mcp", "http", "grpc", "local"]
+          },
+          "input_hash": { "$ref": "#/$defs/contentHash" },
+          "output_hash": { "$ref": "#/$defs/contentHash" },
+          "status": {
+            "type": "string",
+            "enum": ["success", "error", "aborted", "timeout"]
+          },
+          "latency_ms": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "final_output": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["hash"],
+      "properties": {
+        "hash": { "$ref": "#/$defs/contentHash" },
+        "ref": { "type": "string", "minLength": 1 },
+        "payload_inline": {}
+      }
+    },
+    "labels": {
+      "type": "object",
+      "description": "Free-form string-to-string labels for sampling and selection.",
+      "additionalProperties": { "type": "string" }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Free-form metadata. Producers SHOULD document the keys they emit.",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "contentHash": {
+      "type": "string",
+      "pattern": "^(sha256|blake3):[0-9a-f]{32,128}$"
+    },
+    "payloadRef": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["type"],
+      "properties": {
+        "type": { "type": "string", "minLength": 1 },
+        "payload_ref": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Out-of-band reference (URI, blob id) to the input payload. Preferred when the payload contains PII or is large."
+        },
+        "payload_inline": {
+          "description": "Inline payload. Producers MUST NOT include unredacted PII inline."
+        }
+      },
+      "oneOf": [
+        { "required": ["payload_ref"] },
+        { "required": ["payload_inline"] }
+      ]
+    }
+  }
+}

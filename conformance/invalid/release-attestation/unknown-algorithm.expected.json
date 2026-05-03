@@ -1,0 +1,7 @@
+{
+  "description": "`issuer.algorithm` is not in the supported algorithm enum.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/issuer/algorithm"
+  }
+}

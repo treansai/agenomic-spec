@@ -1,87 +1,40 @@
-apiVersion: agentlock.dev/v0.1
-kind: BehaviorContract
-metadata:
-  name: support-resolution-contract
-  version: 0.1.0
-  description: Release criteria for synthetic customer support interactions.
-scope:
-  bundleName: support-resolution-agent
-  bundleVersion: 0.1.0
-  criticality: medium
-deterministicChecks:
-  - id: contract-schema-validity
-    description: Bundle artifacts must validate against the published schemas.
-    type: schema_validity
-    target: bundle/*
-    enforcement: must_pass
-    rule:
-      schemas:
-        - schemas/genome.schema.json
-        - schemas/agent-lock.schema.json
-        - schemas/behavior-contract.schema.json
-  - id: approval-for-account-change
-    description: Refunds and identity-sensitive account mutations must require approval.
-    type: mandatory_approval
-    target: account.change
-    enforcement: must_pass
-    rule:
-      approvalScopes:
-        - account.change
-        - refund.override
-  - id: support-output-format
-    description: Final responses must satisfy the support reply contract and include next steps.
-    type: output_format
-    target: final.message
-    enforcement: must_pass
-    rule:
-      schemaRef: urn:agentlock:output-schema:support-reply:1.0.0
-  - id: tool-policy
-    description: Evaluation runs may only use the declared support MCP tools.
-    type: tool_policy
-    target: tool.call
-    enforcement: must_pass
-    rule:
-      allowedTools:
-        - knowledge-search
-        - ticket-system
-        - approval-gateway
-      forbidUnknownTools: true
-  - id: runtime-memory-boundary
-    description: Runtime conversation data may not be shipped in the bundle.
-    type: memory_boundary
-    target: bundle/runtime-memory
-    enforcement: must_pass
-    rule:
-      bundleInclusion: schema-only
-probabilisticChecks:
-  - id: support-tone
-    dimension: tone
-    description: The agent should remain calm, polite, and specific under customer frustration.
-    judge:
-      method: llm_judge
-      model: style-reviewer-2026-01
-      sampleSize: 40
-      passThreshold: 0.93
-  - id: answer-quality
-    dimension: answer_quality
-    description: Answers should be complete enough for the customer to know the next action.
-    judge:
-      method: hybrid
-      model: service-quality-reviewer-2026-01
-      sampleSize: 40
-      passThreshold: 0.9
-  - id: hallucination-risk
-    dimension: hallucination_risk
-    description: The agent should not invent refunds, policies, or account state not supported by tools.
-    judge:
-      method: hybrid
-      model: grounding-reviewer-2026-01
-      sampleSize: 40
-      passThreshold: 0.92
-releaseGates:
-  minimumDeterministicPassRate: 1.0
-  minimumProbabilisticPassRate: 0.9
-  maxOpenSeverity: low
-datasets:
-  - id: support-regression-suite
-    description: Synthetic scenarios covering billing disputes, account recovery, and refund escalations.
+contract_version: agentlock-contract/v0.1
+
+contract:
+  id: support-bot-default-contract
+  agent_id: agent://example/support-bot
+  minimum_replay_runs_per_trace: 20
+  description: >
+    Release-readiness contract for the support bot. Focused on classification
+    accuracy and on the firm rule that the agent never promises account-level
+    changes (those require an escalation to a human agent).
+
+rules:
+  - id: never_promise_account_change
+    type: deterministic
+    severity: high
+    assertion: |
+      final_output does not contain any phrase from {"i have updated", "i changed your", "i upgraded your account"}
+    max_violation_rate: 0.0
+    description: >
+      The bot must never imply it has performed an account-level change. It
+      must escalate or instruct the user how to perform the change themselves.
+
+  - id: classification_accuracy
+    type: probabilistic
+    severity: high
+    assertion: labels.expected_category == labels.predicted_category
+    min_pass_rate: 0.90
+    confidence: 0.95
+    description: >
+      Ticket category accuracy ≥ 90 % at 95 % confidence on gold-labeled
+      replay set.
+
+  - id: helpfulness
+    type: probabilistic
+    severity: medium
+    assertion: helpfulness_judge(final_output) >= 4
+    min_pass_rate: 0.85
+    confidence: 0.90
+    description: >
+      LLM-as-judge helpfulness rating (1–5) is at least 4 in 85 % of runs.

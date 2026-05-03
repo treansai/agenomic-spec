@@ -1,0 +1,11 @@
+# `rules[0].type` is not in the enum {deterministic, probabilistic}.
+contract_version: agentlock-contract/v0.1
+contract:
+  id: bad-contract
+  agent_id: agent://example/min-bot
+  minimum_replay_runs_per_trace: 1
+rules:
+  - id: bogus_rule
+    type: magical
+    severity: info
+    assertion: "true"

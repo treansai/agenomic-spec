@@ -1,0 +1,38 @@
+# Runtime memory schema for the claims-bot.
+#
+# This file describes the SHAPE of runtime memory only. No actual user
+# memory is bundled (see RFC 0006). The runtime store implements export
+# and deletion against this schema.
+
+memory_schema_version: 1.4.0
+description: >
+  Per-customer conversational and case-history state used by the claims-bot
+  during a triage session. All fields below are owned by the customer; export
+  and deletion APIs MUST be available.
+
+fields:
+  - name: customer_token
+    type: opaque-string
+    description: Tokenized customer identifier; not the policy number itself.
+    pii: false
+  - name: recent_interactions
+    type: array<interaction_summary>
+    description: Up to 10 short summaries of the customer's recent claims interactions.
+    pii: indirect
+    retention_days: 365
+  - name: preferred_language
+    type: enum
+    enum: [en, fr, de, es, it]
+    pii: false
+  - name: open_case_ids
+    type: array<string>
+    description: Tokenized identifiers of currently open cases.
+    pii: indirect
+  - name: last_seen_at
+    type: timestamp
+    description: When the customer last interacted with the bot.
+
+apis_required:
+  - export_for_user(customer_token) -> archive
+  - delete_for_user(customer_token) -> deletion_receipt
+  - schema_version() -> string

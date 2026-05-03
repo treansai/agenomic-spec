@@ -1,0 +1,7 @@
+{
+  "description": "`causal_hash` is not a 64-character lowercase hex string.",
+  "match": {
+    "keyword": "pattern",
+    "instancePath": "/causal_hash"
+  }
+}

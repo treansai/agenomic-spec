@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentlock.dev/spec/v0.1/agent-lock.schema.json",
+  "title": "AgentLock Lockfile (v0.1)",
+  "description": "Pinned, reproducible dependency declaration for an agent bundle. Analogous in spirit to Cargo.lock or package-lock.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "lock_version",
+    "agent_id",
+    "model",
+    "tools",
+    "knowledge",
+    "memory",
+    "policies"
+  ],
+  "properties": {
+    "lock_version": {
+      "type": "string",
+      "const": "agentlock-lock/v0.1"
+    },
+    "agent_id": {
+      "type": "string",
+      "pattern": "^agent://[a-z0-9-]+/[a-z0-9-]+$"
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "provider",
+        "model_id",
+        "provider_fingerprint",
+        "temperature",
+        "top_p"
+      ],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1 },
+        "model_id": { "type": "string", "minLength": 1 },
+        "provider_fingerprint": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Provider-reported fingerprint (e.g. system_fingerprint) captured at lock time. Used to detect silent provider drift."
+        },
+        "temperature": { "type": "number", "minimum": 0, "maximum": 2 },
+        "top_p": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "name",
+          "protocol",
+          "server",
+          "version",
+          "schema_hash",
+          "permissions",
+          "requires_human_approval"
+        ],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "protocol": {
+            "type": "string",
+            "enum": ["mcp", "http", "grpc", "local"]
+          },
+          "server": { "type": "string", "minLength": 1 },
+          "version": { "type": "string", "minLength": 1 },
+          "schema_hash": {
+            "type": "string",
+            "pattern": "^(sha256|blake3):[0-9a-f]{32,128}$"
+          },
+          "permissions": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "requires_human_approval": { "type": "boolean" }
+        }
+      }
+    },
+    "knowledge": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["name", "index_id", "snapshot_hash"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "index_id": { "type": "string", "minLength": 1 },
+          "snapshot_hash": {
+            "type": "string",
+            "pattern": "^(sha256|blake3):[0-9a-f]{32,128}$"
+          }
+        }
+      }
+    },
+    "memory": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "schema_version",
+        "stores_user_specific_data",
+        "retention_days",
+        "gdpr_exportable",
+        "deletion_supported"
+      ],
+      "properties": {
+        "schema_version": { "type": "string", "minLength": 1 },
+        "stores_user_specific_data": { "type": "boolean" },
+        "retention_days": { "type": "integer", "minimum": 0 },
+        "gdpr_exportable": { "type": "boolean" },
+        "deletion_supported": { "type": "boolean" }
+      }
+    },
+    "policies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["id", "version", "hash"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "version": { "type": "string", "minLength": 1 },
+          "hash": {
+            "type": "string",
+            "pattern": "^(sha256|blake3):[0-9a-f]{32,128}$"
+          }
+        }
+      }
+    },
+    "compatible_memory_schemas": {
+      "type": "array",
+      "description": "Optional list of memory schema versions this lock is compatible with for rollback purposes (see RFC 0007).",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "incompatible_with": {
+      "type": "array",
+      "description": "Optional list of release IDs that this release explicitly forbids rolling back to (see RFC 0007).",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

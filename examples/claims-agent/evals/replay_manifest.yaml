@@ -1,0 +1,32 @@
+# Replay manifest (informative, not normatively schema-validated in v0.1).
+#
+# Selects which recorded production traces should be replayed for the
+# release-readiness check. The shape below is one reasonable choice;
+# producers may use other shapes during v0.1.
+
+manifest_version: agentlock-replay-manifest/v0.1-draft
+
+selection:
+  sentinel_set:
+    description: >
+      A small, hand-curated set used for cheap daily checks.
+    selectors:
+      - labels.tenant: example-tenant-a
+        labels.severity: medium
+        max: 25
+      - labels.tenant: example-tenant-b
+        labels.severity: medium
+        max: 25
+  full_set:
+    description: >
+      Larger sample for per-release fingerprints. Stratified by category.
+    stratify_by: labels.expected_category
+    per_stratum: 200
+    total_cap: 2000
+
+modes:
+  - name: deterministic_offline
+    description: Cheap CI; replays cached model outputs.
+  - name: statistical
+    description: Used for release fingerprints; re-invokes the model.
+    runs_per_trace: 30

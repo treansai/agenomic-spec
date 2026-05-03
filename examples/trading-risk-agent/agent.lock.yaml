@@ -1,71 +1,51 @@
-apiVersion: agentlock.dev/v0.1
-kind: AgentLock
-metadata:
-  specVersion: 0.1.0
-  generatedAt: "2026-04-29T12:00:00Z"
-bundle:
-  name: trading-risk-guard-agent
-  version: 0.1.0
-digests:
-  genome: "sha256:ad52a3e7f6e2717ae0594cf084fa335bc1584e3851de4f0473af5b3ab624d4d4"
-  behaviorContract: "sha256:be63b4f809f3828bf16a5df1950b446cd2695f4962ef5a1584af6c4ab735e5e5"
-resolvedArtifacts:
-  prompts:
-    - path: urn:agentlock:prompt:risk-guard-system:1.0.0
-      digest: "sha256:cf74c5091af4939ca27b6ea2a61c557de37a605730af6b2695bc7d5ca846f6f6"
-    - path: urn:agentlock:prompt:risk-limit-hierarchy:1.0.0
-      digest: "sha256:d085d61a2bf5a4ad038c7fa3b72d668ef48b716841bf7c3706cd8e6da957b707"
-    - path: urn:agentlock:prompt:override-escalation-policy:1.0.0
-      digest: "sha256:e196e72b3cf6b5be149d8ab4c83e779f059c827952cf8d4817de9f7eb068c818"
-  tools:
-    - id: market-snapshot
-      serverRef: mcp://synthetic-markets/snapshots
-      serverVersion: 2.0.0
-      schemaHash: "sha256:5a0d5e92a19f2c259504f7a53f95ee067c04f9830ce9af5f28ea06f5c81d1818"
-      permissionScopes:
-        - market.read
-    - id: risk-limits
-      serverRef: mcp://synthetic-risk/limits
-      serverVersion: 4.2.0
-      schemaHash: "sha256:6b1e6fa3b2af3d36a61508b640b6f0178d14fa941cfa0b6039fb17f6d92e1919"
-      permissionScopes:
-        - risk.read
-    - id: override-approval
-      serverRef: mcp://synthetic-risk/approvals
-      serverVersion: 1.3.0
-      schemaHash: "sha256:7c2f70b4c3bf4e47b72619c751c700289e25fb052dfb1c7140fc2807ea3f1a1a"
-      permissionScopes:
-        - risk.override
-        - trade.block
-  knowledge:
-    - id: synthetic-limit-book
-      digest: "sha256:8d3081c5d4c05f58c8372ad862d81139af36ac163efc2d8251ad3918fb402b2b"
-    - id: override-playbook
-      digest: "sha256:9e4192d6e5d16069d9483be973e9224ab047bd2740cd3e9362ce4a29ac513c3c"
-  designMemory:
-    - id: risk-taxonomy
-      schemaRef: urn:agentlock:design-memory:risk-taxonomy:2.0.0
-      version: 2.0.0
-      digest: "sha256:af52f83c4da7c6cf25ae9ab5d94f88a016ad938063de9b5928fa0b8fa179c929"
-compatibility:
-  runtimeMemorySchema:
-    currentVersion: 2.0.0
-    compatibleWith:
-      - 1.9.0
-    breakingChanges:
-      - Risk-case schema 2.0.0 adds mandatory decision-rationale and exposure-window fields.
-  rollback:
-    allowedBundleVersions:
-      - 0.1.0-rc.1
-    blockedWhen:
-      - Runtime memory has been migrated to risk-case schema 2.0.0 and cannot be safely downgraded.
-      - Risk-limits server compatibility drops below 4.2.0.
-    dependencyConstraints:
-      - component: risk-limits
-        constraint: ">=4.2.0 <5.0.0"
-      - component: override-approval
-        constraint: ">=1.3.0 <2.0.0"
-provenance:
-  lockGenerator: agentlock-cli/0.1.0
-  sourceCommit: c18a72de4491
-  createdBy: synthetic-release-bot
+lock_version: agentlock-lock/v0.1
+
+agent_id: agent://example/trading-risk
+
+model:
+  provider: example-llm
+  model_id: example-llm-large-2026-01
+  provider_fingerprint: fp_2026_01_lg_a1b2c3
+  temperature: 0.0
+  top_p: 1.0
+
+tools:
+  - name: read_open_positions
+    protocol: mcp
+    server: mcp://example/positions-mcp
+    version: 3.1.0
+    schema_hash: blake3:e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2
+    permissions:
+      - positions.read
+    requires_human_approval: false
+
+  - name: read_market_snapshot
+    protocol: mcp
+    server: mcp://example/marketdata-mcp
+    version: 4.0.2
+    schema_hash: blake3:f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3
+    permissions:
+      - marketdata.read
+    requires_human_approval: false
+
+knowledge:
+  - name: risk_thresholds_kb
+    index_id: idx-risk-thresholds-2026-04-25
+    snapshot_hash: blake3:e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2
+
+memory:
+  schema_version: 0.1.0
+  stores_user_specific_data: false
+  retention_days: 0
+  gdpr_exportable: false
+  deletion_supported: true
+
+policies:
+  - id: never_modify_state
+    version: 1.0.0
+    hash: blake3:cc55dd66ee77ff8800aa11bb22cc33dd44ee55ff66aa77bb88cc99dd00ee11ff
+  - id: max_flagged_position
+    version: 1.0.0
+    hash: blake3:dd66ee77ff8800aa11bb22cc33dd44ee55ff66aa77bb88cc99dd00ee11ff22aa
+
+generated_at: "2026-04-26T08:00:00Z"

@@ -1,0 +1,11 @@
+contract_version: agentlock-contract/v0.1
+contract:
+  id: minimal-contract
+  agent_id: agent://example/min-bot
+  minimum_replay_runs_per_trace: 1
+rules:
+  - id: must_pass
+    type: deterministic
+    severity: info
+    assertion: "true"
+    max_violation_rate: 0.0

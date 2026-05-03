@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentlock.dev/spec/v0.1/behavior-contract.schema.json",
+  "title": "AgentLock Behavior Contract (v0.1)",
+  "description": "Verifiable invariants and probabilistic checks for an agent's behavior. Used by replay jobs to decide whether a release passes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_version", "contract", "rules"],
+  "properties": {
+    "contract_version": {
+      "type": "string",
+      "const": "agentlock-contract/v0.1"
+    },
+    "contract": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "agent_id", "minimum_replay_runs_per_trace"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "agent_id": {
+          "type": "string",
+          "pattern": "^agent://[a-z0-9-]+/[a-z0-9-]+$"
+        },
+        "minimum_replay_runs_per_trace": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Minimum number of statistical replay runs per recorded trace required for the contract to be evaluable."
+        },
+        "description": { "type": "string" }
+      }
+    },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/rule" }
+    }
+  },
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "type", "severity", "assertion"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["deterministic", "probabilistic"]
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["info", "low", "medium", "high", "critical"]
+        },
+        "assertion": {
+          "type": "string",
+          "minLength": 1,
+          "description": "A free-form assertion expression. The runtime is responsible for interpretation; the spec defines the data shape only."
+        },
+        "max_violation_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "For deterministic rules: the maximum fraction of replay runs that may violate the assertion (typically 0)."
+        },
+        "min_pass_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "For probabilistic rules: the minimum fraction of replay runs that must satisfy the assertion."
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "For probabilistic rules: the required statistical confidence level (e.g. 0.95)."
+        },
+        "description": { "type": "string" }
+      }
+    }
+  }
+}

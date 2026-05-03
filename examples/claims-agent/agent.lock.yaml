@@ -1,73 +1,66 @@
-apiVersion: agentlock.dev/v0.1
-kind: AgentLock
-metadata:
-  specVersion: 0.1.0
-  generatedAt: "2026-04-29T12:00:00Z"
-bundle:
-  name: claims-triage-agent
-  version: 0.1.0
-digests:
-  genome: "sha256:0f5d8b6c2e194cbdd9f47a7f9fa38a8bc4bb0d9d091e0c4f97029a9f7b9c3001"
-  behaviorContract: "sha256:b8a5c69942c8b6c3c3fd17bf249abdc2df9541f5b8d66781f4fca946f2ef3003"
-  replayManifest: "sha256:c4d8f4ae5577db230d42cc5c7d88b9803a5b9f8f861e6ec0a1d6585a1f9ef004"
-resolvedArtifacts:
-  prompts:
-    - path: urn:agentlock:prompt:claims-triage-system:1.0.0
-      digest: "sha256:3ad7562dc6b786a0d5f4425f75656f0dce31c2d8a93f9f8f1147b1e6d75a0404"
-    - path: urn:agentlock:prompt:claims-routing-rules:1.0.0
-      digest: "sha256:4be3e0f0cd7260f6338df8fc07edab5f7251890d77dbe272b5f73d4365eb0505"
-    - path: urn:agentlock:prompt:claims-approval-thresholds:1.0.0
-      digest: "sha256:5cf47b2e1d2af28d73358ef998b53f4a2cae06a2872be7fb9d7d0fb4e95c0606"
-  tools:
-    - id: claim-history
-      serverRef: mcp://synthetic-claims/history
-      serverVersion: 1.4.2
-      schemaHash: "sha256:8a91e9f9342087cb1e2b4ad0bf0db530d7f6edb70bf29d8d3e8a3b87fd620101"
-      permissionScopes:
-        - claims.read
-    - id: coverage-checker
-      serverRef: mcp://synthetic-claims/coverage
-      serverVersion: 2.1.0
-      schemaHash: "sha256:9bf2db827b119ebea36d8a2d9fe3ca89c7781d6a7ee76d4092688d0fd7a10202"
-      permissionScopes:
-        - coverage.read
-    - id: approval-gateway
-      serverRef: mcp://synthetic-governance/approvals
-      serverVersion: 1.2.3
-      schemaHash: "sha256:a18c6f0a9364b7b97f3db985db7d4ecf4c1323c98704f69bc5d0b2a7ce840303"
-      permissionScopes:
-        - settlement.recommendation
-        - payout.adjustment
-  knowledge:
-    - id: claims-policy-handbook
-      digest: "sha256:11c0f09ae2774bf46c65c96a79e68c59e358f2dd9ce4d6a94198f1b3dbcb0404"
-    - id: fraud-signal-playbook
-      digest: "sha256:22d7e82093ab41f0a2616af7bfc28fc88c32b26a4af6a724090f99df8ad20505"
-  designMemory:
-    - id: claims-rubric-pack
-      schemaRef: urn:agentlock:design-memory:claims-rubric-pack:1.1.0
-      version: 1.1.0
-      digest: "sha256:61ab5ed7be8ae977abf6170d70a0743d1fd2e65a4cb6c989788f179b1e8b0707"
-compatibility:
-  runtimeMemorySchema:
-    currentVersion: 2.0.0
-    compatibleWith:
-      - 1.9.0
-      - 1.10.0
-    breakingChanges:
-      - New evidence-summary field is required when a claim is escalated.
-  rollback:
-    allowedBundleVersions:
-      - 0.1.0-rc.1
-    blockedWhen:
-      - Runtime memory contains fields unknown to schema versions below 1.9.0.
-      - Approval policy depends on tool scopes unavailable before approval-gateway 1.2.0.
-    dependencyConstraints:
-      - component: coverage-checker
-        constraint: ">=2.1.0 <3.0.0"
-      - component: approval-gateway
-        constraint: ">=1.2.0 <2.0.0"
-provenance:
-  lockGenerator: agentlock-cli/0.1.0
-  sourceCommit: 7c2ab31e45f0
-  createdBy: synthetic-release-bot
+lock_version: agentlock-lock/v0.1
+
+agent_id: agent://acme/claims-bot
+
+model:
+  provider: example-llm
+  model_id: example-llm-large-2026-01
+  provider_fingerprint: fp_2026_01_lg_a1b2c3
+  temperature: 0.2
+  top_p: 1.0
+
+tools:
+  - name: get_claim_details
+    protocol: mcp
+    server: mcp://acme/claims-mcp
+    version: 2.4.1
+    schema_hash: blake3:9b0a4c1f2e6d8a7b3c5f0e1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c
+    permissions:
+      - claims.read
+    requires_human_approval: false
+
+  - name: lookup_policy
+    protocol: mcp
+    server: mcp://acme/policy-mcp
+    version: 1.7.0
+    schema_hash: blake3:5d4e3a2b1c0f9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4b3a2f1e0d9c8b7a6f5e4d
+    permissions:
+      - policy.read
+    requires_human_approval: false
+
+  - name: propose_compensation
+    protocol: mcp
+    server: mcp://acme/compensation-mcp
+    version: 0.9.3
+    schema_hash: blake3:1f2e3d4c5b6a7f8e9d0c1b2a3f4e5d6c7b8a9f0e1d2c3b4a5f6e7d8c9b0a1f2e
+    permissions:
+      - compensation.propose
+    requires_human_approval: true
+
+knowledge:
+  - name: claim_categories_kb
+    index_id: idx-claim-categories-2026q2
+    snapshot_hash: blake3:9b0a4c1f2e6d8a7b3c5f0e1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c
+
+memory:
+  schema_version: 1.4.0
+  stores_user_specific_data: true
+  retention_days: 365
+  gdpr_exportable: true
+  deletion_supported: true
+
+policies:
+  - id: never_auto_authorize_payout
+    version: 1.2.0
+    hash: blake3:aa11bb22cc33dd44ee55ff66aa77bb88cc99dd00ee11ff22aa33bb44cc55dd66
+  - id: pii_minimization
+    version: 1.0.1
+    hash: blake3:bb22cc33dd44ee55ff66aa77bb88cc99dd00ee11ff22aa33bb44cc55dd66ee77
+
+compatible_memory_schemas:
+  - 1.3.0
+  - 1.4.0
+
+incompatible_with: []
+
+generated_at: "2026-04-30T18:12:00Z"

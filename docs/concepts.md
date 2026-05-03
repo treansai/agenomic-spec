@@ -1,86 +1,92 @@
-# Concepts
+# AgentLock in five minutes
 
-AgentLock treats an agent release as a bundle of behavioral dependencies, not just code.
+AgentLock is an **open standard** for describing, hashing, replaying,
+and attesting AI agents. This page is the shortest path to the core
+ideas.
 
-## Agent Bundle
+## 1. An agent is more than code
 
-An agent bundle is the versionable unit described by this specification. At minimum it carries:
+Source code captures **how** an agent processes inputs. It does not
+capture **what an agent is**. To compare two agent versions
+meaningfully, you also need to know:
 
-- a genome that describes intent and declared dependencies
-- a lockfile with resolved digests and compatibility metadata
-- a behavior contract with release gates
+- the prompts and skills active for that version,
+- the model and inference settings actually used,
+- the tools reachable, with their schemas and permission scopes,
+- the policies and approval rules in force,
+- the memory schema the agent expected,
+- the evaluations and replay evidence supporting the release,
+- the signed release decision.
 
-Optional artifacts include replay manifests, attestations, prompt files, policy files, tool contracts, and design-memory assets.
+AgentLock packages all of those into a single artifact: an
+**agent bundle** (RFC 0001).
 
-## Genome
+## 2. Bundles are hashed canonically
 
-The genome is the authored definition of the agent:
+Two producers with different `tar` versions can ship the same bundle
+content as different bytes. AgentLock specifies a canonical Merkle
+hash (RFC 0002) that depends only on file paths and contents — not on
+archive format, compression level, or filesystem details.
 
-- prompts and operating principles
-- model configuration
-- MCP-native tool declarations
-- policy defaults
-- design-memory and runtime-memory references
-- knowledge references
-- replay profile
+The hash, identified as `blake3-merkle-v1`, is what release
+attestations sign.
 
-It describes the desired agent, not the fully resolved release.
+## 3. Replay is statistical, not deterministic
 
-## Lockfile
+LLMs are non-deterministic by construction. Even at temperature 0, two
+calls can disagree across providers, hardware revisions, and
+checkpoints sharing a name.
 
-The lockfile records the resolved release inputs:
+AgentLock takes this seriously (RFC 0005). It defines two replay
+modes:
 
-- digests for the genome and behavior contract
-- prompt digests
-- tool server versions and schema hashes
-- knowledge digests
-- design-memory digests
-- rollback and memory compatibility constraints
+- **deterministic-offline**, which replays cached model outputs to
+  verify the non-LLM parts of the agent reproduce;
+- **statistical**, which re-invokes the model `N` times per trace and
+  reports confidence intervals.
 
-## Behavior Contract
+A replay report (`schemas/v0.1/replay-report.schema.json`) declares
+its mode. A behavior contract
+(`schemas/v0.1/behavior-contract.schema.json`) carries deterministic
+rules and probabilistic rules with `min_pass_rate` and `confidence`.
 
-Behavior contracts express what must hold for a release to be considered acceptable.
+## 4. Attestations are the trust layer
 
-- Deterministic checks are exact and reproducible.
-- Probabilistic checks are sampled and judged against thresholds.
+A release attestation
+(`schemas/v0.1/release-attestation.schema.json`) signs the bundle
+hash, optionally the replay report hash, optionally the ATEP root
+hash, the approval log, and the issuer's identity. Verification is
+offline and reproducible (RFC 0008).
 
-## Trace Events
+Unsigned attestations are explicitly **not for production**.
 
-Trace events are runtime records. They capture what happened during an execution:
+## 5. ATEP captures causal history
 
-- prompts applied
-- tools requested and completed
-- approvals requested and resolved
-- policy decisions
-- outputs and failures
+The Agentic Trajectory Event Protocol (RFC 0003) is an event-sourced,
+hash-linked, signed log of an agent's life: identity, capabilities,
+knowledge, policies, runtime pinnings, interactions, governance.
+Where Git versions files, ATEP versions **causal trajectories of
+behavior**.
 
-Trace events support replay, audit, and statistical comparison.
+Each event carries a Hybrid Logical Clock, references its parent
+events by causal hash, and is signed over its hash (not its body) to
+make the chain transitively tamper-evident.
 
-## Replay Manifest
+## 6. Memory is split: design vs runtime
 
-A replay manifest defines how historical or synthetic cases should be re-executed and compared:
+Design memory is bundled and versioned. Runtime memory (per-user,
+PII) is not bundled — only its **schema** is referenced (RFC 0006).
+This is the only safe way to reconcile reproducibility with GDPR.
 
-- which bundle is under test
-- which trace set or dataset is the source
-- what variance budget is acceptable
-- which metrics are compared
+## 7. Rollback is compatibility-aware
 
-## Release Attestation
+Releases declare `compatible_memory_schemas` and `incompatible_with`
+(RFC 0007). A controller composes these into a graph; safe rollback
+is a connectivity question, not a wish.
 
-A release attestation is a signed summary of:
+## What to read next
 
-- the subject bundle
-- replay evidence
-- approval results
-- final release status
-
-It is not a substitute for raw evidence. It is the signed index over that evidence.
-
-## Memory Boundary
-
-AgentLock distinguishes:
-
-- design memory: versionable and bundleable
-- runtime memory: user or session state that is not bundled
-
-Only runtime-memory schema and access policy belong in the bundle.
+- [`rfcs/0001-agent-bundle-format.md`](../rfcs/0001-agent-bundle-format.md)
+- [`docs/bundle-format.md`](bundle-format.md)
+- [`examples/claims-agent/genome.yaml`](../examples/claims-agent/genome.yaml)
+- Then the RFCs in order: 0002 → 0008.

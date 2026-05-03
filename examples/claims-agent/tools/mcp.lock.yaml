@@ -1,0 +1,34 @@
+# MCP-specific lock supplement.
+#
+# This file is informative for v0.1; the canonical pinning lives in
+# agent.lock.yaml. It is included to demonstrate the kind of metadata an
+# MCP-aware producer might surface alongside the bundle for tooling that
+# inspects MCP servers directly (server discovery, schema diffs, etc.).
+
+mcp_lock_version: agentlock-mcp-lock/v0.1
+
+servers:
+  - ref: mcp://acme/claims-mcp
+    version: 2.4.1
+    transport: stdio
+    discovered_at: 2026-04-30T18:10:11Z
+    capabilities:
+      - tools/list
+      - tools/call
+
+  - ref: mcp://acme/policy-mcp
+    version: 1.7.0
+    transport: streamable-http
+    discovered_at: 2026-04-30T18:10:14Z
+    capabilities:
+      - tools/list
+      - tools/call
+      - resources/list
+
+  - ref: mcp://acme/compensation-mcp
+    version: 0.9.3
+    transport: stdio
+    discovered_at: 2026-04-30T18:10:17Z
+    capabilities:
+      - tools/list
+      - tools/call

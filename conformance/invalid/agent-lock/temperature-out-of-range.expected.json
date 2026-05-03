@@ -1,0 +1,7 @@
+{
+  "description": "`model.temperature` exceeds the schema maximum of 2.0.",
+  "match": {
+    "keyword": "maximum",
+    "instancePath": "/model/temperature"
+  }
+}

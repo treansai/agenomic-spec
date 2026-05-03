@@ -1,0 +1,20 @@
+header:
+  schema_version: 1
+  event_id: 01HZ8K8YNJ5T2ABCDEFGH1JKLM
+  agent_id: agent://example/min-bot
+  stream: identity
+  stream_seq: 0
+  clock:
+    physical_ms: 1746086400000
+    logical: 0
+    node_id: node-a
+  parents: []
+  event_type: identity.created
+  payload_schema_uri: agentlock://atep/identity.created/v1
+payload:
+  agent_name: Minimal Bot
+causal_hash: "0000000000000000000000000000000000000000000000000000000000000001"
+attestation:
+  signer_key_id: dev-key-0
+  signature: AAAA
+  algo: ed25519

@@ -1,0 +1,7 @@
+{
+  "description": "`agent.criticality` value is not in the allowed enum.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/agent/criticality"
+  }
+}

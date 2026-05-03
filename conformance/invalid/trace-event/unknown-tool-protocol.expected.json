@@ -1,0 +1,7 @@
+{
+  "description": "`tool_calls[0].protocol` is not in the {mcp, http, grpc, local} enum.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/tool_calls/0/protocol"
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentlock.dev/spec/v0.1/atep-event.schema.json",
+  "title": "AgentLock ATEP Event (v0.1, JSON projection)",
+  "description": "JSON projection of an Agentic Trajectory Event Protocol (ATEP) event for tooling and validation. The canonical wire format is CBOR (RFC 8949 Section 4.2 deterministic encoding) as defined in RFC 0003. This JSON schema is intended for tooling that has already CBOR-decoded an event.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["header", "payload", "causal_hash", "attestation"],
+  "properties": {
+    "header": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "event_id",
+        "agent_id",
+        "stream",
+        "stream_seq",
+        "clock",
+        "parents",
+        "event_type",
+        "payload_schema_uri"
+      ],
+      "properties": {
+        "schema_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "event_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "ULID assigned at event creation."
+        },
+        "agent_id": {
+          "type": "string",
+          "pattern": "^agent://[a-z0-9-]+/[a-z0-9-]+$"
+        },
+        "stream": {
+          "type": "string",
+          "enum": [
+            "identity",
+            "capability",
+            "knowledge",
+            "policy",
+            "runtime",
+            "interaction",
+            "governance"
+          ]
+        },
+        "stream_seq": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Monotonically increasing sequence number within the (agent_id, stream) pair."
+        },
+        "clock": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["physical_ms", "logical", "node_id"],
+          "properties": {
+            "physical_ms": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Physical wall-clock component of the Hybrid Logical Clock, in milliseconds since UNIX epoch."
+            },
+            "logical": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Logical counter component of the HLC."
+            },
+            "node_id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Identifier of the producing node. Used for tie-breaking."
+            }
+          }
+        },
+        "parents": {
+          "type": "array",
+          "description": "Hex-encoded BLAKE3 causal hashes of immediate parent events. May be empty only for genesis events.",
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "event_type": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$",
+          "description": "Dotted event type, e.g. capability.skill_added, runtime.model_pinned, policy.rule_changed."
+        },
+        "payload_schema_uri": {
+          "type": "string",
+          "minLength": 1,
+          "description": "URI identifying the payload schema for this event_type."
+        }
+      }
+    },
+    "payload": {
+      "type": "object",
+      "description": "Event-type-specific payload. Validated by the schema referenced in payload_schema_uri.",
+      "additionalProperties": true
+    },
+    "causal_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Hex-encoded BLAKE3 causal hash. Constructed as BLAKE3(\"ATEP-v1\\0\" || len(canonical_body) || canonical_body || len(parents) || sorted(parents)). See RFC 0003."
+    },
+    "attestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["signer_key_id", "signature", "algo"],
+      "properties": {
+        "signer_key_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "signature": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Base64-encoded signature over causal_hash (NOT over the body). This makes the chain transitively tamper-evident."
+        },
+        "algo": {
+          "type": "string",
+          "enum": ["ed25519", "ecdsa-p256", "rsa-pss-sha256"]
+        }
+      }
+    }
+  }
+}
