@@ -1,5 +1,5 @@
 # `criticality` is not in the enum.
-spec_version: agentlock/v0.1
+spec_version: agenomic/v0.1
 agent:
   id: agent://example/min-bot
   name: Minimal Bot

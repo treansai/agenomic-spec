@@ -51,7 +51,7 @@ prepared to live unchanged for a long time.
 - New versions get new directories, never modifications to old
   ones.
 - The `$id` of every schema embeds the version
-  (`https://agentlock.dev/spec/v0.1/<name>.schema.json`).
+  (`https://agenomic.dev/spec/v0.1/<name>.schema.json`).
 - Tooling MAY support multiple versions simultaneously; a bundle's
   `spec_version` selects.
 

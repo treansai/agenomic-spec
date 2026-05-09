@@ -3,7 +3,7 @@
 Tutorial companion to
 [`schemas/v0.1/agent-lock.schema.json`](../schemas/v0.1/agent-lock.schema.json).
 
-The lockfile pins **resolved** dependencies. It is to AgentLock what
+The lockfile pins **resolved** dependencies. It is to Agenomic what
 `Cargo.lock` is to Cargo or `package-lock.json` is to npm: derived
 from a higher-level declaration (`genome.yaml`), reproducible, and
 the source of truth for runtime decisions.
@@ -11,7 +11,7 @@ the source of truth for runtime decisions.
 ## Top-level shape
 
 ```yaml
-lock_version: agentlock-lock/v0.1
+lock_version: agenomic-lock/v0.1
 agent_id: agent://acme/claims-bot
 model: {...}                       # pinned runtime (incl. fingerprint, top_p)
 tools: [{...}]                     # pinned, with schema_hash + permissions

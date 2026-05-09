@@ -4,7 +4,7 @@
 |--------------|-------------------------------------------------------------|
 | Status       | Accepted                                                    |
 | Created      | 2026-05-01                                                  |
-| Author(s)    | AgentLock maintainers \<spec@agentlock.dev\>                |
+| Author(s)    | Agenomic maintainers \<spec@agenomic.dev\>                |
 | Spec version | v0.1                                                        |
 | Supersedes   | —                                                           |
 | Related      | RFC 0002, RFC 0003, RFC 0006, RFC 0008                      |
@@ -12,7 +12,7 @@
 ## Summary
 
 This RFC defines the **agent bundle**, the canonical packaging unit of
-AgentLock. A bundle is a directory tree with a fixed set of named files
+Agenomic. A bundle is a directory tree with a fixed set of named files
 and folders, identified by a logical Merkle root (RFC 0002), and
 optionally distributed as a single `tar.zst` archive.
 
@@ -89,7 +89,7 @@ bundle root.
 Bundle hashing (RFC 0002) and archive packing exclude:
 
 - `.git/`, `.DS_Store`, `Thumbs.db`, `target/`, `node_modules/`,
-  `__pycache__/`, `.agentlock/`,
+  `__pycache__/`, `.agenomic/`,
 - security-sensitive patterns: `.env`, `.env.*`, `*.pem`, `*.key`,
   `id_rsa`, `id_ed25519`, `*.p12`, `*.pfx`.
 
@@ -117,7 +117,7 @@ unavailable.
 
 ### Versioning and forward compatibility
 
-`genome.yaml` MUST set `spec_version: agentlock/v0.1`. The major-minor
+`genome.yaml` MUST set `spec_version: agenomic/v0.1`. The major-minor
 pair selects the schema directory used for validation
 (`schemas/v0.1/`). Tooling encountering an unknown `spec_version` MUST
 refuse to validate and SHOULD report which versions it understands.

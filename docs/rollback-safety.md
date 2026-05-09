@@ -8,7 +8,7 @@ Rolling back is a **normal** operation, not an emergency-only escape.
 If you treat it as exotic, you'll fear it, you won't practice it,
 and it will fail when you need it most.
 
-AgentLock makes rollback compatibility-aware so the controller — not
+Agenomic makes rollback compatibility-aware so the controller — not
 the operator under stress — decides whether a given transition is
 safe.
 

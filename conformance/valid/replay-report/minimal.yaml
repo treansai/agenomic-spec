@@ -1,4 +1,4 @@
-report_version: agentlock-replay/v0.1
+report_version: agenomic-replay/v0.1
 bundle_logical_hash: blake3-merkle-v1:0000000000000000000000000000000000000000000000000000000000000010
 bundle_archive_hash: blake3:0000000000000000000000000000000000000000000000000000000000000011
 contract_id: minimal-contract

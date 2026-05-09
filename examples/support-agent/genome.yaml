@@ -1,4 +1,4 @@
-spec_version: agentlock/v0.1
+spec_version: agenomic/v0.1
 
 agent:
   id: agent://example/support-bot

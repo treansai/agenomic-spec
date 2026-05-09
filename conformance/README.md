@@ -1,7 +1,7 @@
 # Conformance suite
 
 The conformance suite is the standardization heart of this repository.
-Any implementation that claims **AgentLock v0.1 compatibility** for the
+Any implementation that claims **Agenomic v0.1 compatibility** for the
 artifact shapes defined here must accept every fixture in
 `conformance/valid/` and reject every fixture in
 `conformance/invalid/` with an error that matches the sibling
@@ -14,7 +14,7 @@ conformance/
 ├── README.md
 ├── valid/
 │   ├── genome/                    minimal.yaml + …
-│   ├── agent-lock/
+│   ├── agenomic/
 │   ├── behavior-contract/
 │   ├── trace-event/
 │   ├── replay-report/
@@ -22,7 +22,7 @@ conformance/
 │   └── atep-event/
 └── invalid/
     ├── genome/                    NAME.yaml + NAME.expected.json
-    ├── agent-lock/
+    ├── agenomic/
     ├── behavior-contract/
     ├── trace-event/
     ├── release-attestation/
@@ -35,7 +35,7 @@ schema:
 | Directory             | Schema                                      |
 |-----------------------|---------------------------------------------|
 | `genome/`             | `schemas/v0.1/genome.schema.json`           |
-| `agent-lock/`         | `schemas/v0.1/agent-lock.schema.json`       |
+| `agenomic/`         | `schemas/v0.1/agent-lock.schema.json`       |
 | `behavior-contract/`  | `schemas/v0.1/behavior-contract.schema.json`|
 | `trace-event/`        | `schemas/v0.1/trace-event.schema.json`      |
 | `replay-report/`      | `schemas/v0.1/replay-report.schema.json`    |

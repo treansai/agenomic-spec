@@ -30,7 +30,7 @@ The technical proposal in full. Include:
 
 Other approaches and why they were rejected. Be concrete: name the
 alternative, list its tradeoffs, explain why this proposal is better
-for AgentLock's stated invariants (vendor-neutral, versioned,
+for Agenomic's stated invariants (vendor-neutral, versioned,
 reproducible).
 
 ## Open questions

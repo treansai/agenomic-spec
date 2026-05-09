@@ -1,5 +1,5 @@
 # `model.temperature` exceeds the maximum of 2.0.
-lock_version: agentlock-lock/v0.1
+lock_version: agenomic-lock/v0.1
 agent_id: agent://example/min-bot
 model:
   provider: example-llm

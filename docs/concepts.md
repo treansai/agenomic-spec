@@ -1,6 +1,6 @@
-# AgentLock in five minutes
+# Agenomic in five minutes
 
-AgentLock is an **open standard** for describing, hashing, replaying,
+Agenomic is an **open standard** for describing, hashing, replaying,
 and attesting AI agents. This page is the shortest path to the core
 ideas.
 
@@ -18,13 +18,13 @@ meaningfully, you also need to know:
 - the evaluations and replay evidence supporting the release,
 - the signed release decision.
 
-AgentLock packages all of those into a single artifact: an
+Agenomic packages all of those into a single artifact: an
 **agent bundle** (RFC 0001).
 
 ## 2. Bundles are hashed canonically
 
 Two producers with different `tar` versions can ship the same bundle
-content as different bytes. AgentLock specifies a canonical Merkle
+content as different bytes. Agenomic specifies a canonical Merkle
 hash (RFC 0002) that depends only on file paths and contents — not on
 archive format, compression level, or filesystem details.
 
@@ -37,7 +37,7 @@ LLMs are non-deterministic by construction. Even at temperature 0, two
 calls can disagree across providers, hardware revisions, and
 checkpoints sharing a name.
 
-AgentLock takes this seriously (RFC 0005). It defines two replay
+Agenomic takes this seriously (RFC 0005). It defines two replay
 modes:
 
 - **deterministic-offline**, which replays cached model outputs to

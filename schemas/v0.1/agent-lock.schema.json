@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://agentlock.dev/spec/v0.1/agent-lock.schema.json",
-  "title": "AgentLock Lockfile (v0.1)",
+  "$id": "https://agenomic.dev/spec/v0.1/agent-lock.schema.json",
+  "title": "Agenomic Lockfile (v0.1)",
   "description": "Pinned, reproducible dependency declaration for an agent bundle. Analogous in spirit to Cargo.lock or package-lock.json.",
   "type": "object",
   "additionalProperties": false,
@@ -17,7 +17,7 @@
   "properties": {
     "lock_version": {
       "type": "string",
-      "const": "agentlock-lock/v0.1"
+      "const": "agenomic-lock/v0.1"
     },
     "agent_id": {
       "type": "string",

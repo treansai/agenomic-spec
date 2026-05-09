@@ -1,5 +1,5 @@
 # `agent.id` does not match the agent://<org>/<name> pattern.
-spec_version: agentlock/v0.1
+spec_version: agenomic/v0.1
 agent:
   id: not-a-uri
   name: Minimal Bot

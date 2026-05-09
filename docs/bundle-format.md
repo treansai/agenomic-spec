@@ -63,7 +63,7 @@ the logical hash.
 
 ## Versioning
 
-`genome.yaml` MUST set `spec_version: agentlock/v0.1`. The major-minor
+`genome.yaml` MUST set `spec_version: agenomic/v0.1`. The major-minor
 selects the schema directory. Unknown top-level fields in objects with
 `additionalProperties: true` are warnings, not errors; this allows
 additive minor revisions without breaking older readers.

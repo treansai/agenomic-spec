@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://agentlock.dev/spec/v0.1/replay-report.schema.json",
-  "title": "AgentLock Replay Report (v0.1)",
+  "$id": "https://agenomic.dev/spec/v0.1/replay-report.schema.json",
+  "title": "Agenomic Replay Report (v0.1)",
   "description": "Output of a replay job. Captures the bundle under test, the contract evaluated, and aggregated results in either deterministic or statistical mode (see RFC 0005).",
   "type": "object",
   "additionalProperties": true,
@@ -21,7 +21,7 @@
   "properties": {
     "report_version": {
       "type": "string",
-      "const": "agentlock-replay/v0.1"
+      "const": "agenomic-replay/v0.1"
     },
     "bundle_logical_hash": {
       "type": "string",
