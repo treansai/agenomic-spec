@@ -4,7 +4,7 @@
 |--------------|-------------------------------------------------------------|
 | Status       | Accepted                                                    |
 | Created      | 2026-05-01                                                  |
-| Author(s)    | AgentLock maintainers \<spec@agentlock.dev\>                |
+| Author(s)    | Agenomic maintainers \<spec@agenomic.dev\>                |
 | Spec version | v0.1                                                        |
 | Supersedes   | —                                                           |
 | Related      | RFC 0001, RFC 0003, RFC 0008                                |
@@ -43,7 +43,7 @@ local filesystem.
 1. Walk the bundle root recursively.
 2. Exclude any path matching a default exclusion pattern:
     - `.git/`, `.DS_Store`, `Thumbs.db`, `target/`, `node_modules/`,
-      `__pycache__/`, `.agentlock/`,
+      `__pycache__/`, `.agenomic/`,
     - security-sensitive patterns: `.env`, `.env.*`, `*.pem`, `*.key`,
       `id_rsa`, `id_ed25519`, `*.p12`, `*.pfx`.
 3. Implementations MAY add to the exclusion list; they MUST NOT remove
@@ -137,7 +137,7 @@ have different `bundle_archive_hash` values but the same
 A bundle with zero included files yields an explicit empty-tree root:
 
 ```text
-empty_root = BLAKE3( "AGENTLOCK-EMPTY-v1\0" )
+empty_root = BLAKE3( "AGENOMIC-EMPTY-v1\0" )
 ```
 
 Implementations MUST refuse to package an empty bundle in production,
@@ -148,9 +148,9 @@ but the empty-tree root is defined for completeness and for testing.
 Consider a bundle with three files:
 
 ```text
-genome.yaml         (content: "spec_version: agentlock/v0.1\n")
+genome.yaml         (content: "spec_version: agenomic/v0.1\n")
 prompts/system.md   (content: "you are a helpful agent\n")
-agent.lock.yaml     (content: "lock_version: agentlock-lock/v0.1\n")
+agent.lock.yaml     (content: "lock_version: agenomic-lock/v0.1\n")
 ```
 
 Sorted canonical paths:
@@ -163,9 +163,9 @@ Leaf hash inputs (each prefixed with `"AGENTLOCK-LEAF-v1\0"`):
 
 ```text
 leaf_0 = BLAKE3( 0x41 0x47 0x45 0x4e ... 0x00 || "agent.lock.yaml"
-                 || 0x00 || "lock_version: agentlock-lock/v0.1\n" )
+                 || 0x00 || "lock_version: agenomic-lock/v0.1\n" )
 leaf_1 = BLAKE3( 0x41 0x47 0x45 0x4e ... 0x00 || "genome.yaml"
-                 || 0x00 || "spec_version: agentlock/v0.1\n" )
+                 || 0x00 || "spec_version: agenomic/v0.1\n" )
 leaf_2 = BLAKE3( 0x41 0x47 0x45 0x4e ... 0x00 || "prompts/system.md"
                  || 0x00 || "you are a helpful agent\n" )
 ```

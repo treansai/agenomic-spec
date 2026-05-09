@@ -4,7 +4,7 @@
 |--------------|-------------------------------------------------------------|
 | Status       | Accepted                                                    |
 | Created      | 2026-05-01                                                  |
-| Author(s)    | AgentLock maintainers \<spec@agentlock.dev\>                |
+| Author(s)    | Agenomic maintainers \<spec@agenomic.dev\>                |
 | Spec version | v0.1                                                        |
 | Supersedes   | —                                                           |
 | Related      | RFC 0001, RFC 0006                                          |
@@ -12,7 +12,7 @@
 ## Summary
 
 Rolling back an agent to an earlier release is a normal operational
-action, not an emergency-only escape. AgentLock makes rollback
+action, not an emergency-only escape. Agenomic makes rollback
 **compatibility-aware**: every release declares the memory schemas it
 supports and the prior releases it explicitly forbids rolling back to.
 A controller composes these declarations into a directed

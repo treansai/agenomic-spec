@@ -1,4 +1,4 @@
-contract_version: agentlock-contract/v0.1
+contract_version: agenomic-contract/v0.1
 
 contract:
   id: trading-risk-default-contract

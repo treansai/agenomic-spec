@@ -31,7 +31,7 @@ Before tagging:
 ```bash
 git checkout main
 git pull --ff-only
-git tag -a v0.1.0 -m "agentlock-spec v0.1.0 (experimental)"
+git tag -a v0.1.0 -m "agenomic-spec v0.1.0 (experimental)"
 git push origin v0.1.0
 ```
 

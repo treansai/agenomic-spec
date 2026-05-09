@@ -2,9 +2,9 @@
 
 > **Scope.** The European Union's AI Act sets record-keeping and
 > oversight obligations for high-risk AI systems. This page maps
-> AgentLock artifacts to the obligations most often cited in
+> Agenomic artifacts to the obligations most often cited in
 > implementation discussions. It is **vendor-neutral**: any
-> AgentLock-compatible implementation can produce the artifacts
+> Agenomic-compatible implementation can produce the artifacts
 > listed below. This page does **not** mention any specific
 > commercial product.
 >
@@ -28,7 +28,7 @@
 A risk management system must identify, evaluate, and mitigate risks
 across the AI system's lifecycle.
 
-| Obligation (informal)                              | Where AgentLock helps                             |
+| Obligation (informal)                              | Where Agenomic helps                             |
 |----------------------------------------------------|---------------------------------------------------|
 | Identify foreseeable risks of the agent's use      | `genome.yaml#agent.criticality`, `forbidden_decisions` |
 | Evaluate risks empirically                         | `behavior.contract.yaml` (deterministic + probabilistic rules); `replay-report` |
@@ -41,7 +41,7 @@ across the AI system's lifecycle.
 Technical documentation must enable competent authorities to assess
 conformity.
 
-| Obligation                                         | Where AgentLock helps                            |
+| Obligation                                         | Where Agenomic helps                            |
 |----------------------------------------------------|--------------------------------------------------|
 | General description of the system                  | `genome.yaml#agent`, `domain`, `runtime`         |
 | Detailed description of elements and development   | The full bundle: prompts, tools, policies, knowledge refs, memory schema |
@@ -54,7 +54,7 @@ conformity.
 High-risk AI systems must automatically record events ("logs") to a
 level appropriate to risk.
 
-| Obligation                                         | Where AgentLock helps                            |
+| Obligation                                         | Where Agenomic helps                            |
 |----------------------------------------------------|--------------------------------------------------|
 | Automatic recording of events                      | Trace events (`schemas/v0.1/trace-event.schema.json`); ATEP `interaction` stream |
 | Logs traceable to the AI system version            | `release` field in trace events; ATEP causal hash chain to release attestation |
@@ -65,7 +65,7 @@ level appropriate to risk.
 
 Users must be informed of relevant characteristics of the AI system.
 
-| Obligation                                         | Where AgentLock helps                            |
+| Obligation                                         | Where Agenomic helps                            |
 |----------------------------------------------------|--------------------------------------------------|
 | Identify the AI system to users                    | `agent.id` derived from `genome.yaml`             |
 | Information on the system's intended purpose       | `genome.yaml#agent.domain`; bundle README        |
@@ -76,7 +76,7 @@ Users must be informed of relevant characteristics of the AI system.
 
 Effective human oversight measures must be designed and implemented.
 
-| Obligation                                         | Where AgentLock helps                            |
+| Obligation                                         | Where Agenomic helps                            |
 |----------------------------------------------------|--------------------------------------------------|
 | Ability to intervene or interrupt                  | `requires_human_approval` flag on tools (RFC 0004) |
 | Approval gates before consequential actions        | `approvals[]` in attestations; `governance` ATEP events; deterministic rules in the contract |
@@ -101,7 +101,7 @@ offline and confirm the release is what the attestation says it is.
 ## What this mapping is not
 
 - It is **not** legal certification. Authorities decide.
-- It is **not** a guarantee that an AgentLock-compatible deployment
+- It is **not** a guarantee that an Agenomic-compatible deployment
   satisfies all AI Act obligations — for example, public-facing
   transparency notices, conformity assessments, and post-market
   monitoring obligations live partly outside the technical artifacts

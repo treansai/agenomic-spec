@@ -5,7 +5,7 @@
 # MCP-aware producer might surface alongside the bundle for tooling that
 # inspects MCP servers directly (server discovery, schema diffs, etc.).
 
-mcp_lock_version: agentlock-mcp-lock/v0.1
+mcp_lock_version: agenomic-mcp-lock/v0.1
 
 servers:
   - ref: mcp://acme/claims-mcp

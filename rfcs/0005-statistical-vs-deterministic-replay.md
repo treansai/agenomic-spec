@@ -4,7 +4,7 @@
 |--------------|-------------------------------------------------------------|
 | Status       | Accepted                                                    |
 | Created      | 2026-05-01                                                  |
-| Author(s)    | AgentLock maintainers \<spec@agentlock.dev\>                |
+| Author(s)    | Agenomic maintainers \<spec@agenomic.dev\>                |
 | Spec version | v0.1                                                        |
 | Supersedes   | —                                                           |
 | Related      | RFC 0001, RFC 0003, RFC 0008                                |
@@ -12,7 +12,7 @@
 ## Summary
 
 LLM-driven agents are **non-deterministic by construction**, even at
-temperature 0. AgentLock therefore defines two replay modes —
+temperature 0. Agenomic therefore defines two replay modes —
 **deterministic-offline** and **statistical** — and standardizes the
 shape of their output (`replay-report.schema.json`) without mandating
 which mode an implementation must use. A conformant implementation
@@ -31,7 +31,7 @@ does not hold:
 - token sampling tie-breaks differ across servers.
 
 Pretending replay is exact creates fragile pipelines that fail
-unhelpfully on benign drift. AgentLock's posture is to be **honest**
+unhelpfully on benign drift. Agenomic's posture is to be **honest**
 about non-determinism and to provide a statistical machinery that
 gives meaningful release decisions despite it.
 

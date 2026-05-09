@@ -4,7 +4,7 @@
 # release-readiness check. The shape below is one reasonable choice;
 # producers may use other shapes during v0.1.
 
-manifest_version: agentlock-replay-manifest/v0.1-draft
+manifest_version: agenomic-replay-manifest/v0.1-draft
 
 selection:
   sentinel_set:

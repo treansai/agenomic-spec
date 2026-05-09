@@ -11,7 +11,7 @@ header:
     node_id: node-a
   parents: []
   event_type: identity.created
-  payload_schema_uri: agentlock://atep/identity.created/v1
+  payload_schema_uri: agenomic://atep/identity.created/v1
 payload:
   agent_name: Minimal Bot
 causal_hash: NOT_A_HASH

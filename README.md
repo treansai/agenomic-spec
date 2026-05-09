@@ -1,13 +1,13 @@
-# AgentLock Specification
+# Agenomic Specification
 
 > Status: **Experimental — v0.1**
 >
 > Open standard for packaging, versioning, replaying, and attesting AI agents.
 > Apache-2.0 licensed. Vendor-neutral. Implementable by anyone.
 
-[![ci](https://github.com/treansai/agentlock-spec/actions/workflows/ci.yml/badge.svg)](https://github.com/treansai/agentlock-spec/actions/workflows/ci.yml)
+[![ci](https://github.com/treansai/agenomic-spec/actions/workflows/ci.yml/badge.svg)](https://github.com/treansai/agenomic-spec/actions/workflows/ci.yml)
 
-AgentLock defines:
+Agenomic defines:
 
 - a portable **agent bundle** layout (genome, lockfile, contract, prompts,
   tools, policies, knowledge, memory schemas, evals, attestations);
@@ -29,7 +29,7 @@ or verifier from this repo.
 
 ## Why this exists
 
-Git versions files. AgentLock versions agent _behavior_:
+Git versions files. Agenomic versions agent _behavior_:
 
 - which prompts were active for a given run,
 - which model and inference settings were used,
@@ -41,7 +41,7 @@ Git versions files. AgentLock versions agent _behavior_:
 - and which causal events shaped the agent's trajectory between releases.
 
 Two commits in a Git repo can refer to materially different agents.
-AgentLock makes that difference explicit, hashable, and verifiable.
+Agenomic makes that difference explicit, hashable, and verifiable.
 
 ## What this repo IS
 
@@ -70,8 +70,8 @@ See [`docs/versioning.md`](docs/versioning.md) for the full policy.
 ## Quick start
 
 ```bash
-git clone https://github.com/treansai/agentlock-spec
-cd agentlock-spec
+git clone https://github.com/treansai/agenomic-spec
+cd agenomic-spec
 npm ci
 npm run validate    # validates examples/ and conformance/ against schemas/v0.1/
 npm run lint        # markdownlint + RFC front-matter lint

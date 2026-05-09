@@ -4,14 +4,14 @@
 |--------------|-------------------------------------------------------------|
 | Status       | Accepted                                                    |
 | Created      | 2026-05-01                                                  |
-| Author(s)    | AgentLock maintainers \<spec@agentlock.dev\>                |
+| Author(s)    | Agenomic maintainers \<spec@agenomic.dev\>                |
 | Spec version | v0.1                                                        |
 | Supersedes   | —                                                           |
 | Related      | RFC 0001, RFC 0007                                          |
 
 ## Summary
 
-AgentLock distinguishes **design memory** (versionable agent
+Agenomic distinguishes **design memory** (versionable agent
 knowledge: examples, few-shot cases, glossaries) from **runtime
 memory** (per-user history, conversational state, PII). The bundle
 versions design memory as a first-class artifact. It versions only

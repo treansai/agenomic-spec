@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://agentlock.dev/spec/v0.1/genome.schema.json",
-  "title": "AgentLock Genome (v0.1)",
+  "$id": "https://agenomic.dev/spec/v0.1/genome.schema.json",
+  "title": "Agenomic Genome (v0.1)",
   "description": "Declarative description of an agent's design: identity, runtime, capabilities, knowledge references, policies, and memory references. The primary indexable artifact in an agent bundle.",
   "type": "object",
   "additionalProperties": false,
@@ -18,8 +18,8 @@
   "properties": {
     "spec_version": {
       "type": "string",
-      "const": "agentlock/v0.1",
-      "description": "Pins the AgentLock specification version this genome targets."
+      "const": "agenomic/v0.1",
+      "description": "Pins the Agenomic specification version this genome targets."
     },
     "agent": {
       "type": "object",

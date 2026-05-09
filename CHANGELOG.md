@@ -11,8 +11,8 @@ documented here.
 
 ### Added
 
-- Initial public scaffolding of the AgentLock specification.
-- JSON Schemas (Draft 2020-12) for `genome`, `agent-lock`, `behavior-contract`,
+- Initial public scaffolding of the Agenomic specification.
+- JSON Schemas (Draft 2020-12) for `genome`, `agenomic`, `behavior-contract`,
   `trace-event`, `replay-report`, `release-attestation`, and `atep-event` under
   `schemas/v0.1/`.
 - RFCs 0001 through 0008 covering bundle format, canonical Merkle hashing,

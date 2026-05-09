@@ -4,14 +4,14 @@
 |--------------|-------------------------------------------------------------|
 | Status       | Accepted                                                    |
 | Created      | 2026-05-01                                                  |
-| Author(s)    | AgentLock maintainers \<spec@agentlock.dev\>                |
+| Author(s)    | Agenomic maintainers \<spec@agenomic.dev\>                |
 | Spec version | v0.1                                                        |
 | Supersedes   | —                                                           |
 | Related      | RFC 0001, RFC 0002, RFC 0003                                |
 
 ## Summary
 
-AgentLock treats the **Model Context Protocol (MCP)** as a first-class
+Agenomic treats the **Model Context Protocol (MCP)** as a first-class
 tool reference protocol. Bundles MAY also reference `http`, `grpc`, and
 `local` tools for cases MCP does not yet cover. This RFC specifies how
 tool references are pinned, how their schemas are hashed, how
@@ -151,7 +151,7 @@ multiple canonical encodings (one per protocol).
 
 Rejected. v0.1 acknowledges that production stacks include legacy
 HTTP/gRPC tools. Permitting `http`/`grpc`/`local` lets teams adopt
-AgentLock incrementally without rewriting their integrations.
+Agenomic incrementally without rewriting their integrations.
 
 ## Open questions
 

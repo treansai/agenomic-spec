@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://agentlock.dev/spec/v0.1/behavior-contract.schema.json",
-  "title": "AgentLock Behavior Contract (v0.1)",
+  "$id": "https://agenomic.dev/spec/v0.1/behavior-contract.schema.json",
+  "title": "Agenomic Behavior Contract (v0.1)",
   "description": "Verifiable invariants and probabilistic checks for an agent's behavior. Used by replay jobs to decide whether a release passes.",
   "type": "object",
   "additionalProperties": false,
@@ -9,7 +9,7 @@
   "properties": {
     "contract_version": {
       "type": "string",
-      "const": "agentlock-contract/v0.1"
+      "const": "agenomic-contract/v0.1"
     },
     "contract": {
       "type": "object",

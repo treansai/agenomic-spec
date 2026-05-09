@@ -2,7 +2,7 @@
 
 ## Scope
 
-This repository contains the AgentLock specification: schemas, RFCs,
+This repository contains the Agenomic specification: schemas, RFCs,
 documentation, examples, and a conformance suite. It contains **no
 runtime code**.
 
@@ -19,16 +19,16 @@ these categories:
    `package.json`.
 
 If you believe you have found a runtime vulnerability in a specific
-**implementation** of AgentLock, please report it to the maintainers of
+**implementation** of Agenomic, please report it to the maintainers of
 that implementation, not here.
 
 ## Reporting a vulnerability
 
 Please do **not** open a public GitHub issue for security reports.
 
-Email: `security@agentlock.dev` *(placeholder address — to be replaced
+Email: `security@agenomic.dev` *(placeholder address — to be replaced
 before v1.0; until then, send a private security advisory via GitHub:
-`https://github.com/treansai/agentlock-spec/security/advisories/new`).*
+`https://github.com/treansai/agenomic-spec/security/advisories/new`).*
 
 Include, where possible:
 

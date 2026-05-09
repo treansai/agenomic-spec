@@ -5,7 +5,7 @@
 
 ## Goals
 
-AgentLock aims to be a vendor-neutral, multi-stakeholder open standard. The
+Agenomic aims to be a vendor-neutral, multi-stakeholder open standard. The
 governance model is calibrated to that goal: light-touch while the spec is
 experimental, formal once independent implementations exist.
 
@@ -69,12 +69,12 @@ disclose it in the PR description. The BDFL will recuse from approving RFCs
 where they hold a conflict; in that case the change requires approval from
 two unconflicted maintainers.
 
-## Trademarks and the AgentLock name
+## Trademarks and the Agenomic name
 
-The "AgentLock" name and any logo are currently held by the original
+The "Agenomic" name and any logo are currently held by the original
 maintainer. They will be transferred to the foundation chosen at the TSC
 transition. Until then, third parties may freely state that an
-implementation is "AgentLock-compatible" if it passes the conformance suite,
+implementation is "Agenomic-compatible" if it passes the conformance suite,
 without seeking permission, but may not imply endorsement by the project.
 
 ## Amendments to this document

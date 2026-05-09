@@ -6,7 +6,7 @@ important thing to internalize:
 > **LLM-driven agents are non-deterministic by construction. Even at
 > temperature 0, two calls can disagree.**
 
-Pretending otherwise builds fragile pipelines. AgentLock is honest
+Pretending otherwise builds fragile pipelines. Agenomic is honest
 about this and gives you the machinery to gate releases statistically.
 
 ## Why temperature 0 isn't enough
@@ -28,7 +28,7 @@ changes silently across days even when the public model id is fixed.
 
 ## Two replay modes
 
-AgentLock declares the mode in every replay report:
+Agenomic declares the mode in every replay report:
 
 ### `deterministic_offline`
 

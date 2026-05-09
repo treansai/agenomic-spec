@@ -1,6 +1,6 @@
-# Contributing to AgentLock Spec
+# Contributing to Agenomic Spec
 
-Thank you for considering a contribution. AgentLock is an open standard;
+Thank you for considering a contribution. Agenomic is an open standard;
 its long-term value depends on careful, explicit changes that the wider
 community can review.
 

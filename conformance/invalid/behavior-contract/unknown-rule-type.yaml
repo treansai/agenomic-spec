@@ -1,5 +1,5 @@
 # `rules[0].type` is not in the enum {deterministic, probabilistic}.
-contract_version: agentlock-contract/v0.1
+contract_version: agenomic-contract/v0.1
 contract:
   id: bad-contract
   agent_id: agent://example/min-bot

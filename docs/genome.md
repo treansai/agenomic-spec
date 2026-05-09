@@ -10,7 +10,7 @@ Think of it as the design document the rest of the bundle pins.
 ## Top-level shape
 
 ```yaml
-spec_version: agentlock/v0.1     # constant for v0.1 bundles
+spec_version: agenomic/v0.1     # constant for v0.1 bundles
 agent: {...}                     # identity, criticality
 runtime: {...}                   # model + inference settings
 tools: [{...}]                   # external capabilities
