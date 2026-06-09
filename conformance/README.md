@@ -14,19 +14,23 @@ conformance/
 ├── README.md
 ├── valid/
 │   ├── genome/                    minimal.yaml + …
-│   ├── agenomic/
+│   ├── agent-lock/
 │   ├── behavior-contract/
 │   ├── trace-event/
 │   ├── replay-report/
 │   ├── release-attestation/
-│   └── atep-event/
+│   ├── atep-event/
+│   ├── workflow/
+│   └── system/
 └── invalid/
     ├── genome/                    NAME.yaml + NAME.expected.json
-    ├── agenomic/
+    ├── agent-lock/
     ├── behavior-contract/
     ├── trace-event/
     ├── release-attestation/
-    └── atep-event/
+    ├── atep-event/
+    ├── workflow/
+    └── system/
 ```
 
 The first path component under `valid/` and `invalid/` selects the
@@ -34,13 +38,21 @@ schema:
 
 | Directory             | Schema                                      |
 |-----------------------|---------------------------------------------|
-| `genome/`             | `schemas/v0.1/genome.schema.json`           |
-| `agenomic/`         | `schemas/v0.1/agent-lock.schema.json`       |
+| `genome/`             | `schemas/v0.1/genome.schema.json` or `schemas/v0.2/genome.schema.json` (see below) |
+| `agent-lock/`         | `schemas/v0.1/agent-lock.schema.json`       |
 | `behavior-contract/`  | `schemas/v0.1/behavior-contract.schema.json`|
 | `trace-event/`        | `schemas/v0.1/trace-event.schema.json`      |
 | `replay-report/`      | `schemas/v0.1/replay-report.schema.json`    |
 | `release-attestation/`| `schemas/v0.1/release-attestation.schema.json` |
 | `atep-event/`         | `schemas/v0.1/atep-event.schema.json`       |
+| `workflow/`           | `schemas/v0.2/workflow.schema.json`         |
+| `system/`             | `schemas/v0.2/system.schema.json`           |
+
+For artifact kinds published in more than one schema version (currently
+only `genome`), the fixture's own `spec_version` selects the directory:
+`agenomic/v0.2` selects `schemas/v0.2/`, anything else falls back to
+the artifact's first published version. v0.2 is an overlay (RFC 0009):
+artifact kinds not redefined there keep validating against v0.1.
 
 ## `.expected.json` format
 

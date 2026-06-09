@@ -1,0 +1,12 @@
+# `system.id` must match system://<org>/<name>.
+spec_version: agenomic/v0.2
+system:
+  id: claims-orchestra
+  name: Minimal System
+  domain: minimal
+  criticality: standard
+agents:
+  - role: solo
+    id: agent://example/min-bot
+orchestration:
+  style: pipeline

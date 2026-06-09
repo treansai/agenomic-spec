@@ -1,0 +1,8 @@
+{
+  "description": "Steps of type `agent` must carry the `agent` field (conditional required).",
+  "match": {
+    "keyword": "required",
+    "instancePath": "/steps/0",
+    "params": { "missingProperty": "agent" }
+  }
+}

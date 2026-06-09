@@ -1,0 +1,7 @@
+{
+  "description": "`system.id` must match the system://<org>/<name> pattern.",
+  "match": {
+    "keyword": "pattern",
+    "instancePath": "/system/id"
+  }
+}

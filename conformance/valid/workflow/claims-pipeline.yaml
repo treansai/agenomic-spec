@@ -1,0 +1,105 @@
+# Exercises the full step vocabulary: agent, tool, human, wait, loop,
+# sub-workflow, guards, retries, timeouts, signals, escalation rules.
+spec_version: agenomic/v0.2
+workflow:
+  id: workflow://example/claims-pipeline
+  name: Claims Pipeline
+  domain: claims
+  criticality: regulated_customer_facing
+  version: 1.0.0
+  description: Staged claims pipeline with deterministic routing and early human exit.
+engine:
+  kind: temporal
+  version: "1.24"
+triggers:
+  - type: api
+    description: Started by POST /claims
+  - type: schedule
+    schedule: "0 6 * * *"
+inputs:
+  - name: customer_message
+    required: true
+  - name: claim_case_snapshot
+outputs:
+  - name: final_message
+  - name: requires_human
+state:
+  schema_path: state/state.schema.yaml
+  schema_version: 1.0.0
+steps:
+  - id: extraction
+    type: agent
+    agent: agent://example/claims-extractor
+    skill: extract_claim_facts
+    outputs: [person_type, detected_language, identified_issues]
+    retry:
+      max_attempts: 3
+      backoff: exponential
+      initial_interval: 2s
+    timeout: 60s
+  - id: categorization
+    type: agent
+    agent: agent://example/claims-categorizer
+    depends_on: [extraction]
+    outputs: [category_id, confidence]
+  - id: routing
+    type: tool
+    tool:
+      name: compensation_rules
+      protocol: local
+      version: 2.0.0
+    depends_on: [categorization]
+    outputs: [flow_type, requires_human, compensation_breakdown]
+    on_error: escalate
+  - id: collect_missing_documents
+    type: loop
+    depends_on: [routing]
+    when: "missing_documents != []"
+    until: "completeness_score >= 0.8"
+    max_iterations: 3
+    body:
+      - id: request_documents
+        type: agent
+        agent: agent://example/claims-communicator
+        skill: request_missing_documents
+      - id: await_documents
+        type: wait
+        wait_for:
+          signals: [documents_received]
+          mode: any
+          timeout: 30d
+          on_timeout: escalate
+      - id: rescore_completeness
+        type: agent
+        agent: agent://example/claims-completeness
+  - id: human_review
+    type: human
+    depends_on: [routing]
+    when: "requires_human == true"
+    gate:
+      role: claims_handler
+      action: review
+      sla: 48h
+      on_timeout: escalate
+      escalation_route: senior_handler
+  - id: generation
+    type: agent
+    agent: agent://example/claims-responder
+    depends_on: [routing, collect_missing_documents]
+    when: "requires_human == false"
+    outputs: [proposed_message]
+  - id: validation
+    type: workflow
+    uses: workflows/response-validation.yaml
+    depends_on: [generation]
+signals:
+  - name: documents_received
+    description: Customer uploaded the requested documents.
+    payload_schema_path: state/documents-received.schema.yaml
+escalation_rules:
+  - condition: bodily_injury
+    route: senior_handler
+  - condition: suspected_fraud
+    route: fraud_team
+labels:
+  team: claims-platform

@@ -1,0 +1,12 @@
+# Orchestration style `anarchy` is not part of the style vocabulary.
+spec_version: agenomic/v0.2
+system:
+  id: system://example/min-system
+  name: Minimal System
+  domain: minimal
+  criticality: standard
+agents:
+  - role: solo
+    id: agent://example/min-bot
+orchestration:
+  style: anarchy

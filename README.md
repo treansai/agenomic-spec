@@ -20,7 +20,13 @@ Agenomic defines:
   and the causal history;
 - the **Agentic Trajectory Event Protocol (ATEP)** — an event-sourced log of
   the agent's life, hash-linked and signed, suitable for governance and
-  forensics.
+  forensics;
+- a **workflow manifest** describing staged, branching, long-running
+  compositions of agent calls, tool steps, human gates, signal waits, and
+  loops (v0.2, RFC 0009);
+- a **system manifest** describing multi-agent systems: member agents and
+  roles, orchestration topology, shared state, signals, and the system-wide
+  autonomy/guardrail/escalation envelope (v0.2, RFC 0009).
 
 This repository is the **specification only**. It contains schemas, RFCs,
 documentation, synthetic examples, and a conformance suite. It contains
@@ -45,7 +51,8 @@ Agenomic makes that difference explicit, hashable, and verifiable.
 
 ## What this repo IS
 
-- Normative JSON Schemas (Draft 2020-12) under [`schemas/v0.1/`](schemas/v0.1/).
+- Normative JSON Schemas (Draft 2020-12) under [`schemas/v0.1/`](schemas/v0.1/)
+  and [`schemas/v0.2/`](schemas/v0.2/).
 - RFCs describing protocol decisions and tradeoffs in [`rfcs/`](rfcs/).
 - Synthetic, validating example bundles in [`examples/`](examples/).
 - A conformance suite in [`conformance/`](conformance/) with positive and
@@ -73,7 +80,7 @@ See [`docs/versioning.md`](docs/versioning.md) for the full policy.
 git clone https://github.com/treansai/agenomic-spec
 cd agenomic-spec
 npm ci
-npm run validate    # validates examples/ and conformance/ against schemas/v0.1/
+npm run validate    # validates examples/ and conformance/ against schemas/v0.1/ and v0.2/
 npm run lint        # markdownlint + RFC front-matter lint
 ```
 
@@ -98,6 +105,7 @@ npm run lint        # markdownlint + RFC front-matter lint
 | 0006 | Design vs Runtime Memory                          | Accepted |
 | 0007 | Rollback Safety                                   | Accepted |
 | 0008 | Release Attestations                              | Accepted |
+| 0009 | Workflows and Multi-Agent Systems                 | Draft    |
 
 ## Schemas
 
@@ -110,6 +118,13 @@ npm run lint        # markdownlint + RFC front-matter lint
 | [`replay-report.schema.json`](schemas/v0.1/replay-report.schema.json)    | Output of a replay job.                  |
 | [`release-attestation.schema.json`](schemas/v0.1/release-attestation.schema.json) | Signed release evidence.        |
 | [`atep-event.schema.json`](schemas/v0.1/atep-event.schema.json)          | JSON projection of an ATEP event.        |
+| [`genome.schema.json` (v0.2)](schemas/v0.2/genome.schema.json)           | Agent design declaration with orchestration-facing fields (triggers, autonomy, guardrails, escalation, collaboration). |
+| [`workflow.schema.json` (v0.2)](schemas/v0.2/workflow.schema.json)       | Workflow declaration: steps, guards, human gates, signals, loops. |
+| [`system.schema.json` (v0.2)](schemas/v0.2/system.schema.json)           | Multi-agent system declaration: members, orchestration, governance envelope. |
+
+`schemas/v0.2/` is an **overlay** (RFC 0009): artifact kinds not redefined
+there continue to validate against `schemas/v0.1/`. A document's
+`spec_version` selects the schema directory.
 
 ## Contributing
 

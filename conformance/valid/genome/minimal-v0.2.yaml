@@ -1,0 +1,38 @@
+# A v0.2 genome: the v0.1 minimal genome plus the optional
+# orchestration-facing fields introduced by RFC 0009.
+spec_version: agenomic/v0.2
+agent:
+  id: agent://example/min-bot
+  name: Minimal Bot
+  domain: minimal
+  criticality: standard
+runtime:
+  model_provider: example-llm
+  model_id: example-llm-mini
+tools: []
+skills: []
+knowledge: []
+policies: []
+memory:
+  design_memory: memory/memory.schema.yaml
+  runtime_memory_schema_version: 0.0.0
+triggers:
+  - type: api
+  - type: signal
+    signal: documents_received
+autonomy:
+  allowed_actions: [classify_document, extract_fields]
+  forbidden_actions: [trigger_payment]
+guardrails:
+  - formal_address
+  - no_payment_commitment
+escalation_rules:
+  - condition: suspected_fraud
+    route: fraud_team
+collaboration:
+  member_of:
+    - system://example/claims-orchestra
+  hand_off_to:
+    - agent://example/claims-coverage
+  accepts_handoffs_from:
+    - agent://example/claims-intake

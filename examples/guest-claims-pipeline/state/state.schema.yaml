@@ -1,0 +1,46 @@
+# Schema of the pipeline's shared context. Schema only — runtime state
+# is never bundled (RFC 0006).
+schema_version: 1.0.0
+fields:
+  person_type:
+    type: string
+    description: Whether the claimant is an individual or an organization.
+  detected_language:
+    type: string
+    description: ISO 639-1 language code of the complaint.
+  identified_issues:
+    type: array
+    description: Up to five issues extracted from the complaint.
+  category_hints:
+    type: array
+    description: Candidate category ids surfaced during extraction.
+  category_id:
+    type: integer
+    description: Final complaint category (1..12).
+  confidence:
+    type: string
+    description: Categorization confidence band (high | medium | low).
+  flow_type:
+    type: string
+    description: Distribution flow (direct | indirect | business).
+  requires_human:
+    type: boolean
+    description: Whether routing sent the case to a human queue.
+  compensation_breakdown:
+    type: array
+    description: Deterministic compensation lines (base, rate, amount).
+  proposed_message:
+    type: string
+    description: Draft customer response.
+  proposed_partner_message:
+    type: string
+    description: Draft partner response (indirect flow only).
+  validation_score:
+    type: number
+    description: 0..1 quality score from the validation agent.
+  final_message:
+    type: string
+    description: Customer response after validation/auto-correction.
+  partner_message:
+    type: string
+    description: Partner response after validation/auto-correction.

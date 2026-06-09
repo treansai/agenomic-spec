@@ -84,9 +84,31 @@ Releases declare `compatible_memory_schemas` and `incompatible_with`
 (RFC 0007). A controller composes these into a graph; safe rollback
 is a connectivity question, not a wish.
 
+## 8. Agents compose: workflows and systems
+
+Production agents rarely run alone. v0.2 (RFC 0009) adds two manifest
+kinds on top of the genome:
+
+- a **workflow** (`workflow.yaml`) declares an ordered, possibly
+  branching, possibly long-running composition of agent calls,
+  deterministic tool steps, human gates, signal waits, loops, and
+  sub-workflows;
+- a **system** (`system.yaml`) declares a multi-agent system: the
+  member agents and their roles, the orchestration topology
+  (pipeline, graph, supervisor, swarm, custom), shared state and
+  signals, and the system-wide autonomy, guardrail, and escalation
+  envelope.
+
+Both are ordinary bundle files: hashed by RFC 0002, attested by
+RFC 0008, and referencing schemas only — never runtime state
+(RFC 0006). Re-wiring a system changes its hash exactly like editing
+a prompt changes an agent's.
+
 ## What to read next
 
 - [`rfcs/0001-agent-bundle-format.md`](../rfcs/0001-agent-bundle-format.md)
 - [`docs/bundle-format.md`](bundle-format.md)
 - [`examples/claims-agent/genome.yaml`](../examples/claims-agent/genome.yaml)
-- Then the RFCs in order: 0002 → 0008.
+- [`docs/orchestration.md`](orchestration.md) — workflows and
+  multi-agent systems (v0.2).
+- Then the RFCs in order: 0002 → 0009.

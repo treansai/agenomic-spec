@@ -1,0 +1,369 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.2/workflow.schema.json",
+  "title": "Agenomic Workflow (v0.2)",
+  "description": "Declarative description of a workflow: an ordered, possibly branching and long-running composition of agent calls, deterministic tool steps, human gates, signal waits, loops, and sub-workflows (RFC 0009). The manifest describes design, not execution state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["spec_version", "workflow", "steps"],
+  "properties": {
+    "spec_version": {
+      "type": "string",
+      "const": "agenomic/v0.2",
+      "description": "Pins the Agenomic specification version this workflow targets."
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "name", "domain", "criticality"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^workflow://[a-z0-9-]+/[a-z0-9-]+$",
+          "description": "Stable workflow identifier of the form workflow://<org>/<name>."
+        },
+        "name": { "type": "string", "minLength": 1 },
+        "domain": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Free-form domain tag (e.g. claims, support, onboarding)."
+        },
+        "criticality": {
+          "type": "string",
+          "enum": [
+            "standard",
+            "sensitive",
+            "regulated_customer_facing",
+            "life_critical"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "description": "Version of the workflow definition itself (semver recommended)."
+        },
+        "description": { "type": "string" }
+      }
+    },
+    "engine": {
+      "$ref": "#/$defs/engine",
+      "description": "Optional, non-normative hint about the runtime executing this workflow (e.g. temporal, langgraph, crewai, custom). Conformant tooling MUST NOT require it."
+    },
+    "triggers": {
+      "type": "array",
+      "description": "Optional declaration of how this workflow starts.",
+      "items": { "$ref": "#/$defs/trigger" }
+    },
+    "inputs": {
+      "type": "array",
+      "description": "Declared workflow inputs.",
+      "items": { "$ref": "#/$defs/io_field" }
+    },
+    "outputs": {
+      "type": "array",
+      "description": "Declared workflow outputs.",
+      "items": { "$ref": "#/$defs/io_field" }
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Reference to the shared context schema steps read from and write to. Only the schema is referenced; runtime state is NEVER bundled (RFC 0006 applies).",
+      "properties": {
+        "schema_path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Bundle-relative path to the state schema artifact."
+        },
+        "schema_version": { "type": "string" }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The workflow's steps. Execution order is the DAG induced by `depends_on`; steps with identical dependencies MAY run in parallel. Step `when` guards make any step conditional.",
+      "items": { "$ref": "#/$defs/step" }
+    },
+    "signals": {
+      "type": "array",
+      "description": "External signals this workflow can receive while running (e.g. documents_received, expert_report_received).",
+      "items": { "$ref": "#/$defs/signal" }
+    },
+    "escalation_rules": {
+      "type": "array",
+      "description": "Declarative escalation table: when `condition` holds, the run is routed to `route` (a human role, team, or queue).",
+      "items": { "$ref": "#/$defs/escalation_rule" }
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "engine": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Runtime family, e.g. temporal, langgraph, crewai, autogen, custom."
+        },
+        "version": { "type": "string" }
+      }
+    },
+    "trigger": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["api", "event", "schedule", "signal", "manual"]
+        },
+        "description": { "type": "string" },
+        "event": {
+          "type": "string",
+          "description": "`event` triggers only: the event name that starts a run."
+        },
+        "schedule": {
+          "type": "string",
+          "description": "`schedule` triggers only: a cron expression."
+        },
+        "signal": {
+          "type": "string",
+          "description": "`signal` triggers only: the signal name that starts a run."
+        }
+      }
+    },
+    "io_field": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "required": { "type": "boolean" }
+      }
+    },
+    "signal": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "payload_schema_path": {
+          "type": "string",
+          "description": "Optional bundle-relative path to the signal payload schema."
+        }
+      }
+    },
+    "escalation_rule": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["condition", "route"],
+      "properties": {
+        "condition": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Free-form condition tag or expression (e.g. bodily_injury, suspected_fraud)."
+        },
+        "route": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human role, team, or queue that receives the escalation."
+        }
+      }
+    },
+    "duration": {
+      "type": "string",
+      "pattern": "^[0-9]+(ms|s|m|h|d)$",
+      "description": "Plain duration literal: integer + unit, e.g. 500ms, 30s, 15m, 2h, 90d."
+    },
+    "retry": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["max_attempts"],
+      "properties": {
+        "max_attempts": { "type": "integer", "minimum": 1 },
+        "backoff": {
+          "type": "string",
+          "enum": ["none", "fixed", "exponential"]
+        },
+        "initial_interval": { "$ref": "#/$defs/duration" }
+      }
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["role", "action"],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human role required to act, e.g. senior_handler, risk_officer."
+        },
+        "action": {
+          "type": "string",
+          "enum": ["approve", "review", "input", "decide"]
+        },
+        "sla": { "$ref": "#/$defs/duration" },
+        "on_timeout": {
+          "type": "string",
+          "enum": ["escalate", "fail", "continue"]
+        },
+        "escalation_route": {
+          "type": "string",
+          "description": "Role, team, or queue receiving the case when the SLA elapses."
+        }
+      }
+    },
+    "wait_for": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["signals"],
+      "properties": {
+        "signals": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["any", "all"],
+          "description": "Resume on the first declared signal (any) or after all of them (all). Defaults to any."
+        },
+        "timeout": { "$ref": "#/$defs/duration" },
+        "on_timeout": {
+          "type": "string",
+          "enum": ["escalate", "fail", "continue"]
+        }
+      }
+    },
+    "tool_ref": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "protocol": {
+          "type": "string",
+          "enum": ["mcp", "http", "grpc", "local"]
+        },
+        "server": { "type": "string" },
+        "version": { "type": "string" }
+      }
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "type"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "Step identifier, unique within the workflow."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["agent", "tool", "human", "wait", "workflow", "loop"],
+          "description": "agent: invoke an Agenomic agent; tool: deterministic tool/function call; human: human gate; wait: suspend until a signal; workflow: invoke a sub-workflow; loop: repeat a body of steps until a condition holds."
+        },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "agent": {
+          "type": "string",
+          "pattern": "^agent://[a-z0-9-]+/[a-z0-9-]+$",
+          "description": "`agent` steps only: the agent invoked by this step."
+        },
+        "skill": {
+          "type": "string",
+          "description": "`agent` steps only: optional skill id within the agent."
+        },
+        "tool": {
+          "$ref": "#/$defs/tool_ref",
+          "description": "`tool` steps only: the deterministic tool or function invoked."
+        },
+        "gate": {
+          "$ref": "#/$defs/gate",
+          "description": "`human` steps only: who must act, and what happens on SLA breach."
+        },
+        "wait_for": {
+          "$ref": "#/$defs/wait_for",
+          "description": "`wait` steps only: which signals resume the run."
+        },
+        "uses": {
+          "type": "string",
+          "description": "`workflow` steps only: path or URI of the sub-workflow manifest."
+        },
+        "body": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/step" },
+          "description": "`loop` steps only: the steps repeated on each iteration."
+        },
+        "until": {
+          "type": "string",
+          "description": "`loop` steps only: condition that terminates the loop."
+        },
+        "max_iterations": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "`loop` steps only: hard upper bound on iterations."
+        },
+        "depends_on": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Step ids that must complete before this step starts. Steps with identical dependencies MAY run in parallel."
+        },
+        "when": {
+          "type": "string",
+          "description": "Optional guard expression over the shared state; when false the step is skipped (enables conditional routing and early exit)."
+        },
+        "inputs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "State fields this step reads."
+        },
+        "outputs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "State fields this step writes."
+        },
+        "retry": { "$ref": "#/$defs/retry" },
+        "timeout": { "$ref": "#/$defs/duration" },
+        "on_error": {
+          "type": "string",
+          "enum": ["fail", "continue", "escalate"],
+          "description": "Behavior after retries are exhausted. Defaults to fail."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "agent" } } },
+          "then": { "required": ["agent"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "tool" } } },
+          "then": { "required": ["tool"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "human" } } },
+          "then": { "required": ["gate"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "wait" } } },
+          "then": { "required": ["wait_for"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "workflow" } } },
+          "then": { "required": ["uses"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "loop" } } },
+          "then": { "required": ["body", "until"] }
+        }
+      ]
+    }
+  }
+}

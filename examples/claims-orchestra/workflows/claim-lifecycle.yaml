@@ -1,0 +1,131 @@
+# The end-to-end claim lifecycle owned by system://acme/claims-orchestra.
+# Long-running: it loops on missing documents, suspends on the expertise
+# gate, and resumes on external signals.
+spec_version: agenomic/v0.2
+workflow:
+  id: workflow://acme/claim-lifecycle
+  name: Claim Lifecycle
+  domain: claims
+  criticality: regulated_customer_facing
+  version: 2.0.0
+  description: From first notice of loss to a settlement decision pack.
+engine:
+  kind: temporal
+  version: "1.24"
+triggers:
+  - type: api
+    description: Started when a first notice of loss is filed.
+inputs:
+  - name: fnol_payload
+    required: true
+  - name: contract_snapshot_ref
+    required: true
+outputs:
+  - name: decision_pack
+  - name: settlement_statement
+state:
+  schema_path: ../state/state.schema.yaml
+  schema_version: 1.4.0
+steps:
+  - id: intake
+    type: agent
+    agent: agent://acme/claims-intake
+    outputs: [claim_summary]
+    retry:
+      max_attempts: 3
+      backoff: exponential
+      initial_interval: 2s
+    timeout: 5m
+  - id: prequalification
+    type: loop
+    depends_on: [intake]
+    until: "completeness_score >= 0.8"
+    max_iterations: 5
+    body:
+      - id: process_documents
+        type: agent
+        agent: agent://acme/claims-document
+        outputs: [classified_documents]
+      - id: score_completeness
+        type: agent
+        agent: agent://acme/claims-completeness
+        outputs: [completeness_score, missing_documents]
+      - id: request_missing_documents
+        type: agent
+        agent: agent://acme/claims-communication
+        skill: generate_missing_documents_request
+        when: "missing_documents != []"
+      - id: await_documents
+        type: wait
+        when: "missing_documents != []"
+        wait_for:
+          signals: [documents_received]
+          timeout: 30d
+          on_timeout: escalate
+  - id: coverage_analysis
+    type: agent
+    agent: agent://acme/claims-coverage
+    depends_on: [prequalification]
+    outputs: [guarantees, exclusions]
+  - id: triage
+    type: agent
+    agent: agent://acme/claims-triage
+    depends_on: [coverage_analysis]
+    outputs: [severity, complexity, expertise_required]
+  - id: await_expert_report
+    type: wait
+    depends_on: [triage]
+    when: "expertise_required == true"
+    wait_for:
+      signals: [expert_report_received]
+      timeout: 90d
+      on_timeout: escalate
+  - id: liability_assessment
+    type: agent
+    agent: agent://acme/claims-liability
+    depends_on: [triage, await_expert_report]
+    outputs: [liability_share, recourse_mode]
+  - id: decision_pack
+    type: agent
+    agent: agent://acme/claims-decision
+    depends_on: [liability_assessment]
+    outputs: [decision_pack, auto_approval]
+  - id: handler_validation
+    type: human
+    depends_on: [decision_pack]
+    when: "auto_approval == false"
+    gate:
+      role: claims_handler
+      action: decide
+      sla: 48h
+      on_timeout: escalate
+      escalation_route: senior_handler
+  - id: settlement
+    type: agent
+    agent: agent://acme/claims-settlement
+    depends_on: [decision_pack, handler_validation]
+    outputs: [settlement_statement]
+  - id: quality_gate
+    type: tool
+    tool:
+      name: quality_gate_checks
+      protocol: local
+      version: 2.0.0
+    depends_on: [settlement]
+    on_error: escalate
+signals:
+  - name: documents_received
+  - name: expert_report_received
+  - name: human_decision_applied
+escalation_rules:
+  - condition: bodily_injury
+    route: senior_handler
+  - condition: refusal
+    route: regulated_human_in_the_loop
+  - condition: suspected_fraud
+    route: fraud_investigation_team
+  - condition: major_loss
+    route: senior_handler
+labels:
+  team: claims-platform
+  synthetic: "true"

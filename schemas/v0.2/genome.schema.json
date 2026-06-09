@@ -1,0 +1,272 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.2/genome.schema.json",
+  "title": "Agenomic Genome (v0.2)",
+  "description": "Declarative description of an agent's design: identity, runtime, capabilities, knowledge references, policies, and memory references. v0.2 adds optional orchestration-facing fields (triggers, autonomy, guardrails, escalation rules, collaboration) so a genome can declare how it participates in workflows and multi-agent systems (RFC 0009). Every valid v0.1 genome remains valid under v0.2 after updating spec_version.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "spec_version",
+    "agent",
+    "runtime",
+    "tools",
+    "skills",
+    "knowledge",
+    "policies",
+    "memory"
+  ],
+  "properties": {
+    "spec_version": {
+      "type": "string",
+      "const": "agenomic/v0.2",
+      "description": "Pins the Agenomic specification version this genome targets."
+    },
+    "agent": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "name", "domain", "criticality"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^agent://[a-z0-9-]+/[a-z0-9-]+$",
+          "description": "Stable agent identifier of the form agent://<org>/<name>."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "domain": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Free-form domain tag (e.g. claims, support, trading-risk)."
+        },
+        "criticality": {
+          "type": "string",
+          "enum": [
+            "standard",
+            "sensitive",
+            "regulated_customer_facing",
+            "life_critical"
+          ]
+        }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["model_provider", "model_id"],
+      "properties": {
+        "model_provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "temperature": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["name", "protocol", "server", "version"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "protocol": {
+            "type": "string",
+            "enum": ["mcp", "http", "grpc", "local"]
+          },
+          "server": { "type": "string", "minLength": 1 },
+          "version": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["id", "version", "prompt_path"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "version": { "type": "string", "minLength": 1 },
+          "prompt_path": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "knowledge": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["name", "snapshot_hash", "source_uri"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "snapshot_hash": {
+            "type": "string",
+            "pattern": "^(sha256|blake3):[0-9a-f]{32,128}$"
+          },
+          "source_uri": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "policies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["id", "path", "severity"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
+          "severity": {
+            "type": "string",
+            "enum": ["info", "low", "medium", "high", "critical"]
+          }
+        }
+      }
+    },
+    "memory": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["design_memory", "runtime_memory_schema_version"],
+      "properties": {
+        "design_memory": {
+          "description": "Reference to the bundled design memory artifact (e.g. file path, URI, or structured ref).",
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "object", "additionalProperties": true }
+          ]
+        },
+        "runtime_memory_schema_version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Version string of the runtime memory schema this agent expects (e.g. 1.4.0). Runtime memory itself is NEVER bundled; only its schema version is referenced."
+        }
+      }
+    },
+    "triggers": {
+      "type": "array",
+      "description": "Optional declaration of how this agent is invoked. Absence means the invocation mode is unspecified.",
+      "items": { "$ref": "#/$defs/trigger" }
+    },
+    "autonomy": {
+      "$ref": "#/$defs/autonomy",
+      "description": "Optional explicit autonomy envelope: actions the agent may take on its own, and actions that always require escalation or are forbidden outright."
+    },
+    "guardrails": {
+      "type": "array",
+      "description": "Optional named output guardrails the agent's responses must respect (e.g. formal_address, no_payment_commitment). Names are free-form tags resolved by policies and behavior contracts.",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "escalation_rules": {
+      "type": "array",
+      "description": "Optional declarative escalation table: when `condition` holds, the run is routed to `route` (a human role, team, or queue).",
+      "items": { "$ref": "#/$defs/escalation_rule" }
+    },
+    "collaboration": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Optional declaration of how this agent participates in multi-agent systems (RFC 0009).",
+      "properties": {
+        "member_of": {
+          "type": "array",
+          "description": "Systems this agent is designed to run inside.",
+          "items": {
+            "type": "string",
+            "pattern": "^system://[a-z0-9-]+/[a-z0-9-]+$"
+          }
+        },
+        "hand_off_to": {
+          "type": "array",
+          "description": "Agents this agent may hand work off to.",
+          "items": {
+            "type": "string",
+            "pattern": "^agent://[a-z0-9-]+/[a-z0-9-]+$"
+          }
+        },
+        "accepts_handoffs_from": {
+          "type": "array",
+          "description": "Agents allowed to hand work off to this agent.",
+          "items": {
+            "type": "string",
+            "pattern": "^agent://[a-z0-9-]+/[a-z0-9-]+$"
+          }
+        }
+      }
+    },
+    "forbidden_decisions": {
+      "type": "array",
+      "description": "Optional list of decisions this agent must never take, used by behavior contracts and policies.",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "trigger": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["api", "event", "schedule", "signal", "manual"]
+        },
+        "description": { "type": "string" },
+        "event": {
+          "type": "string",
+          "description": "`event` triggers only: the event name that starts a run."
+        },
+        "schedule": {
+          "type": "string",
+          "description": "`schedule` triggers only: a cron expression."
+        },
+        "signal": {
+          "type": "string",
+          "description": "`signal` triggers only: the signal name that starts or resumes a run."
+        }
+      }
+    },
+    "autonomy": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "allowed_actions": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "forbidden_actions": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "escalation_rule": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["condition", "route"],
+      "properties": {
+        "condition": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Free-form condition tag or expression (e.g. bodily_injury, suspected_fraud)."
+        },
+        "route": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human role, team, or queue that receives the escalation."
+        }
+      }
+    }
+  }
+}
