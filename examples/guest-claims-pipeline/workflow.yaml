@@ -1,0 +1,105 @@
+# Synthetic example of a staged LLM pipeline workflow (RFC 0009).
+# Modeled on a real-world guest-claims service: LLM extraction and
+# categorization, deterministic routing and compensation rules, an early
+# human exit, conditional response generation (one or two messages
+# depending on the distribution channel), and LLM validation with
+# auto-correction.
+spec_version: agenomic/v0.2
+workflow:
+  id: workflow://acme/guest-claims-pipeline
+  name: Guest Claims Pipeline
+  domain: claims
+  criticality: regulated_customer_facing
+  version: 1.0.0
+  description: >-
+    Five-stage complaint handling pipeline: extract, categorize, route
+    deterministically, generate a response, validate it. Cases flagged by
+    routing exit early to a human queue.
+triggers:
+  - type: api
+    description: Started by POST /claims/send-message.
+inputs:
+  - name: customer_message
+    required: true
+  - name: brand
+    required: true
+  - name: channel
+  - name: stay_details
+  - name: invoice_amounts
+outputs:
+  - name: final_message
+  - name: partner_message
+  - name: requires_human
+state:
+  schema_path: state/state.schema.yaml
+  schema_version: 1.0.0
+steps:
+  - id: extraction
+    type: agent
+    agent: agent://acme/guest-claims-extractor
+    skill: extract_claim_facts
+    inputs: [customer_message, invoice_amounts, brand, stay_details]
+    outputs: [person_type, detected_language, identified_issues, category_hints]
+    retry:
+      max_attempts: 3
+      backoff: exponential
+      initial_interval: 2s
+    timeout: 60s
+  - id: categorization
+    type: agent
+    agent: agent://acme/guest-claims-categorizer
+    depends_on: [extraction]
+    inputs: [customer_message, category_hints]
+    outputs: [category_id, confidence, other_categories]
+    timeout: 60s
+  - id: routing
+    type: tool
+    tool:
+      name: routing_and_compensation_rules
+      protocol: local
+      version: 1.0.0
+    depends_on: [categorization]
+    inputs: [category_id, channel, person_type, brand]
+    outputs: [flow_type, requires_human, compensation_breakdown]
+    on_error: escalate
+  - id: human_review
+    type: human
+    depends_on: [routing]
+    when: "requires_human == true"
+    gate:
+      role: claims_handler
+      action: review
+      sla: 48h
+      on_timeout: escalate
+      escalation_route: senior_handler
+  - id: generate_customer_message
+    type: agent
+    agent: agent://acme/guest-claims-responder
+    skill: draft_customer_response
+    depends_on: [routing]
+    when: "requires_human == false"
+    inputs: [flow_type, compensation_breakdown, detected_language]
+    outputs: [proposed_message]
+  - id: generate_partner_message
+    type: agent
+    agent: agent://acme/guest-claims-responder
+    skill: draft_partner_response
+    depends_on: [routing]
+    when: "requires_human == false && flow_type == 'indirect'"
+    inputs: [flow_type, compensation_breakdown]
+    outputs: [proposed_partner_message]
+  - id: validation
+    type: agent
+    agent: agent://acme/guest-claims-validator
+    depends_on: [generate_customer_message, generate_partner_message]
+    when: "requires_human == false"
+    inputs: [proposed_message, proposed_partner_message]
+    outputs: [validation_score, final_message, partner_message]
+escalation_rules:
+  - condition: aggressive_tone
+    route: senior_handler
+  - condition: legal_threat
+    route: legal_team
+labels:
+  team: guest-relations
+  synthetic: "true"

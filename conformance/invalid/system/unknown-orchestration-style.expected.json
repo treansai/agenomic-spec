@@ -1,0 +1,7 @@
+{
+  "description": "Orchestration `style` must be one of pipeline | graph | supervisor | swarm | custom.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/orchestration/style"
+  }
+}

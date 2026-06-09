@@ -1,0 +1,8 @@
+{
+  "description": "Top-level required field `agents` is missing.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "params": { "missingProperty": "agents" }
+  }
+}

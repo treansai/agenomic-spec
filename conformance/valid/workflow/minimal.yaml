@@ -1,0 +1,10 @@
+spec_version: agenomic/v0.2
+workflow:
+  id: workflow://example/min-flow
+  name: Minimal Flow
+  domain: minimal
+  criticality: standard
+steps:
+  - id: answer
+    type: agent
+    agent: agent://example/min-bot

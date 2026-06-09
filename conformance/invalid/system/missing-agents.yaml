@@ -1,0 +1,9 @@
+# Missing the required top-level `agents` field.
+spec_version: agenomic/v0.2
+system:
+  id: system://example/min-system
+  name: Minimal System
+  domain: minimal
+  criticality: standard
+orchestration:
+  style: pipeline

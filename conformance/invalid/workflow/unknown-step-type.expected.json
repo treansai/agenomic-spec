@@ -1,0 +1,7 @@
+{
+  "description": "Step `type` must be one of agent | tool | human | wait | workflow | loop.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/steps/0/type"
+  }
+}

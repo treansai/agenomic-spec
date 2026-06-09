@@ -1,0 +1,46 @@
+# Schema of the state shared between the orchestra's member agents.
+# Schema only — runtime state is never bundled (RFC 0006).
+schema_version: 1.4.0
+fields:
+  claim_summary:
+    type: object
+    description: Structured first-notice-of-loss summary produced by intake.
+  classified_documents:
+    type: array
+    description: Documents with class labels and extracted fields.
+  completeness_score:
+    type: number
+    description: 0..1 information completeness score.
+  missing_documents:
+    type: array
+    description: Document kinds still required from the customer.
+  guarantees:
+    type: array
+    description: Policy guarantees applicable to the incident.
+  exclusions:
+    type: array
+    description: Policy exclusions engaged by the incident.
+  severity:
+    type: string
+    description: Triage severity band.
+  complexity:
+    type: string
+    description: Triage complexity band.
+  expertise_required:
+    type: boolean
+    description: Whether a human expert mission is required before analysis continues.
+  liability_share:
+    type: number
+    description: Liability share retained against the insured.
+  recourse_mode:
+    type: string
+    description: Selected recourse mode, if any.
+  decision_pack:
+    type: object
+    description: Aggregated, rationalized decision proposal.
+  auto_approval:
+    type: boolean
+    description: Whether the decision pack qualifies for automatic approval.
+  settlement_statement:
+    type: object
+    description: Deterministic settlement computation result.

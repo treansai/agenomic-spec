@@ -1,0 +1,8 @@
+{
+  "description": "Top-level required field `steps` is missing.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "params": { "missingProperty": "steps" }
+  }
+}

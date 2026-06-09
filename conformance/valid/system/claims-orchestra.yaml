@@ -1,0 +1,81 @@
+# Exercises the full system vocabulary: members with autonomy envelopes,
+# conditional graph orchestration, shared state, signals, owned workflows,
+# guardrails, escalation rules, and system-wide forbidden autonomy.
+spec_version: agenomic/v0.2
+system:
+  id: system://example/claims-orchestra
+  name: Claims Orchestra
+  domain: claims
+  criticality: regulated_customer_facing
+  version: 2.0.0
+  description: Multi-agent claims platform with an expertise gate.
+agents:
+  - role: intake
+    id: agent://example/claims-intake
+    genome: ../claims-agent
+    autonomy:
+      allowed_actions: [read_fnol, parse_incident_metadata]
+  - role: coverage
+    id: agent://example/claims-coverage
+    autonomy:
+      allowed_actions: [retrieve_clauses, assess_guarantees, assess_exclusions]
+  - role: triage
+    id: agent://example/claims-triage
+    autonomy:
+      allowed_actions: [score_severity, score_complexity, pick_route]
+  - role: decision
+    id: agent://example/claims-decision
+    autonomy:
+      allowed_actions: [aggregate_findings, rationalize, propose_outcome]
+      forbidden_actions: [authorize_payout]
+orchestration:
+  style: graph
+  engine:
+    kind: temporal
+    version: "1.24"
+  entrypoint: intake
+  edges:
+    - from: intake
+      to: coverage
+    - from: coverage
+      to: triage
+    - from: triage
+      to: decision
+      when: "expertise_required == false"
+    - from: triage
+      to: END
+      when: "expertise_required == true"
+    - from: decision
+      to: END
+shared_state:
+  schema_path: state/state.schema.yaml
+  schema_version: 1.4.0
+signals:
+  - name: documents_received
+  - name: expert_report_received
+    description: Resumes analysis after the expertise gate.
+  - name: human_decision_applied
+workflows:
+  - id: workflow://example/claims-pipeline
+    path: workflows/claims-pipeline.yaml
+    description: End-to-end claim lifecycle.
+communication_guardrails:
+  - formal_address
+  - no_medical_content
+  - no_payment_commitment
+  - no_refusal_wording_without_human_review
+escalation_rules:
+  - condition: bodily_injury
+    route: senior_handler
+  - condition: suspected_fraud
+    route: fraud_team
+  - condition: refusal
+    route: human_in_the_loop
+forbidden_autonomy:
+  - send_refusal_letter
+  - trigger_payment
+  - close_claim
+  - override_expert_report
+labels:
+  team: claims-platform
+  data_classification: regulated

@@ -11,29 +11,50 @@ const addFormats = require('ajv-formats').default;
 const yaml = require('js-yaml');
 
 const ROOT = path.resolve(__dirname, '..');
-const SCHEMA_DIR = path.join(ROOT, 'schemas', 'v0.1');
+const SCHEMA_DIRS = {
+  'v0.1': path.join(ROOT, 'schemas', 'v0.1'),
+  'v0.2': path.join(ROOT, 'schemas', 'v0.2'),
+};
 
+// Artifact kinds and the schema versions in which they are published.
+// v0.2 is an overlay (RFC 0009): artifacts not redefined there keep
+// validating against v0.1. For multi-version artifacts the document's
+// `spec_version` selects; the first listed version is the default.
 const ARTIFACT_TO_SCHEMA = {
-  'genome': 'genome.schema.json',
-  'agent-lock': 'agent-lock.schema.json',
-  'behavior-contract': 'behavior-contract.schema.json',
-  'trace-event': 'trace-event.schema.json',
-  'replay-report': 'replay-report.schema.json',
-  'release-attestation': 'release-attestation.schema.json',
-  'atep-event': 'atep-event.schema.json',
+  'genome': { file: 'genome.schema.json', versions: ['v0.1', 'v0.2'] },
+  'agent-lock': { file: 'agent-lock.schema.json', versions: ['v0.1'] },
+  'behavior-contract': { file: 'behavior-contract.schema.json', versions: ['v0.1'] },
+  'trace-event': { file: 'trace-event.schema.json', versions: ['v0.1'] },
+  'replay-report': { file: 'replay-report.schema.json', versions: ['v0.1'] },
+  'release-attestation': { file: 'release-attestation.schema.json', versions: ['v0.1'] },
+  'atep-event': { file: 'atep-event.schema.json', versions: ['v0.1'] },
+  'workflow': { file: 'workflow.schema.json', versions: ['v0.2'] },
+  'system': { file: 'system.schema.json', versions: ['v0.2'] },
 };
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 addFormats(ajv);
 
+function schemaRefFor(artifact, doc) {
+  const entry = ARTIFACT_TO_SCHEMA[artifact];
+  if (!entry) return null;
+  const declared = doc && typeof doc.spec_version === 'string'
+    ? doc.spec_version.replace(/^agenomic\//, '')
+    : null;
+  const version = declared && entry.versions.includes(declared)
+    ? declared
+    : entry.versions[0];
+  return { version, file: entry.file, label: version + '/' + entry.file };
+}
+
 const compiledByPath = new Map();
-function getValidator(schemaFile) {
-  if (!compiledByPath.has(schemaFile)) {
-    const full = path.join(SCHEMA_DIR, schemaFile);
+function getValidator(ref) {
+  if (!compiledByPath.has(ref.label)) {
+    const full = path.join(SCHEMA_DIRS[ref.version], ref.file);
     const schema = JSON.parse(fs.readFileSync(full, 'utf8'));
-    compiledByPath.set(schemaFile, ajv.compile(schema));
+    compiledByPath.set(ref.label, ajv.compile(schema));
   }
-  return compiledByPath.get(schemaFile);
+  return compiledByPath.get(ref.label);
 }
 
 function loadDoc(absPath) {
@@ -82,13 +103,16 @@ function pass(file, note) {
 
 // --- examples/ -------------------------------------------------------------
 
-function schemaForExampleFile(relPath) {
-  // Map a few well-known filenames to their schema. Other files are not
-  // schema-validated (only YAML-parse-checked).
-  const base = path.basename(relPath);
-  if (base === 'genome.yaml') return ARTIFACT_TO_SCHEMA['genome'];
-  if (base === 'agent.lock.yaml') return ARTIFACT_TO_SCHEMA['agent-lock'];
-  if (base === 'behavior.contract.yaml') return ARTIFACT_TO_SCHEMA['behavior-contract'];
+function artifactForExampleFile(absPath) {
+  // Map a few well-known filenames to their artifact kind. Other files are
+  // not schema-validated (only YAML-parse-checked).
+  const base = path.basename(absPath);
+  const parent = path.basename(path.dirname(absPath));
+  if (base === 'genome.yaml') return 'genome';
+  if (base === 'agent.lock.yaml') return 'agent-lock';
+  if (base === 'behavior.contract.yaml') return 'behavior-contract';
+  if (base === 'system.yaml') return 'system';
+  if (base === 'workflow.yaml' || parent === 'workflows') return 'workflow';
   return null;
 }
 
@@ -103,16 +127,17 @@ for (const file of exampleFiles) {
     fail(file, 'YAML/JSON parse error: ' + e.message);
     continue;
   }
-  const schemaFile = schemaForExampleFile(file);
-  if (!schemaFile) {
+  const artifact = artifactForExampleFile(file);
+  if (!artifact) {
     pass(file, 'parsed only');
     continue;
   }
-  const validate = getValidator(schemaFile);
+  const ref = schemaRefFor(artifact, doc);
+  const validate = getValidator(ref);
   if (validate(doc)) {
-    pass(file, schemaFile);
+    pass(file, ref.label);
   } else {
-    fail(file, 'schema ' + schemaFile + ' rejected: ' + JSON.stringify(validate.errors, null, 2));
+    fail(file, 'schema ' + ref.label + ' rejected: ' + JSON.stringify(validate.errors, null, 2));
   }
 }
 
@@ -124,8 +149,7 @@ const validFiles = walk(path.join(ROOT, 'conformance', 'valid'))
 for (const file of validFiles) {
   const r = path.relative(path.join(ROOT, 'conformance', 'valid'), file);
   const artifact = r.split(path.sep)[0];
-  const schemaFile = ARTIFACT_TO_SCHEMA[artifact];
-  if (!schemaFile) {
+  if (!ARTIFACT_TO_SCHEMA[artifact]) {
     fail(file, 'unknown artifact directory "' + artifact + '" under conformance/valid/');
     continue;
   }
@@ -136,11 +160,12 @@ for (const file of validFiles) {
     fail(file, 'YAML/JSON parse error: ' + e.message);
     continue;
   }
-  const validate = getValidator(schemaFile);
+  const ref = schemaRefFor(artifact, doc);
+  const validate = getValidator(ref);
   if (validate(doc)) {
-    pass(file, schemaFile);
+    pass(file, ref.label);
   } else {
-    fail(file, 'expected PASS but schema ' + schemaFile + ' rejected: ' +
+    fail(file, 'expected PASS but schema ' + ref.label + ' rejected: ' +
       JSON.stringify(validate.errors, null, 2));
   }
 }
@@ -175,8 +200,7 @@ const invalidFiles = walk(path.join(ROOT, 'conformance', 'invalid'))
 for (const file of invalidFiles) {
   const r = path.relative(path.join(ROOT, 'conformance', 'invalid'), file);
   const artifact = r.split(path.sep)[0];
-  const schemaFile = ARTIFACT_TO_SCHEMA[artifact];
-  if (!schemaFile) {
+  if (!ARTIFACT_TO_SCHEMA[artifact]) {
     fail(file, 'unknown artifact directory "' + artifact + '" under conformance/invalid/');
     continue;
   }
@@ -194,9 +218,10 @@ for (const file of invalidFiles) {
     fail(file, 'YAML/JSON parse error in invalid fixture: ' + e.message);
     continue;
   }
-  const validate = getValidator(schemaFile);
+  const ref = schemaRefFor(artifact, doc);
+  const validate = getValidator(ref);
   if (validate(doc)) {
-    fail(file, 'expected FAIL but schema ' + schemaFile + ' accepted the fixture.');
+    fail(file, 'expected FAIL but schema ' + ref.label + ' accepted the fixture.');
     continue;
   }
   const matched = (validate.errors || []).some(err => errorMatches(err, expected));
@@ -207,7 +232,7 @@ for (const file of invalidFiles) {
       '      actual:   ' + JSON.stringify(validate.errors, null, 2));
     continue;
   }
-  pass(file, 'rejected as expected by ' + schemaFile);
+  pass(file, 'rejected as expected by ' + ref.label);
 }
 
 // --- summary ---------------------------------------------------------------

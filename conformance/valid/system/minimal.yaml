@@ -1,0 +1,12 @@
+spec_version: agenomic/v0.2
+system:
+  id: system://example/min-system
+  name: Minimal System
+  domain: minimal
+  criticality: standard
+agents:
+  - role: solo
+    id: agent://example/min-bot
+orchestration:
+  style: pipeline
+  entrypoint: solo

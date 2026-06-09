@@ -1,0 +1,10 @@
+# Step type `magic` is not part of the step type vocabulary.
+spec_version: agenomic/v0.2
+workflow:
+  id: workflow://example/min-flow
+  name: Minimal Flow
+  domain: minimal
+  criticality: standard
+steps:
+  - id: answer
+    type: magic

@@ -1,0 +1,137 @@
+# Synthetic example of a multi-agent system manifest (RFC 0009).
+# Modeled on a real-world insurance claims platform: specialized agents
+# composed by a durable workflow engine, with an expertise gate that
+# suspends automated analysis until a human expert's report arrives.
+spec_version: agenomic/v0.2
+system:
+  id: system://acme/claims-orchestra
+  name: Acme Claims Orchestra
+  domain: claims
+  criticality: regulated_customer_facing
+  version: 2.0.0
+  description: >-
+    Multi-agent claims handling platform. Specialized agents take a claim
+    from first notice of loss to a settlement decision pack; humans gate
+    every refusal, payment, and expert assessment.
+agents:
+  - role: intake
+    id: agent://acme/claims-intake
+    description: Parses the first notice of loss into a structured claim summary.
+    autonomy:
+      allowed_actions: [read_fnol, parse_incident_metadata]
+  - role: document
+    id: agent://acme/claims-document
+    description: Classifies uploaded documents and extracts fields.
+    autonomy:
+      allowed_actions: [classify_document, extract_text, extract_fields, validate_document]
+  - role: completeness
+    id: agent://acme/claims-completeness
+    description: Scores information completeness and lists missing documents.
+    autonomy:
+      allowed_actions: [score_completeness, identify_missing_documents]
+  - role: communication
+    id: agent://acme/claims-communication
+    description: Generates customer notifications under strict guardrails.
+    autonomy:
+      allowed_actions: [generate_confirmation, generate_status_update, generate_missing_documents_request]
+      forbidden_actions: [generate_refusal_letter]
+  - role: coverage
+    id: agent://acme/claims-coverage
+    description: Assesses policy guarantees and exclusions against the incident.
+    autonomy:
+      allowed_actions: [retrieve_clauses, assess_guarantees, assess_exclusions]
+  - role: triage
+    id: agent://acme/claims-triage
+    description: Scores severity and complexity, decides whether an expert is needed.
+    autonomy:
+      allowed_actions: [score_severity, score_complexity, evaluate_expertise, pick_route]
+  - role: liability
+    id: agent://acme/claims-liability
+    description: Computes liability shares and recourse options.
+    autonomy:
+      allowed_actions: [extract_circumstances, lookup_barometer, compute_recourse]
+  - role: decision
+    id: agent://acme/claims-decision
+    description: Aggregates findings into a rationalized decision pack.
+    autonomy:
+      allowed_actions: [aggregate_findings, rationalize, propose_outcome]
+      forbidden_actions: [authorize_payout]
+  - role: settlement
+    id: agent://acme/claims-settlement
+    description: Applies the deterministic settlement formula (deductible, cap, depreciation).
+    autonomy:
+      allowed_actions: [apply_depreciation, apply_deductible, apply_cap]
+orchestration:
+  style: graph
+  engine:
+    kind: temporal
+    version: "1.24"
+  entrypoint: intake
+  edges:
+    - from: intake
+      to: document
+    - from: document
+      to: completeness
+    - from: completeness
+      to: communication
+      when: "missing_documents != []"
+    - from: completeness
+      to: coverage
+      when: "completeness_score >= 0.8"
+    - from: coverage
+      to: triage
+    - from: triage
+      to: liability
+      when: "expertise_required == false"
+    - from: triage
+      to: END
+      when: "expertise_required == true"
+    - from: liability
+      to: decision
+    - from: decision
+      to: settlement
+      when: "auto_approval == true"
+    - from: decision
+      to: END
+      when: "auto_approval == false"
+    - from: settlement
+      to: END
+shared_state:
+  schema_path: state/state.schema.yaml
+  schema_version: 1.4.0
+signals:
+  - name: documents_received
+    description: Customer uploaded the requested documents; prequalification resumes.
+  - name: expert_report_received
+    description: The expert's report arrived; analysis resumes past the expertise gate.
+  - name: human_decision_applied
+    description: A handler validated or overrode the proposed decision pack.
+workflows:
+  - id: workflow://acme/claim-lifecycle
+    path: workflows/claim-lifecycle.yaml
+    description: End-to-end claim lifecycle from FNOL to settlement decision.
+communication_guardrails:
+  - formal_address
+  - legal_mentions
+  - no_medical_content
+  - no_payment_commitment
+  - no_refusal_wording_without_human_review
+escalation_rules:
+  - condition: bodily_injury
+    route: senior_handler
+  - condition: refusal
+    route: regulated_human_in_the_loop
+  - condition: suspected_fraud
+    route: fraud_investigation_team
+  - condition: major_loss
+    route: senior_handler
+forbidden_autonomy:
+  - send_refusal_letter
+  - trigger_payment
+  - close_claim
+  - override_expert_report
+  - modify_contract_snapshot
+labels:
+  team: claims-platform
+  data_classification: regulated
+  synthetic: "true"

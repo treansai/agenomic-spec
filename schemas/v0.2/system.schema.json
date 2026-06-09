@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.2/system.schema.json",
+  "title": "Agenomic System (v0.2)",
+  "description": "Declarative description of a multi-agent system: the member agents, the orchestration topology that connects them, the shared state and signals they exchange, and the system-wide autonomy, guardrail, and escalation envelope (RFC 0009). The manifest describes design, not execution state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["spec_version", "system", "agents", "orchestration"],
+  "properties": {
+    "spec_version": {
+      "type": "string",
+      "const": "agenomic/v0.2",
+      "description": "Pins the Agenomic specification version this system targets."
+    },
+    "system": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "name", "domain", "criticality"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^system://[a-z0-9-]+/[a-z0-9-]+$",
+          "description": "Stable system identifier of the form system://<org>/<name>."
+        },
+        "name": { "type": "string", "minLength": 1 },
+        "domain": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Free-form domain tag (e.g. claims, support, trading-risk)."
+        },
+        "criticality": {
+          "type": "string",
+          "enum": [
+            "standard",
+            "sensitive",
+            "regulated_customer_facing",
+            "life_critical"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "description": "Version of the system definition itself (semver recommended)."
+        },
+        "description": { "type": "string" }
+      }
+    },
+    "agents": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Member agents. Each member binds a system-local role name to an agent identity and optionally to its genome bundle.",
+      "items": { "$ref": "#/$defs/member" }
+    },
+    "orchestration": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["style"],
+      "description": "How the member agents are composed.",
+      "properties": {
+        "style": {
+          "type": "string",
+          "enum": ["pipeline", "graph", "supervisor", "swarm", "custom"],
+          "description": "pipeline: linear hand-offs; graph: explicit edges with optional conditions; supervisor: one role routes to the others; swarm: peer-to-peer hand-offs without a fixed topology; custom: none of the above (describe in `description`)."
+        },
+        "description": { "type": "string" },
+        "engine": {
+          "$ref": "#/$defs/engine",
+          "description": "Optional, non-normative hint about the runtime executing the orchestration (e.g. temporal, langgraph, crewai, custom). Conformant tooling MUST NOT require it."
+        },
+        "entrypoint": {
+          "type": "string",
+          "description": "Role that receives the initial input."
+        },
+        "supervisor": {
+          "type": "string",
+          "description": "`supervisor` style only: the routing role."
+        },
+        "edges": {
+          "type": "array",
+          "description": "`graph` and `pipeline` styles: directed hand-offs between roles. `END` is a reserved terminal vertex.",
+          "items": { "$ref": "#/$defs/edge" }
+        }
+      }
+    },
+    "shared_state": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Reference to the schema of the state shared between member agents. Only the schema is referenced; runtime state is NEVER bundled (RFC 0006 applies).",
+      "properties": {
+        "schema_path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Bundle-relative path to the shared state schema artifact."
+        },
+        "schema_version": { "type": "string" }
+      }
+    },
+    "signals": {
+      "type": "array",
+      "description": "External signals the system can receive while running (e.g. documents_received, expert_report_received, human_decision_applied).",
+      "items": { "$ref": "#/$defs/signal" }
+    },
+    "workflows": {
+      "type": "array",
+      "description": "Workflow manifests owned by this system (validated by workflow.schema.json).",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["id", "path"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^workflow://[a-z0-9-]+/[a-z0-9-]+$"
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Bundle-relative path to the workflow manifest."
+          },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "communication_guardrails": {
+      "type": "array",
+      "description": "Named output guardrails every member's external communication must respect (e.g. formal_address, no_payment_commitment, no_refusal_wording_without_human_review).",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "escalation_rules": {
+      "type": "array",
+      "description": "System-wide escalation table: when `condition` holds, the case is routed to `route` (a human role, team, or queue).",
+      "items": { "$ref": "#/$defs/escalation_rule" }
+    },
+    "forbidden_autonomy": {
+      "type": "array",
+      "description": "Actions no member agent may ever take autonomously, regardless of per-member autonomy declarations.",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    }
+  },
+  "$defs": {
+    "member": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["role", "id"],
+      "properties": {
+        "role": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "System-local role name, unique within the system (e.g. intake, coverage, triage)."
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^agent://[a-z0-9-]+/[a-z0-9-]+$",
+          "description": "Identity of the member agent."
+        },
+        "genome": {
+          "type": "string",
+          "description": "Optional path or URI to the member's genome bundle. When present, tooling SHOULD resolve and cross-validate it."
+        },
+        "description": { "type": "string" },
+        "autonomy": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Per-member autonomy envelope inside this system.",
+          "properties": {
+            "allowed_actions": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "forbidden_actions": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "engine": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Runtime family, e.g. temporal, langgraph, crewai, autogen, custom."
+        },
+        "version": { "type": "string" }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["from", "to"],
+      "properties": {
+        "from": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Source role."
+        },
+        "to": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Target role, or the reserved terminal vertex END."
+        },
+        "when": {
+          "type": "string",
+          "description": "Optional guard expression; the hand-off happens only when it holds."
+        }
+      }
+    },
+    "signal": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "payload_schema_path": {
+          "type": "string",
+          "description": "Optional bundle-relative path to the signal payload schema."
+        }
+      }
+    },
+    "escalation_rule": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["condition", "route"],
+      "properties": {
+        "condition": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Free-form condition tag or expression (e.g. bodily_injury, suspected_fraud)."
+        },
+        "route": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human role, team, or queue that receives the escalation."
+        }
+      }
+    }
+  }
+}

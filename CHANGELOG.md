@@ -11,6 +11,25 @@ documented here.
 
 ### Added
 
+- **v0.2 (RFC 0009): workflows and multi-agent systems.** New schema
+  overlay directory `schemas/v0.2/` with:
+  - `workflow.schema.json` — declarative workflows: agent/tool/human/
+    wait/sub-workflow/loop steps, `depends_on` DAG, `when` guards,
+    retries, timeouts, signals, triggers, escalation rules;
+  - `system.schema.json` — multi-agent systems: member roles with
+    autonomy envelopes, orchestration styles (pipeline, graph,
+    supervisor, swarm, custom) with engine hints, shared state, signals,
+    owned workflows, communication guardrails, escalation rules,
+    `forbidden_autonomy`;
+  - `genome.schema.json` (v0.2) — v0.1 genome plus optional `triggers`,
+    `autonomy`, `guardrails`, `escalation_rules`, and `collaboration`.
+- RFC 0009 (Draft) — Workflows and Multi-Agent Systems.
+- Example bundles `claims-orchestra` (multi-agent system) and
+  `guest-claims-pipeline` (staged LLM workflow).
+- Conformance fixtures for `workflow`, `system`, and the v0.2 genome;
+  the runner now selects the schema directory from each document's
+  `spec_version`.
+- `docs/orchestration.md` tutorial.
 - Initial public scaffolding of the Agenomic specification.
 - JSON Schemas (Draft 2020-12) for `genome`, `agenomic`, `behavior-contract`,
   `trace-event`, `replay-report`, `release-attestation`, and `atep-event` under
