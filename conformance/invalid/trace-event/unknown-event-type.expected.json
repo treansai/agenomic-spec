@@ -1,0 +1,6 @@
+{
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/events/0/type"
+  }
+}
