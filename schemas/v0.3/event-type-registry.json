@@ -3,6 +3,41 @@
   "$id": "https://agenomic.dev/spec/v0.3/event-type-registry.json",
   "title": "Agenomic append-only trace event type registry (v0.3)",
   "description": "Enumerated vocabulary for canonical run trace events. required_fields are minimum semantic fields expected when that type appears in schemas/v0.3/trace-event.schema.json.",
+  "$defs": {
+    "eventType": {
+      "type": "string",
+      "enum": [
+        "run.started",
+        "agent.loaded",
+        "genome.resolved",
+        "prompt.loaded",
+        "policy.loaded",
+        "memory.read",
+        "knowledge.retrieve",
+        "llm.requested",
+        "llm.responded",
+        "decision.made",
+        "tool.call.proposed",
+        "policy.check.performed",
+        "tool.call.approved",
+        "tool.call.executed",
+        "tool.result.observed",
+        "memory.write.proposed",
+        "memory.write.committed",
+        "human.review.requested",
+        "human.review.approved",
+        "human.review.rejected",
+        "human.review.modified",
+        "risk.score.updated",
+        "compliance.check.performed",
+        "alignment.check.performed",
+        "error.raised",
+        "run.completed",
+        "run.replay.started",
+        "run.replay.completed"
+      ]
+    }
+  },
   "event_types": {
     "run.started": {
       "description": "Canonical append-only event run.started.",
@@ -15,7 +50,7 @@
         "prev_event_hash",
         "event_hash"
       ],
-      "actor_kind": "agent"
+      "actor_kind": "system"
     },
     "agent.loaded": {
       "description": "Canonical append-only event agent.loaded.",
@@ -28,7 +63,7 @@
         "prev_event_hash",
         "event_hash"
       ],
-      "actor_kind": "agent"
+      "actor_kind": "system"
     },
     "genome.resolved": {
       "description": "Canonical append-only event genome.resolved.",
@@ -41,7 +76,7 @@
         "prev_event_hash",
         "event_hash"
       ],
-      "actor_kind": "agent"
+      "actor_kind": "system"
     },
     "prompt.loaded": {
       "description": "Canonical append-only event prompt.loaded.",
@@ -54,7 +89,7 @@
         "prev_event_hash",
         "event_hash"
       ],
-      "actor_kind": "agent"
+      "actor_kind": "system"
     },
     "policy.loaded": {
       "description": "Canonical append-only event policy.loaded.",
@@ -67,7 +102,7 @@
         "prev_event_hash",
         "event_hash"
       ],
-      "actor_kind": "agent"
+      "actor_kind": "system"
     },
     "memory.read": {
       "description": "Canonical append-only event memory.read.",
@@ -340,7 +375,7 @@
         "prev_event_hash",
         "event_hash"
       ],
-      "actor_kind": "agent"
+      "actor_kind": "system"
     },
     "run.replay.started": {
       "description": "Canonical append-only event run.replay.started.",
@@ -353,7 +388,7 @@
         "prev_event_hash",
         "event_hash"
       ],
-      "actor_kind": "agent"
+      "actor_kind": "system"
     },
     "run.replay.completed": {
       "description": "Canonical append-only event run.replay.completed.",
@@ -366,37 +401,7 @@
         "prev_event_hash",
         "event_hash"
       ],
-      "actor_kind": "agent"
+      "actor_kind": "system"
     }
-  },
-  "enum": [
-    "run.started",
-    "agent.loaded",
-    "genome.resolved",
-    "prompt.loaded",
-    "policy.loaded",
-    "memory.read",
-    "knowledge.retrieve",
-    "llm.requested",
-    "llm.responded",
-    "decision.made",
-    "tool.call.proposed",
-    "policy.check.performed",
-    "tool.call.approved",
-    "tool.call.executed",
-    "tool.result.observed",
-    "memory.write.proposed",
-    "memory.write.committed",
-    "human.review.requested",
-    "human.review.approved",
-    "human.review.rejected",
-    "human.review.modified",
-    "risk.score.updated",
-    "compliance.check.performed",
-    "alignment.check.performed",
-    "error.raised",
-    "run.completed",
-    "run.replay.started",
-    "run.replay.completed"
-  ]
+  }
 }

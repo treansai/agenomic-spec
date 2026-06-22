@@ -9,6 +9,7 @@ const path = require('path');
 const Ajv = require('ajv/dist/2020').default;
 const addFormats = require('ajv-formats').default;
 const yaml = require('js-yaml');
+const { canonicalJson, eventHash, merkleRoot } = require('./trace-crypto');
 
 const ROOT = path.resolve(__dirname, '..');
 const SCHEMA_DIRS = {
@@ -37,20 +38,10 @@ const ajv = new Ajv({ allErrors: true, strict: false });
 addFormats(ajv);
 
 
-function canonicalJson(value) {
-  if (Array.isArray(value)) return '[' + value.map(canonicalJson).join(',') + ']';
-  if (value && typeof value === 'object') {
-    return '{' + Object.keys(value).sort().map(k => JSON.stringify(k) + ':' + canonicalJson(value[k])).join(',') + '}';
-  }
-  return JSON.stringify(value);
-}
-function traceDigest(s) {
-  return require('crypto').createHash('sha256').update(s).digest('hex');
-}
 function validateTraceV03Custom(doc) {
   const errors = [];
   if (!doc || doc.spec_version !== 'agenomic/v0.3') return errors;
-  let prev = '0'.repeat(64);
+  let prev = 'blake3:' + '0'.repeat(64);
   for (let i = 0; i < (doc.events || []).length; i++) {
     const ev = doc.events[i];
     if (ev.prev_event_hash !== prev) {
@@ -58,11 +49,15 @@ function validateTraceV03Custom(doc) {
     }
     const withoutHash = { ...ev };
     delete withoutHash.event_hash;
-    const expected = traceDigest(canonicalJson(withoutHash) + ev.prev_event_hash);
+    const expected = eventHash(withoutHash);
     if (ev.event_hash !== expected) {
-      errors.push({ keyword: 'traceChain', instancePath: `/events/${i}/event_hash`, message: 'event_hash does not match canonical trace chain digest' });
+      errors.push({ keyword: 'traceChain', instancePath: `/events/${i}/event_hash`, message: 'event_hash does not match BLAKE3/JCS trace chain digest' });
     }
     prev = ev.event_hash;
+  }
+  const expectedRoot = merkleRoot((doc.events || []).map(ev => ev.event_hash));
+  if (doc.integrity && doc.integrity.run_merkle_root !== expectedRoot) {
+    errors.push({ keyword: 'traceMerkleRoot', instancePath: '/integrity/run_merkle_root', message: 'run_merkle_root does not match blake3-merkle-v1 event tree' });
   }
   const nodes = new Set((((doc.execution_graph || {}).nodes) || []).map(n => n.id));
   (((doc.execution_graph || {}).edges) || []).forEach((edge, i) => {
@@ -89,6 +84,12 @@ function getValidator(ref) {
   if (!compiledByPath.has(ref.label)) {
     const full = path.join(SCHEMA_DIRS[ref.version], ref.file);
     const schema = JSON.parse(fs.readFileSync(full, 'utf8'));
+    if (ref.version === 'v0.3') {
+      const registryPath = path.join(SCHEMA_DIRS['v0.3'], 'event-type-registry.json');
+      if (!ajv.getSchema('https://agenomic.dev/spec/v0.3/event-type-registry.json')) {
+        ajv.addSchema(JSON.parse(fs.readFileSync(registryPath, 'utf8')));
+      }
+    }
     compiledByPath.set(ref.label, ajv.compile(schema));
   }
   return compiledByPath.get(ref.label);
@@ -175,7 +176,7 @@ for (const file of exampleFiles) {
   if (validate(doc) && customErrors.length === 0) {
     pass(file, ref.label);
   } else {
-    fail(file, 'schema ' + ref.label + ' rejected: ' + JSON.stringify(validate.errors, null, 2));
+    fail(file, 'schema ' + ref.label + ' rejected: ' + JSON.stringify((validate.errors || []).concat(customErrors), null, 2));
   }
 }
 

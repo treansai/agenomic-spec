@@ -53,15 +53,15 @@
       "type": "run.started",
       "timestamp": "2026-06-22T00:00:00Z",
       "actor": {
-        "kind": "agent",
-        "id": "agent://acme/claims"
+        "kind": "system",
+        "id": "system://agenomic/runtime"
       },
-      "payload_hash": "0000000000000000000000000000000000000000000000000000000000000000",
-      "prev_event_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "payload_hash": "blake3:0000000000000000000000000000000000000000000000000000000000000000",
+      "prev_event_hash": "blake3:0000000000000000000000000000000000000000000000000000000000000000",
       "side_inputs": {
         "captured": false
       },
-      "event_hash": "0d8b4da4b1ff1b394f8a442071817afed14eff5fb7c398add0db6abefb0fb1c1"
+      "event_hash": "blake3:fadd62d86f2b5abfd5d76af8eb165ffbfd3fc45bb2962d6a07473cc5515057cc"
     }
   ],
   "execution_graph": {
@@ -80,7 +80,7 @@
     "os": "linux"
   },
   "integrity": {
-    "run_merkle_root": "0e52025549de17f220b6b8218182fe5d7b489df85773bf416f2ac8201ac1f14d",
+    "run_merkle_root": "blake3-merkle-v1:bd6143929bccebdc46556c647890cede0653aef2a3b761cd7ee7ddf91f2be4e7",
     "signed_by": "key://org/acme",
     "signature": "ed25519:example"
   }

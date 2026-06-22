@@ -183,7 +183,7 @@
     "os": "linux"
   },
   "integrity": {
-    "run_merkle_root": "blake3-merkle-v1:d1bd32baefdd242711f7b7da3e32c252af23d809e7ee3003282a0caf9646c51b",
+    "run_merkle_root": "blake3-merkle-v1:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
     "signed_by": "key://org/acme",
     "signature": "ed25519:example"
   }

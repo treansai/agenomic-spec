@@ -44,15 +44,13 @@ same tamper-evidence principle inside one production run.
 
 ```text
 event_hash = BLAKE3(JCS(event_without_event_hash) || prev_event_hash)
-run_merkle_root = MerkleRoot(event_hash_0..event_hash_n)
+run_merkle_root = blake3-merkle-v1(event_hash_0..event_hash_n)
 ```
 
 [SOURCÉ] JSON canonicalization is JCS (RFC 8785). The hash algorithm is BLAKE3,
-matching ATEP's choice rather than introducing a divergent digest.
-
-[EXTRAPOLATION] The repository conformance helper currently uses a
-Node.js dependency-free deterministic digest to validate fixture chain wiring;
-producers and verifiers implementing the normative protocol MUST use BLAKE3.
+matching ATEP's choice rather than introducing a divergent digest. The run root
+uses the RFC 0002 `blake3-merkle-v1` tree construction with domain-separated
+leaf and node hashing and odd-node duplication.
 
 ## Event registry
 
@@ -98,9 +96,9 @@ statistical replay modes.
 
 ## Open questions
 
-[EXTRAPOLATION] Future revisions may standardize a JSON fixture hash test vector
-format for BLAKE3/JCS so dependency-free validators and production verifiers can
-share identical conformance vectors.
+[EXTRAPOLATION] Future revisions may add cross-language fixture packs for the
+BLAKE3/JCS event hash and `blake3-merkle-v1` event tree so non-JavaScript
+producers can self-test against the same vectors.
 
 ## Security considerations
 

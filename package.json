@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "validate": "bash scripts/validate.sh",
-    "lint": "bash scripts/lint-rfcs.sh && markdownlint-cli '**/*.md' --ignore node_modules --ignore CODE_OF_CONDUCT.md"
+    "lint": "bash scripts/lint-rfcs.sh && markdownlint '**/*.md' --ignore node_modules --ignore CODE_OF_CONDUCT.md"
   },
   "devDependencies": {
     "ajv": "^8.17.0",

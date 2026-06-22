@@ -1,0 +1,7 @@
+{
+  "match": {
+    "keyword": "traceMerkleRoot",
+    "instancePath": "/integrity/run_merkle_root",
+    "message": "run_merkle_root does not match"
+  }
+}
