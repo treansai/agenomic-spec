@@ -14,6 +14,7 @@ const ROOT = path.resolve(__dirname, '..');
 const SCHEMA_DIRS = {
   'v0.1': path.join(ROOT, 'schemas', 'v0.1'),
   'v0.2': path.join(ROOT, 'schemas', 'v0.2'),
+  'v0.3': path.join(ROOT, 'schemas', 'v0.3'),
 };
 
 // Artifact kinds and the schema versions in which they are published.
@@ -24,7 +25,7 @@ const ARTIFACT_TO_SCHEMA = {
   'genome': { file: 'genome.schema.json', versions: ['v0.1', 'v0.2'] },
   'agent-lock': { file: 'agent-lock.schema.json', versions: ['v0.1'] },
   'behavior-contract': { file: 'behavior-contract.schema.json', versions: ['v0.1'] },
-  'trace-event': { file: 'trace-event.schema.json', versions: ['v0.1'] },
+  'trace-event': { file: 'trace-event.schema.json', versions: ['v0.1', 'v0.3'] },
   'replay-report': { file: 'replay-report.schema.json', versions: ['v0.1'] },
   'release-attestation': { file: 'release-attestation.schema.json', versions: ['v0.1'] },
   'atep-event': { file: 'atep-event.schema.json', versions: ['v0.1'] },
@@ -34,6 +35,42 @@ const ARTIFACT_TO_SCHEMA = {
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 addFormats(ajv);
+
+
+function canonicalJson(value) {
+  if (Array.isArray(value)) return '[' + value.map(canonicalJson).join(',') + ']';
+  if (value && typeof value === 'object') {
+    return '{' + Object.keys(value).sort().map(k => JSON.stringify(k) + ':' + canonicalJson(value[k])).join(',') + '}';
+  }
+  return JSON.stringify(value);
+}
+function traceDigest(s) {
+  return require('crypto').createHash('sha256').update(s).digest('hex');
+}
+function validateTraceV03Custom(doc) {
+  const errors = [];
+  if (!doc || doc.spec_version !== 'agenomic/v0.3') return errors;
+  let prev = '0'.repeat(64);
+  for (let i = 0; i < (doc.events || []).length; i++) {
+    const ev = doc.events[i];
+    if (ev.prev_event_hash !== prev) {
+      errors.push({ keyword: 'traceChain', instancePath: `/events/${i}/prev_event_hash`, message: 'prev_event_hash does not match previous event_hash' });
+    }
+    const withoutHash = { ...ev };
+    delete withoutHash.event_hash;
+    const expected = traceDigest(canonicalJson(withoutHash) + ev.prev_event_hash);
+    if (ev.event_hash !== expected) {
+      errors.push({ keyword: 'traceChain', instancePath: `/events/${i}/event_hash`, message: 'event_hash does not match canonical trace chain digest' });
+    }
+    prev = ev.event_hash;
+  }
+  const nodes = new Set((((doc.execution_graph || {}).nodes) || []).map(n => n.id));
+  (((doc.execution_graph || {}).edges) || []).forEach((edge, i) => {
+    if (!nodes.has(edge.from)) errors.push({ keyword: 'graphRef', instancePath: `/execution_graph/edges/${i}/from`, message: 'unknown node referenced by edge.from' });
+    if (!nodes.has(edge.to)) errors.push({ keyword: 'graphRef', instancePath: `/execution_graph/edges/${i}/to`, message: 'unknown node referenced by edge.to' });
+  });
+  return errors;
+}
 
 function schemaRefFor(artifact, doc) {
   const entry = ARTIFACT_TO_SCHEMA[artifact];
@@ -134,7 +171,8 @@ for (const file of exampleFiles) {
   }
   const ref = schemaRefFor(artifact, doc);
   const validate = getValidator(ref);
-  if (validate(doc)) {
+  const customErrors = validateTraceV03Custom(doc);
+  if (validate(doc) && customErrors.length === 0) {
     pass(file, ref.label);
   } else {
     fail(file, 'schema ' + ref.label + ' rejected: ' + JSON.stringify(validate.errors, null, 2));
@@ -162,11 +200,12 @@ for (const file of validFiles) {
   }
   const ref = schemaRefFor(artifact, doc);
   const validate = getValidator(ref);
-  if (validate(doc)) {
+  const customErrors = validateTraceV03Custom(doc);
+  if (validate(doc) && customErrors.length === 0) {
     pass(file, ref.label);
   } else {
     fail(file, 'expected PASS but schema ' + ref.label + ' rejected: ' +
-      JSON.stringify(validate.errors, null, 2));
+      JSON.stringify((validate.errors || []).concat(customErrors), null, 2));
   }
 }
 
@@ -220,16 +259,19 @@ for (const file of invalidFiles) {
   }
   const ref = schemaRefFor(artifact, doc);
   const validate = getValidator(ref);
-  if (validate(doc)) {
+  const schemaOk = validate(doc);
+  const customErrors = validateTraceV03Custom(doc);
+  if (schemaOk && customErrors.length === 0) {
     fail(file, 'expected FAIL but schema ' + ref.label + ' accepted the fixture.');
     continue;
   }
-  const matched = (validate.errors || []).some(err => errorMatches(err, expected));
+  const allErrors = (validate.errors || []).concat(customErrors);
+  const matched = allErrors.some(err => errorMatches(err, expected));
   if (!matched) {
     fail(file,
       'fixture failed validation, but no error matched the expected constraints.\n' +
       '      expected: ' + JSON.stringify(expected.match) + '\n' +
-      '      actual:   ' + JSON.stringify(validate.errors, null, 2));
+      '      actual:   ' + JSON.stringify(allErrors, null, 2));
     continue;
   }
   pass(file, 'rejected as expected by ' + ref.label);

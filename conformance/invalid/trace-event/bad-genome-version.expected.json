@@ -1,0 +1,6 @@
+{
+  "match": {
+    "keyword": "pattern",
+    "instancePath": "/agent/genome_version"
+  }
+}

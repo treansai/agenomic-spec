@@ -1,0 +1,7 @@
+{
+  "match": {
+    "keyword": "traceChain",
+    "instancePath": "/events/1/event_hash",
+    "message": "event_hash does not match"
+  }
+}

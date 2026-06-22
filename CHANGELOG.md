@@ -11,6 +11,8 @@ documented here.
 
 ### Added
 
+- **v0.3 (RFC 0010): canonical run traces.** Adds intra-run event hash chaining, causal execution graph, evidence package, event registry, replay taxonomy, conformance fixtures, and a trace-chain verifier.
+
 - **v0.2 (RFC 0009): workflows and multi-agent systems.** New schema
   overlay directory `schemas/v0.2/` with:
   - `workflow.schema.json` — declarative workflows: agent/tool/human/

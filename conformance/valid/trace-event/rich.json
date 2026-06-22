@@ -1,0 +1,190 @@
+{
+  "spec_version": "agenomic/v0.3",
+  "run_id": "run_rich",
+  "agent": {
+    "agent_id": "agent://acme/claims",
+    "agent_version": "1.0.0",
+    "genome_version": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "runtime": {
+      "name": "node",
+      "version": "22.0.0",
+      "adapter_version": "0.3.0"
+    }
+  },
+  "llm": {
+    "provider": "openai",
+    "model": "gpt-x",
+    "model_version": "2026-06-01",
+    "temperature": 0.2,
+    "top_p": 1,
+    "seed": 42
+  },
+  "components": {
+    "prompt_version": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "policy_version": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "memory_version": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "knowledge_version": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "tool_versions": {
+      "search": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    }
+  },
+  "input": {
+    "hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "redacted_payload": {
+      "text": "[redacted]"
+    },
+    "classification": [
+      "internal"
+    ]
+  },
+  "output": {
+    "hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+    "redacted_payload": {
+      "answer": "approved"
+    },
+    "classification": [
+      "internal"
+    ],
+    "semantic_signature": "sig://semantic/1"
+  },
+  "events": [
+    {
+      "event_id": "evt_01",
+      "type": "run.started",
+      "timestamp": "2026-06-22T00:00:00Z",
+      "actor": {
+        "kind": "agent",
+        "id": "agent://acme/claims"
+      },
+      "payload_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "prev_event_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "side_inputs": {
+        "captured": false
+      },
+      "event_hash": "0d8b4da4b1ff1b394f8a442071817afed14eff5fb7c398add0db6abefb0fb1c1"
+    },
+    {
+      "event_id": "evt_02",
+      "type": "llm.requested",
+      "timestamp": "2026-06-22T00:00:00Z",
+      "actor": {
+        "kind": "agent",
+        "id": "agent://acme/claims"
+      },
+      "payload_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "prev_event_hash": "0d8b4da4b1ff1b394f8a442071817afed14eff5fb7c398add0db6abefb0fb1c1",
+      "policy_checks": [
+        {
+          "policy": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "status": "pass"
+        }
+      ],
+      "risk_score": 0.2,
+      "event_hash": "1b30793a82419d13adfb3c7b3a3649722637c885e01136bcd52c4c47f6fdcaa2"
+    },
+    {
+      "event_id": "evt_03",
+      "type": "llm.responded",
+      "timestamp": "2026-06-22T00:00:00Z",
+      "actor": {
+        "kind": "agent",
+        "id": "agent://acme/claims"
+      },
+      "payload_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "prev_event_hash": "1b30793a82419d13adfb3c7b3a3649722637c885e01136bcd52c4c47f6fdcaa2",
+      "provenance": {
+        "used": [
+          "evt_02"
+        ],
+        "evidence_units": [
+          "evidence://unit/1"
+        ]
+      },
+      "event_hash": "ad510ad773fc2d8d312d6d3f240c07a9c36b499a5dacd47c6365964ca16f0697"
+    },
+    {
+      "event_id": "evt_04",
+      "type": "run.completed",
+      "timestamp": "2026-06-22T00:00:00Z",
+      "actor": {
+        "kind": "agent",
+        "id": "agent://acme/claims"
+      },
+      "payload_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "prev_event_hash": "ad510ad773fc2d8d312d6d3f240c07a9c36b499a5dacd47c6365964ca16f0697",
+      "event_hash": "de810e768d8e9ba20e122bd785a747683856d9ffa770493189ec0224779b8e1d"
+    }
+  ],
+  "execution_graph": {
+    "nodes": [
+      {
+        "id": "evt_01",
+        "kind": "event"
+      },
+      {
+        "id": "evt_02",
+        "kind": "event"
+      },
+      {
+        "id": "evt_03",
+        "kind": "event"
+      },
+      {
+        "id": "evt_04",
+        "kind": "event"
+      },
+      {
+        "id": "out_01",
+        "kind": "artifact"
+      }
+    ],
+    "edges": [
+      {
+        "from": "evt_01",
+        "to": "evt_02",
+        "type": "caused_by"
+      },
+      {
+        "from": "evt_02",
+        "to": "evt_03",
+        "type": "caused_by"
+      },
+      {
+        "from": "evt_03",
+        "to": "out_01",
+        "type": "produced"
+      },
+      {
+        "from": "evt_04",
+        "to": "out_01",
+        "type": "supported_by"
+      }
+    ]
+  },
+  "risk_scores": [
+    {
+      "name": "runtime",
+      "score": 0.2
+    }
+  ],
+  "compliance_checks": [
+    {
+      "control_id": "EUAI-12-LOG-001",
+      "status": "pass"
+    }
+  ],
+  "alignment_checks": [
+    {
+      "name": "policy-alignment",
+      "status": "pass"
+    }
+  ],
+  "environment_snapshot": {
+    "os": "linux"
+  },
+  "integrity": {
+    "run_merkle_root": "5f3d5179e070f59d230469502108af10f23cdf91df0346d0c6f5bf97f184ebc4",
+    "signed_by": "key://org/acme",
+    "signature": "ed25519:example"
+  }
+}

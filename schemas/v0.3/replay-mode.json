@@ -1,0 +1,13 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://agenomic.dev/spec/v0.3/replay-mode.json",
+  "title":"Agenomic Replay Mode Taxonomy (v0.3)",
+  "description":"Five replay modes. Evidentiary replay is evidence review without re-execution; behavioral synthetic reconstruction MUST NOT be used as probative evidence and MUST be labelled 'simulation, non probant'.",
+  "modes": {
+    "exact":{"criteria":{"event_hash_match":"boolean"}},
+    "functional":{"criteria":{"semantic_similarity":">0.95","side_effect_diff":"=0","contract_pass":"boolean"}},
+    "statistical":{"criteria":{"JS(P_o||P_r)":"<0.05"}},
+    "explanatory":{"criteria":{"causal_coverage":">0.9","root_cause_confidence":">0.8"}},
+    "evidentiary":{"criteria":{"audit_evidence_completeness":">0.95","integrity_valid":"boolean","reexecution":"forbidden"},"required_label_for_simulation":"simulation, non probant"}
+  }
+}
