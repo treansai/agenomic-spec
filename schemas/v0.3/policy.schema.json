@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.3/policy.schema.json",
+  "title": "Agenomic Behavioral Contract (Policy DSL)",
+  "description": "A behavioral contract C=(P,I,G,R): preconditions, invariants, guarantees/obligations and recovery, with probabilistic (p,δ,k) satisfaction. Master document §10.1 (deontic_temporal_contract).",
+  "type": "object",
+  "required": ["policy_id", "rules"],
+  "additionalProperties": false,
+  "properties": {
+    "spec_version": {
+      "type": "string",
+      "const": "agenomic/v0.3",
+      "description": "Optional spec version tag."
+    },
+    "policy_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier for the contract."
+    },
+    "type": {
+      "type": "string",
+      "enum": ["deontic_temporal_contract", "behavior_contract"],
+      "default": "deontic_temporal_contract"
+    },
+    "scope": { "$ref": "#/$defs/scope" },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/rule" }
+    },
+    "recovery": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/recoveryRule" },
+      "description": "R of ABC: actions applied when a rule is violated."
+    },
+    "satisfaction": { "$ref": "#/$defs/satisfaction" }
+  },
+  "$defs": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "agent_id": { "type": "string" },
+        "environment": { "type": "string" },
+        "tools": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "predicate": {
+      "type": "object",
+      "required": ["field", "op"],
+      "additionalProperties": false,
+      "properties": {
+        "field": { "type": "string", "minLength": 1, "description": "Dotted path into the event payload." },
+        "op": {
+          "type": "string",
+          "enum": ["eq", "ne", "lt", "le", "gt", "ge", "exists", "not_exists", "contains", "in", "not_in"]
+        },
+        "value": { "description": "Right-hand side; required except for exists/not_exists, which test presence alone." }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["op"],
+            "properties": { "op": { "enum": ["exists", "not_exists"] } }
+          },
+          "else": { "required": ["value"] }
+        }
+      ]
+    },
+    "trigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "event": { "type": "string", "description": "Event type to match (e.g. tool.call.proposed)." },
+        "predicate": { "$ref": "#/$defs/predicate" }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "required": ["id", "modality"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "modality": {
+          "type": "string",
+          "enum": ["forbidden", "obligation", "permission", "temporal_invariant"]
+        },
+        "aspect": {
+          "type": "string",
+          "enum": ["precondition", "invariant", "guarantee"],
+          "default": "invariant",
+          "description": "Which part of C=(P,I,G,R) this rule belongs to."
+        },
+        "when": { "$ref": "#/$defs/trigger" },
+        "then": { "$ref": "#/$defs/predicate" },
+        "formula": {
+          "type": "string",
+          "description": "Past-time PLTL formula, e.g. G(delete_record -> once(human_approved))."
+        },
+        "enforce": {
+          "type": "string",
+          "enum": ["block", "redact", "escalate", "require_approval", "warn", "allow"],
+          "default": "block"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["info", "low", "medium", "high", "critical"],
+          "default": "medium"
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "modality": { "const": "temporal_invariant" } } },
+          "then": { "required": ["formula"] }
+        },
+        {
+          "if": { "properties": { "modality": { "enum": ["forbidden", "obligation"] } } },
+          "then": { "required": ["when"] }
+        },
+        {
+          "if": { "properties": { "modality": { "const": "obligation" } } },
+          "then": { "required": ["then"] }
+        }
+      ]
+    },
+    "recoveryRule": {
+      "type": "object",
+      "required": ["actions"],
+      "additionalProperties": false,
+      "properties": {
+        "on_violation": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Rule ids this recovery responds to; empty/absent = any violation."
+        },
+        "actions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": ["block_tool", "redact_sensitive_data", "escalate_to_human", "create_incident"]
+          }
+        }
+      }
+    },
+    "satisfaction": {
+      "type": "object",
+      "required": ["p"],
+      "additionalProperties": false,
+      "description": "(p,δ,k) probabilistic satisfaction plus drift parameters α,γ (D*=α/γ).",
+      "properties": {
+        "p": { "type": "number", "minimum": 0, "maximum": 1, "description": "Target success proportion." },
+        "delta": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.05, "description": "Tolerance." },
+        "k": { "type": "integer", "minimum": 1, "default": 100, "description": "Number of trajectories." },
+        "alpha": { "type": "number", "minimum": 0, "default": 1.0, "description": "Drift rate." },
+        "gamma": { "type": "number", "exclusiveMinimum": 0, "default": 1.0, "description": "Restoring rate." }
+      }
+    }
+  }
+}

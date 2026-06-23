@@ -1,0 +1,8 @@
+{
+  "description": "A `temporal_invariant` rule must carry a PLTL `formula`.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "/rules/0",
+    "params": { "missingProperty": "formula" }
+  }
+}

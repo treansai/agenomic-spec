@@ -1,0 +1,8 @@
+{
+  "description": "A comparison predicate (any operator other than exists/not_exists) requires a `value` right-hand side to evaluate against.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "/rules/0/then",
+    "params": { "missingProperty": "value" }
+  }
+}

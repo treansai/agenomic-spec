@@ -1,0 +1,8 @@
+{
+  "description": "`policy_id` is required.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "params": { "missingProperty": "policy_id" }
+  }
+}
