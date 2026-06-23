@@ -55,8 +55,17 @@
           "type": "string",
           "enum": ["eq", "ne", "lt", "le", "gt", "ge", "exists", "not_exists", "contains", "in", "not_in"]
         },
-        "value": { "description": "Right-hand side; ignored for exists/not_exists." }
-      }
+        "value": { "description": "Right-hand side; required except for exists/not_exists, which test presence alone." }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": ["op"],
+            "properties": { "op": { "enum": ["exists", "not_exists"] } }
+          },
+          "else": { "required": ["value"] }
+        }
+      ]
     },
     "trigger": {
       "type": "object",
@@ -107,6 +116,10 @@
         {
           "if": { "properties": { "modality": { "enum": ["forbidden", "obligation"] } } },
           "then": { "required": ["when"] }
+        },
+        {
+          "if": { "properties": { "modality": { "const": "obligation" } } },
+          "then": { "required": ["then"] }
         }
       ]
     },

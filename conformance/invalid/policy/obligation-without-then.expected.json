@@ -1,0 +1,8 @@
+{
+  "description": "An `obligation` rule must carry a `then` consequent: the RFC defines obligations as \"when fires, then must hold\", so a rule with only `when` is not evaluable.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "/rules/0",
+    "params": { "missingProperty": "then" }
+  }
+}

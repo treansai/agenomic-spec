@@ -1,0 +1,11 @@
+{
+  "policy_id": "predicate-missing-rhs",
+  "rules": [
+    {
+      "id": "cmp-needs-value",
+      "modality": "obligation",
+      "when": { "event": "tool.call.proposed" },
+      "then": { "field": "risk_score", "op": "lt" }
+    }
+  ]
+}

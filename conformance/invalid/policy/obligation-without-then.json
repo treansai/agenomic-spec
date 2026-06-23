@@ -1,0 +1,6 @@
+{
+  "policy_id": "obligation-missing-consequent",
+  "rules": [
+    { "id": "needs-then", "modality": "obligation", "when": { "event": "tool.call.proposed" } }
+  ]
+}
