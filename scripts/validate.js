@@ -32,6 +32,7 @@ const ARTIFACT_TO_SCHEMA = {
   'atep-event': { file: 'atep-event.schema.json', versions: ['v0.1'] },
   'workflow': { file: 'workflow.schema.json', versions: ['v0.2'] },
   'system': { file: 'system.schema.json', versions: ['v0.2'] },
+  'policy': { file: 'policy.schema.json', versions: ['v0.3'] },
 };
 
 const ajv = new Ajv({ allErrors: true, strict: false });

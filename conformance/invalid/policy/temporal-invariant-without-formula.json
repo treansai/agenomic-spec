@@ -1,0 +1,6 @@
+{
+  "policy_id": "missing-formula",
+  "rules": [
+    { "id": "delete-rule", "modality": "temporal_invariant", "enforce": "block" }
+  ]
+}

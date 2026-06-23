@@ -1,0 +1,7 @@
+{
+  "description": "`modality` must be one of the four deontic modalities.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/rules/0/modality"
+  }
+}

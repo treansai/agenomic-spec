@@ -1,0 +1,49 @@
+{
+  "spec_version": "agenomic/v0.3",
+  "policy_id": "pii-egress-guard",
+  "type": "deontic_temporal_contract",
+  "scope": { "agent_id": "agent://acme/support", "tools": ["send_email", "delete_record"] },
+  "rules": [
+    {
+      "id": "no-self-mod",
+      "modality": "forbidden",
+      "aspect": "invariant",
+      "when": {
+        "event": "tool.call.proposed",
+        "predicate": { "field": "tool", "op": "eq", "value": "set_system_prompt" }
+      },
+      "enforce": "block",
+      "severity": "critical"
+    },
+    {
+      "id": "risk-precondition",
+      "modality": "obligation",
+      "aspect": "precondition",
+      "when": { "event": "tool.call.proposed" },
+      "then": { "field": "risk_score", "op": "lt", "value": 0.8 },
+      "enforce": "escalate",
+      "severity": "high"
+    },
+    {
+      "id": "no-owasp-output",
+      "modality": "forbidden",
+      "aspect": "guarantee",
+      "when": { "event": "tool.result.observed" },
+      "then": { "field": "output.classes", "op": "contains", "value": "owasp" },
+      "enforce": "redact"
+    },
+    {
+      "id": "delete-needs-approval",
+      "modality": "temporal_invariant",
+      "aspect": "invariant",
+      "formula": "G(delete_record -> once(human_approved))",
+      "enforce": "block",
+      "severity": "critical"
+    }
+  ],
+  "recovery": [
+    { "on_violation": ["no-self-mod", "delete-needs-approval"], "actions": ["block_tool", "escalate_to_human"] },
+    { "actions": ["create_incident"] }
+  ],
+  "satisfaction": { "p": 0.95, "delta": 0.05, "k": 100, "alpha": 0.5, "gamma": 2.0 }
+}

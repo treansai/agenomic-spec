@@ -11,6 +11,7 @@ documented here.
 
 ### Added
 
+- **v0.3 (RFC 0011): behavioral contracts / policy DSL.** Adds `schemas/v0.3/policy.schema.json` encoding an ABC contract `C=(P,I,G,R)`: `policy_id`, `type`, `scope`, `rules[]` with `modality ∈ {forbidden, obligation, permission, temporal_invariant}` and ABC `aspect ∈ {precondition, invariant, guarantee}`, `when`/`then` predicates, a past-time PLTL `formula`, an `enforce` action, a `recovery` block (R), and `(p,δ,k)` `satisfaction` with drift parameters `α,γ` (`D*=α/γ`). Conformance fixtures under `conformance/{valid,invalid}/policy/`.
 - **v0.3 (RFC 0010): canonical run traces.** Adds intra-run event hash chaining, causal execution graph, evidence package, event registry, replay taxonomy, conformance fixtures, and a trace-chain verifier.
 
 - **v0.2 (RFC 0009): workflows and multi-agent systems.** New schema

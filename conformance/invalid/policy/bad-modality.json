@@ -1,0 +1,6 @@
+{
+  "policy_id": "bad-modality",
+  "rules": [
+    { "id": "r", "modality": "verboten" }
+  ]
+}

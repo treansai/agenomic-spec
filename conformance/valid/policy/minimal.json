@@ -1,0 +1,6 @@
+{
+  "policy_id": "minimal-permission-policy",
+  "rules": [
+    { "id": "allow-read", "modality": "permission" }
+  ]
+}
