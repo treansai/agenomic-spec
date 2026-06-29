@@ -24,6 +24,5 @@
   "summary_metrics": { "event_count": 4, "alert_count": 2 },
   "recommendations": ["Roll back or re-baseline."],
   "final_status": "fail",
-  "evidence_event_ids": ["01J000000000000000000EVENT"],
-  "report_hash": "blake3:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  "evidence_event_ids": ["01J000000000000000000EVENT"]
 }

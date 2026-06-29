@@ -8,7 +8,5 @@
   "agent_id": "agent://treans/claims-agent",
   "tool": { "name": "classify_claim", "protocol": "mcp" },
   "input_hash": "blake3:0000000000000000000000000000000000000000000000000000000000000000",
-  "output_hash": "blake3:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-  "prev_event_hash": "blake3:0000000000000000000000000000000000000000000000000000000000000000",
-  "event_hash": "blake3:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  "output_hash": "blake3:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 }

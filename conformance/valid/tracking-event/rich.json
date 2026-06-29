@@ -12,8 +12,5 @@
   "model": { "provider": "openai", "model": "gpt-4o", "temperature": 0.0 },
   "input_hash": "blake3:0000000000000000000000000000000000000000000000000000000000000000",
   "redacted_preview": { "answer": "[redacted]" },
-  "intent": "classify_claim",
-  "prev_event_hash": "blake3:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-  "event_hash": "blake3:0000000000000000000000000000000000000000000000000000000000000000",
-  "signature": { "signer_key_id": "key://treans/prod", "algo": "ed25519", "value": "deadbeef" }
+  "intent": "classify_claim"
 }

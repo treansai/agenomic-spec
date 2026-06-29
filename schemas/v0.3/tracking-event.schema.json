@@ -26,25 +26,32 @@
     "sequence_number": { "type": "integer", "minimum": 0 },
     "type": {
       "type": "string",
-      "description": "The runtime event vocabulary. A superset of the v0.3 event-type registry plus tracking-native detector events.",
-      "enum": [
-        "agent.started",
-        "agent.step.started",
-        "agent.step.completed",
-        "model.call.started",
-        "model.call.completed",
-        "tool.call.started",
-        "tool.call.completed",
-        "memory.read",
-        "memory.write",
-        "policy.evaluated",
-        "intent.detected",
-        "loop.detected",
-        "drift.detected",
-        "harness.violation",
-        "alert.created",
-        "agent.completed",
-        "agent.failed"
+      "description": "The runtime event vocabulary: the tracking-native detector/lifecycle events below, OR any canonical v0.3 event-type registry value (so producers can forward canonical trace/ATEP events into a tracking session unchanged).",
+      "anyOf": [
+        {
+          "enum": [
+            "agent.started",
+            "agent.step.started",
+            "agent.step.completed",
+            "model.call.started",
+            "model.call.completed",
+            "tool.call.started",
+            "tool.call.completed",
+            "memory.read",
+            "memory.write",
+            "policy.evaluated",
+            "intent.detected",
+            "loop.detected",
+            "drift.detected",
+            "harness.violation",
+            "alert.created",
+            "agent.completed",
+            "agent.failed"
+          ]
+        },
+        {
+          "$ref": "https://agenomic.dev/spec/v0.3/event-type-registry.json#/$defs/eventType"
+        }
       ]
     },
     "parent_event_id": { "type": "string" },

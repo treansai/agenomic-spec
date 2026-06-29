@@ -33,6 +33,12 @@ const ARTIFACT_TO_SCHEMA = {
   'workflow': { file: 'workflow.schema.json', versions: ['v0.2'] },
   'system': { file: 'system.schema.json', versions: ['v0.2'] },
   'policy': { file: 'policy.schema.json', versions: ['v0.3'] },
+  // Tracking artifacts are validated for SHAPE here. Their content-addressed
+  // integrity fields (`event_hash`/`prev_event_hash` hash-link, `report_hash`)
+  // are recomputed and verified by the producing implementations
+  // (agenomic-cli's agenomic-track, the Python/TS SDKs, agenomic-cloud's
+  // agenomic-tracking), whose hash scheme they own; the valid fixtures here do
+  // not carry placeholder integrity hashes so they never imply certification.
   'tracking-session': { file: 'tracking-session.schema.json', versions: ['v0.3'] },
   'tracking-event': { file: 'tracking-event.schema.json', versions: ['v0.3'] },
   'tracking-report': { file: 'tracking-report.schema.json', versions: ['v0.3'] },
