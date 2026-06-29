@@ -1,0 +1,9 @@
+{
+  "spec_version": "agenomic/v0.3",
+  "session_id": "s1",
+  "agent_id": "agent://treans/claims-agent",
+  "environment": "production",
+  "started_at": "2026-06-29T00:00:00Z",
+  "status": "paused",
+  "tracking_config": {}
+}

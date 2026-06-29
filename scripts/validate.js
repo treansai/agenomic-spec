@@ -33,6 +33,9 @@ const ARTIFACT_TO_SCHEMA = {
   'workflow': { file: 'workflow.schema.json', versions: ['v0.2'] },
   'system': { file: 'system.schema.json', versions: ['v0.2'] },
   'policy': { file: 'policy.schema.json', versions: ['v0.3'] },
+  'tracking-session': { file: 'tracking-session.schema.json', versions: ['v0.3'] },
+  'tracking-event': { file: 'tracking-event.schema.json', versions: ['v0.3'] },
+  'tracking-report': { file: 'tracking-report.schema.json', versions: ['v0.3'] },
 };
 
 const ajv = new Ajv({ allErrors: true, strict: false });

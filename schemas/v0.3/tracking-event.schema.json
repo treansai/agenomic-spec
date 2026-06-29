@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.3/tracking-event.schema.json",
+  "title": "Agenomic Online Tracking Event (v0.3)",
+  "description": "A single live runtime event ingested into an online-tracking session. A production-time projection of the canonical run trace (RFC 0010) and the ATEP event model (RFC 0003): it reuses the dotted event vocabulary, carries a monotonic sequence_number, an optional parent_event_id, content *_hash fields, a prev_event_hash/event_hash hash-link, and an optional detached signature over the event_hash. Only redacted previews and content hashes ever appear — never raw payloads. Ingestion is idempotent on event_id.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "spec_version",
+    "event_id",
+    "session_id",
+    "timestamp",
+    "sequence_number",
+    "type",
+    "agent_id"
+  ],
+  "properties": {
+    "spec_version": { "const": "agenomic/v0.3" },
+    "event_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable id (typically a ULID). Re-ingesting the same event_id is a no-op."
+    },
+    "session_id": { "type": "string", "minLength": 1 },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "sequence_number": { "type": "integer", "minimum": 0 },
+    "type": {
+      "type": "string",
+      "description": "The runtime event vocabulary. A superset of the v0.3 event-type registry plus tracking-native detector events.",
+      "enum": [
+        "agent.started",
+        "agent.step.started",
+        "agent.step.completed",
+        "model.call.started",
+        "model.call.completed",
+        "tool.call.started",
+        "tool.call.completed",
+        "memory.read",
+        "memory.write",
+        "policy.evaluated",
+        "intent.detected",
+        "loop.detected",
+        "drift.detected",
+        "harness.violation",
+        "alert.created",
+        "agent.completed",
+        "agent.failed"
+      ]
+    },
+    "parent_event_id": { "type": "string" },
+    "agent_id": {
+      "type": "string",
+      "pattern": "^agent://[a-z0-9-]+/[a-z0-9-]+$"
+    },
+    "genome_hash": {
+      "type": "string",
+      "pattern": "^(blake3-merkle-v1|sha256|blake3):[0-9a-f]{32,128}$"
+    },
+    "workflow_step_id": { "type": "string" },
+    "tool": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "protocol": { "type": "string" },
+        "server": { "type": "string" },
+        "permissions": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["provider", "model"],
+      "properties": {
+        "provider": { "type": "string" },
+        "model": { "type": "string" },
+        "fingerprint": { "type": "string" },
+        "temperature": { "type": "number" }
+      }
+    },
+    "input_hash": {
+      "type": "string",
+      "pattern": "^(sha256|blake3):[0-9a-f]{32,128}$"
+    },
+    "output_hash": {
+      "type": "string",
+      "pattern": "^(sha256|blake3):[0-9a-f]{32,128}$"
+    },
+    "redacted_preview": {
+      "description": "A small, redaction-safe preview of the input/output. Never raw sensitive data."
+    },
+    "policy_result": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["outcome"],
+      "properties": {
+        "policy_id": { "type": "string" },
+        "outcome": { "type": "string", "enum": ["allow", "deny", "review"] },
+        "denies": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "intent": { "type": "string" },
+    "prev_event_hash": {
+      "type": "string",
+      "pattern": "^blake3:[0-9a-f]{64}$"
+    },
+    "event_hash": {
+      "type": "string",
+      "pattern": "^blake3:[0-9a-f]{64}$"
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["signer_key_id", "algo", "value"],
+      "properties": {
+        "signer_key_id": { "type": "string" },
+        "algo": { "type": "string" },
+        "value": { "type": "string" }
+      }
+    },
+    "metadata": { "type": "object" }
+  }
+}

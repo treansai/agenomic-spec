@@ -1,0 +1,4 @@
+{
+  "description": "`type` must be one of the enumerated tracking event types.",
+  "match": { "keyword": "enum", "instancePath": "/type" }
+}

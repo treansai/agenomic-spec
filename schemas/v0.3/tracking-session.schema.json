@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.3/tracking-session.schema.json",
+  "title": "Agenomic Online Tracking Session (v0.3)",
+  "description": "A durable, serializable record of an online-tracking session: it binds an agent release/genome to a live event stream and the alerts raised against it. The tracking analogue of a replay report, but open (mutated as events arrive) until `status` leaves `active`. Baselines reference an existing artifact — a genome, replay report, behavior contract, or release attestation.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "spec_version",
+    "session_id",
+    "agent_id",
+    "environment",
+    "started_at",
+    "status",
+    "tracking_config"
+  ],
+  "properties": {
+    "spec_version": { "const": "agenomic/v0.3" },
+    "session_id": { "type": "string", "minLength": 1 },
+    "agent_id": {
+      "type": "string",
+      "pattern": "^agent://[a-z0-9-]+/[a-z0-9-]+$"
+    },
+    "bundle_id": { "type": "string" },
+    "genome_hash": {
+      "type": "string",
+      "pattern": "^(blake3-merkle-v1|sha256|blake3):[0-9a-f]{32,128}$"
+    },
+    "release_id": { "type": "string" },
+    "environment": { "type": "string", "minLength": 1 },
+    "started_at": { "type": "string", "format": "date-time" },
+    "ended_at": { "type": "string", "format": "date-time" },
+    "status": {
+      "type": "string",
+      "enum": ["active", "completed", "failed", "cancelled"]
+    },
+    "tracking_config": { "$ref": "#/$defs/trackingConfig" },
+    "baseline": { "$ref": "#/$defs/baseline" },
+    "summary": { "$ref": "#/$defs/summary" },
+    "alerts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/alert" }
+    }
+  },
+  "$defs": {
+    "baseline": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["genome", "replay_report", "behavior_contract", "release_attestation"]
+        },
+        "reference": { "type": "string" },
+        "genome_hash": { "type": "string" },
+        "contract_id": { "type": "string" },
+        "replay_report_hash": { "type": "string" },
+        "attestation_id": { "type": "string" }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "event_count": { "type": "integer", "minimum": 0 },
+        "alert_count": { "type": "integer", "minimum": 0 },
+        "drift_count": { "type": "integer", "minimum": 0 },
+        "loop_count": { "type": "integer", "minimum": 0 },
+        "intent_count": { "type": "integer", "minimum": 0 },
+        "harness_failures": { "type": "integer", "minimum": 0 },
+        "info": { "type": "integer", "minimum": 0 },
+        "warning": { "type": "integer", "minimum": 0 },
+        "critical": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "trackingConfig": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "drift": { "type": "object", "additionalProperties": true },
+        "loops": { "type": "object", "additionalProperties": true },
+        "intent": { "type": "object", "additionalProperties": true },
+        "fail_on": {
+          "type": "string",
+          "enum": ["info", "warning", "critical"]
+        }
+      }
+    },
+    "alert": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "alert_id",
+        "session_id",
+        "kind",
+        "severity",
+        "created_at",
+        "title",
+        "message",
+        "blocks_release",
+        "requires_human_review"
+      ],
+      "properties": {
+        "alert_id": { "type": "string", "minLength": 1 },
+        "session_id": { "type": "string", "minLength": 1 },
+        "kind": {
+          "type": "string",
+          "enum": ["drift", "loop", "intent", "harness", "policy", "security"]
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["info", "warning", "critical"]
+        },
+        "created_at": { "type": "string", "format": "date-time" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "observed": true,
+        "expected": true,
+        "evidence_event_ids": { "type": "array", "items": { "type": "string" } },
+        "recommended_action": { "type": "string" },
+        "blocks_release": { "type": "boolean" },
+        "requires_human_review": { "type": "boolean" },
+        "details": { "type": "object" }
+      }
+    }
+  }
+}
