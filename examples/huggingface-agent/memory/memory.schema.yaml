@@ -1,0 +1,18 @@
+memory_schema_version: 0.1.0
+description: >
+  Minimal session memory for the Hugging Face assistant. Holds short-term
+  conversation context only. No user-specific data is persisted.
+
+fields:
+  - name: session_id
+    type: opaque-string
+    pii: false
+  - name: recent_turns
+    type: array<string>
+    description: Up to 5 most recent conversation turns for follow-up context.
+    pii: indirect
+    retention_days: 0
+
+apis_required:
+  - export_for_user(session_id) -> archive
+  - delete_for_user(session_id) -> deletion_receipt

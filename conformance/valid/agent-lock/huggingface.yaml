@@ -1,0 +1,27 @@
+# A valid lockfile using the Hugging Face provider with the optional
+# model fields: revision, resolved_commit, task, endpoint_ref,
+# endpoint_hash, metadata_hash, parameter_hash.
+lock_version: agenomic-lock/v0.1
+agent_id: agent://example/hf-assistant
+model:
+  provider: huggingface
+  model_id: mistralai/Mistral-7B-Instruct-v0.3
+  provider_fingerprint: hf_mistral_7b_instruct_v0_3_a1b2c3
+  temperature: 0.3
+  top_p: 0.9
+  revision: main
+  resolved_commit: e0bc86c23ce5aae1db576c8cca6f06f1f73af2db
+  task: text-generation
+  endpoint_ref: https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3
+  endpoint_hash: blake3:a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2
+  metadata_hash: blake3:b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3
+  parameter_hash: blake3:c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4
+tools: []
+knowledge: []
+memory:
+  schema_version: 0.1.0
+  stores_user_specific_data: false
+  retention_days: 0
+  gdpr_exportable: false
+  deletion_supported: true
+policies: []
