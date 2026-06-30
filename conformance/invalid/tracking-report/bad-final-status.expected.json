@@ -1,0 +1,4 @@
+{
+  "description": "`final_status` must be pass | warn | fail.",
+  "match": { "keyword": "enum", "instancePath": "/final_status" }
+}

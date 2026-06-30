@@ -1,0 +1,4 @@
+{
+  "description": "`status` must be active | completed | failed | cancelled.",
+  "match": { "keyword": "enum", "instancePath": "/status" }
+}

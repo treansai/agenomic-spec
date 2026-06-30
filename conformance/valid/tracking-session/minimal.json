@@ -1,0 +1,18 @@
+{
+  "spec_version": "agenomic/v0.3",
+  "session_id": "01J000000000000000000SESSN",
+  "agent_id": "agent://treans/claims-agent",
+  "release_id": "release_123",
+  "genome_hash": "blake3-merkle-v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "environment": "production",
+  "started_at": "2026-06-29T00:00:00Z",
+  "status": "active",
+  "tracking_config": {
+    "loops": { "max_same_tool_calls": 3 },
+    "intent": { "forbidden_intents": ["exfiltrate_data"] },
+    "fail_on": "critical"
+  },
+  "baseline": { "kind": "genome", "genome_hash": "blake3-merkle-v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+  "summary": { "event_count": 0, "alert_count": 0, "critical": 0 },
+  "alerts": []
+}

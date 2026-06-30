@@ -1,0 +1,16 @@
+{
+  "spec_version": "agenomic/v0.3",
+  "event_id": "01J000000000000000000MODEL",
+  "session_id": "01J000000000000000000SESSN",
+  "timestamp": "2026-06-29T00:00:01Z",
+  "sequence_number": 1,
+  "type": "model.call.completed",
+  "parent_event_id": "01J000000000000000000EVENT",
+  "agent_id": "agent://treans/claims-agent",
+  "genome_hash": "blake3-merkle-v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "workflow_step_id": "classify",
+  "model": { "provider": "openai", "model": "gpt-4o", "temperature": 0.0 },
+  "input_hash": "blake3:0000000000000000000000000000000000000000000000000000000000000000",
+  "redacted_preview": { "answer": "[redacted]" },
+  "intent": "classify_claim"
+}

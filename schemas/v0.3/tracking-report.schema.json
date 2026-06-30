@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.3/tracking-report.schema.json",
+  "title": "Agenomic Online Tracking Report (v0.3)",
+  "description": "The exportable, signable roll-up of an online-tracking session — the tracking analogue of the replay report. JSON first; aggregates alerts by severity and kind, embeds the harness result, and content-addresses itself with a report_hash over its canonical form. Findings carry kind-specific detail (drift_type, loop_type, intent_issue) and evidence event ids.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "report_version",
+    "session_id",
+    "agent_id",
+    "environment",
+    "status",
+    "started_at",
+    "generated_at",
+    "event_count",
+    "alert_counts",
+    "alerts_by_kind",
+    "harness",
+    "final_status"
+  ],
+  "properties": {
+    "report_version": { "const": "agenomic.track/v0.1" },
+    "session_id": { "type": "string", "minLength": 1 },
+    "agent_id": {
+      "type": "string",
+      "pattern": "^agent://[a-z0-9-]+/[a-z0-9-]+$"
+    },
+    "bundle_id": { "type": "string" },
+    "release_id": { "type": "string" },
+    "genome_hash": { "type": "string" },
+    "environment": { "type": "string", "minLength": 1 },
+    "status": {
+      "type": "string",
+      "enum": ["active", "completed", "failed", "cancelled"]
+    },
+    "started_at": { "type": "string", "format": "date-time" },
+    "ended_at": { "type": "string", "format": "date-time" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "event_count": { "type": "integer", "minimum": 0 },
+    "alert_counts": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["info", "warning", "critical"],
+      "properties": {
+        "info": { "type": "integer", "minimum": 0 },
+        "warning": { "type": "integer", "minimum": 0 },
+        "critical": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "alerts_by_kind": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["drift", "loop", "intent", "harness", "policy", "security"],
+      "properties": {
+        "drift": { "type": "integer", "minimum": 0 },
+        "loop": { "type": "integer", "minimum": 0 },
+        "intent": { "type": "integer", "minimum": 0 },
+        "harness": { "type": "integer", "minimum": 0 },
+        "policy": { "type": "integer", "minimum": 0 },
+        "security": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "drift_findings": { "type": "array", "items": { "$ref": "#/$defs/alert" } },
+    "loop_findings": { "type": "array", "items": { "$ref": "#/$defs/alert" } },
+    "intent_findings": { "type": "array", "items": { "$ref": "#/$defs/alert" } },
+    "policy_violations": { "type": "array", "items": { "$ref": "#/$defs/alert" } },
+    "harness": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["passed", "checks"],
+      "properties": {
+        "passed": { "type": "boolean" },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true,
+            "required": ["id", "name", "passed", "severity", "message"],
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "passed": { "type": "boolean" },
+              "severity": {
+                "type": "string",
+                "enum": ["info", "warning", "critical"]
+              },
+              "message": { "type": "string" },
+              "evidence_event_ids": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "summary_metrics": { "type": "object", "additionalProperties": true },
+    "recommendations": { "type": "array", "items": { "type": "string" } },
+    "final_status": {
+      "type": "string",
+      "enum": ["pass", "warn", "fail"]
+    },
+    "evidence_event_ids": { "type": "array", "items": { "type": "string" } },
+    "report_hash": {
+      "type": "string",
+      "pattern": "^blake3:[0-9a-f]{64}$"
+    }
+  },
+  "$defs": {
+    "alert": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "alert_id",
+        "session_id",
+        "kind",
+        "severity",
+        "created_at",
+        "title",
+        "message",
+        "blocks_release",
+        "requires_human_review"
+      ],
+      "properties": {
+        "alert_id": { "type": "string", "minLength": 1 },
+        "session_id": { "type": "string", "minLength": 1 },
+        "kind": {
+          "type": "string",
+          "enum": ["drift", "loop", "intent", "harness", "policy", "security"]
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["info", "warning", "critical"]
+        },
+        "created_at": { "type": "string", "format": "date-time" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "observed": true,
+        "expected": true,
+        "evidence_event_ids": { "type": "array", "items": { "type": "string" } },
+        "recommended_action": { "type": "string" },
+        "blocks_release": { "type": "boolean" },
+        "requires_human_review": { "type": "boolean" },
+        "details": { "type": "object" }
+      }
+    }
+  }
+}

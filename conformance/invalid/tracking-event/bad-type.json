@@ -1,0 +1,9 @@
+{
+  "spec_version": "agenomic/v0.3",
+  "event_id": "e1",
+  "session_id": "s1",
+  "timestamp": "2026-06-29T00:00:00Z",
+  "sequence_number": 0,
+  "type": "frobnicate.everything",
+  "agent_id": "agent://treans/claims-agent"
+}

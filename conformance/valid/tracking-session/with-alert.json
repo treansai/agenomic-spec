@@ -1,0 +1,26 @@
+{
+  "spec_version": "agenomic/v0.3",
+  "session_id": "01J000000000000000000SESSN",
+  "agent_id": "agent://treans/claims-agent",
+  "environment": "production",
+  "started_at": "2026-06-29T00:00:00Z",
+  "status": "active",
+  "tracking_config": { "fail_on": "critical" },
+  "summary": { "event_count": 1, "alert_count": 1, "drift_count": 1, "critical": 1 },
+  "alerts": [
+    {
+      "alert_id": "01J0000000000000000ALERT1",
+      "session_id": "01J000000000000000000SESSN",
+      "kind": "drift",
+      "severity": "critical",
+      "created_at": "2026-06-29T00:00:02Z",
+      "title": "Drift detected: tool_permission",
+      "message": "Tool 'shell.exec' is not in the baseline's permitted tool set.",
+      "evidence_event_ids": ["01J000000000000000000EVENT"],
+      "recommended_action": "Roll back or re-baseline.",
+      "blocks_release": true,
+      "requires_human_review": true,
+      "details": { "drift_type": "tool_permission", "mode": "deterministic" }
+    }
+  ]
+}

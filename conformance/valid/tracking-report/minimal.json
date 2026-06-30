@@ -1,0 +1,28 @@
+{
+  "report_version": "agenomic.track/v0.1",
+  "session_id": "01J000000000000000000SESSN",
+  "agent_id": "agent://treans/claims-agent",
+  "release_id": "release_123",
+  "environment": "production",
+  "status": "completed",
+  "started_at": "2026-06-29T00:00:00Z",
+  "ended_at": "2026-06-29T00:05:00Z",
+  "generated_at": "2026-06-29T00:05:01Z",
+  "event_count": 4,
+  "alert_counts": { "info": 0, "warning": 1, "critical": 1 },
+  "alerts_by_kind": { "drift": 1, "loop": 1, "intent": 0, "harness": 0, "policy": 0, "security": 0 },
+  "drift_findings": [],
+  "loop_findings": [],
+  "intent_findings": [],
+  "policy_violations": [],
+  "harness": {
+    "passed": false,
+    "checks": [
+      { "id": "behavior_contract", "name": "Behavior contract", "passed": true, "severity": "info", "message": "All deterministic contract checks held." }
+    ]
+  },
+  "summary_metrics": { "event_count": 4, "alert_count": 2 },
+  "recommendations": ["Roll back or re-baseline."],
+  "final_status": "fail",
+  "evidence_event_ids": ["01J000000000000000000EVENT"]
+}

@@ -1,0 +1,14 @@
+{
+  "report_version": "agenomic.track/v0.1",
+  "session_id": "s1",
+  "agent_id": "agent://treans/claims-agent",
+  "environment": "production",
+  "status": "completed",
+  "started_at": "2026-06-29T00:00:00Z",
+  "generated_at": "2026-06-29T00:05:01Z",
+  "event_count": 0,
+  "alert_counts": { "info": 0, "warning": 0, "critical": 0 },
+  "alerts_by_kind": { "drift": 0, "loop": 0, "intent": 0, "harness": 0, "policy": 0, "security": 0 },
+  "harness": { "passed": true, "checks": [] },
+  "final_status": "green"
+}
