@@ -1,0 +1,27 @@
+# A valid genome using the Hugging Face provider with the optional
+# runtime fields: task, revision, endpoint_url, organization, parameters.
+spec_version: agenomic/v0.1
+agent:
+  id: agent://example/hf-assistant
+  name: Example Hugging Face Assistant
+  domain: support
+  criticality: standard
+runtime:
+  model_provider: huggingface
+  model_id: mistralai/Mistral-7B-Instruct-v0.3
+  task: text-generation
+  revision: main
+  endpoint_url: https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3
+  organization: example-org
+  temperature: 0.3
+  parameters:
+    max_new_tokens: 512
+    top_p: 0.9
+    repetition_penalty: 1.1
+tools: []
+skills: []
+knowledge: []
+policies: []
+memory:
+  design_memory: memory/memory.schema.yaml
+  runtime_memory_schema_version: 0.1.0

@@ -11,6 +11,20 @@ documented here.
 
 ### Added
 
+- **Hugging Face provider support.** Adds optional Hugging Face fields to
+  the genome `runtime` block (`task`, `revision`, `endpoint_url`,
+  `organization`, `parameters`) in `schemas/v0.1/genome.schema.json` and
+  `schemas/v0.2/genome.schema.json`, and to the agent lockfile `model`
+  block (`revision`, `resolved_commit`, `task`, `endpoint_ref`,
+  `endpoint_hash`, `metadata_hash`, `parameter_hash`) in
+  `schemas/v0.1/agent-lock.schema.json`. All fields are optional; provider
+  names remain a free string. New example bundle
+  `examples/huggingface-agent/`, conformance fixtures
+  `conformance/valid/{genome,agent-lock}/huggingface.yaml`, and provider
+  reference `docs/providers/huggingface.md` (provider name `huggingface`
+  with aliases `hf`/`hugging_face`, env vars `HUGGINGFACE_API_TOKEN` /
+  `HF_TOKEN`, security notes — tokens are never stored in artifacts and
+  endpoint references are REDACTED `scheme://host[/path]`).
 - **v0.3: online tracking.** Adds `schemas/v0.3/tracking-session.schema.json`, `schemas/v0.3/tracking-event.schema.json`, and `schemas/v0.3/tracking-report.schema.json` for real-time monitoring of production agents (drift, loops, intent shifts, runtime-harness / policy / behavior-contract violations). Tracking events are a production-time projection of the canonical run trace (RFC 0010) and ATEP (RFC 0003) event models — same dotted vocabulary, `sequence_number`, `parent_event_id`, content `*_hash` fields, a `prev_event_hash`/`event_hash` hash-link, and an optional detached signature. The tracking report is the tracking analogue of the replay report, content-addressed with a `report_hash`. See `docs/online-tracking.md`. Conformance fixtures under `conformance/{valid,invalid}/tracking-{session,event,report}/`.
 - **v0.3 (RFC 0011): behavioral contracts / policy DSL.** Adds `schemas/v0.3/policy.schema.json` encoding an ABC contract `C=(P,I,G,R)`: `policy_id`, `type`, `scope`, `rules[]` with `modality ∈ {forbidden, obligation, permission, temporal_invariant}` and ABC `aspect ∈ {precondition, invariant, guarantee}`, `when`/`then` predicates, a past-time PLTL `formula`, an `enforce` action, a `recovery` block (R), and `(p,δ,k)` `satisfaction` with drift parameters `α,γ` (`D*=α/γ`). Conformance fixtures under `conformance/{valid,invalid}/policy/`.
 - **v0.3 (RFC 0010): canonical run traces.** Adds intra-run event hash chaining, causal execution graph, evidence package, event registry, replay taxonomy, conformance fixtures, and a trace-chain verifier.

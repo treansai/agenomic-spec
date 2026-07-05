@@ -1,0 +1,40 @@
+spec_version: agenomic/v0.1
+
+agent:
+  id: agent://example/hf-assistant
+  name: Example Hugging Face Assistant
+  domain: support
+  criticality: standard
+
+runtime:
+  model_provider: huggingface
+  model_id: mistralai/Mistral-7B-Instruct-v0.3
+  task: text-generation
+  revision: main
+  organization: example-org
+  temperature: 0.3
+  parameters:
+    max_new_tokens: 512
+    top_p: 0.9
+    repetition_penalty: 1.1
+
+tools: []
+
+skills:
+  - id: answer_question
+    version: 1.0.0
+    prompt_path: prompts/skills/answer_question.md
+
+knowledge: []
+
+policies:
+  - id: no_personal_data_in_prompts
+    path: policies/data_handling.md
+    severity: medium
+
+memory:
+  design_memory: memory/memory.schema.yaml
+  runtime_memory_schema_version: 0.1.0
+
+labels:
+  team: ml-platform

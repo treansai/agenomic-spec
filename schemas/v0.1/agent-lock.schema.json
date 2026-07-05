@@ -42,7 +42,42 @@
           "description": "Provider-reported fingerprint (e.g. system_fingerprint) captured at lock time. Used to detect silent provider drift."
         },
         "temperature": { "type": "number", "minimum": 0, "maximum": 2 },
-        "top_p": { "type": "number", "minimum": 0, "maximum": 1 }
+        "top_p": { "type": "number", "minimum": 0, "maximum": 1 },
+        "revision": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Requested model revision (branch, tag, or commit) as declared in the genome runtime block (e.g. `main`). The resolved commit is pinned separately in `resolved_commit`."
+        },
+        "resolved_commit": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Provider-resolved immutable commit SHA the revision pointed to at lock time (e.g. a Hugging Face repo commit). Detects silent upstream model drift when a moving revision like `main` advances."
+        },
+        "task": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Resolved inference task for providers that distinguish tasks (e.g. Hugging Face): text-generation, embeddings, classification, etc."
+        },
+        "endpoint_ref": {
+          "type": "string",
+          "minLength": 1,
+          "description": "REDACTED reference to a dedicated/self-hosted inference endpoint, of the form scheme://host[/path]. MUST NEVER contain credentials, tokens, query strings, or user-info. Omitted when the default hosted inference API is used."
+        },
+        "endpoint_hash": {
+          "type": "string",
+          "pattern": "^(sha256|blake3):[0-9a-f]{32,128}$",
+          "description": "Hash over the canonicalized endpoint configuration (host, path, task) used at lock time, so endpoint changes are visible in a lockfile diff without ever storing the raw URL or credentials."
+        },
+        "metadata_hash": {
+          "type": "string",
+          "pattern": "^(sha256|blake3):[0-9a-f]{32,128}$",
+          "description": "Hash over the provider model metadata snapshot (e.g. Hugging Face model card / config captured at lock time) used to detect upstream metadata drift."
+        },
+        "parameter_hash": {
+          "type": "string",
+          "pattern": "^(sha256|blake3):[0-9a-f]{32,128}$",
+          "description": "Hash over the canonicalized resolved generation parameters (the genome runtime `parameters` object), so a parameter change is detectable in a lockfile diff."
+        }
       }
     },
     "tools": {

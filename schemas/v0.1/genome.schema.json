@@ -68,6 +68,31 @@
           "type": "number",
           "minimum": 0,
           "maximum": 2
+        },
+        "task": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional inference task hint for providers that distinguish tasks (e.g. Hugging Face): text-generation, embeddings, classification, etc. Absence means the provider's default task for the model."
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional model revision (branch, tag, or commit) requested in the genome. For Hugging Face this maps to a repo revision such as `main` or a commit SHA. The lockfile pins the resolved commit."
+        },
+        "endpoint_url": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional dedicated/self-hosted inference endpoint URL (e.g. a Hugging Face Inference Endpoint). MUST NOT contain inline credentials; authentication is supplied at runtime via environment variables, never stored in the artifact."
+        },
+        "organization": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional provider organization/namespace the model is billed or scoped to (e.g. a Hugging Face org)."
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Optional provider-specific generation parameters (e.g. Hugging Face `max_new_tokens`, `top_p`, `repetition_penalty`). Free-form object; the lockfile records a `parameter_hash` over the resolved values."
         }
       }
     },

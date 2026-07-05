@@ -57,7 +57,8 @@ Agenomic makes that difference explicit, hashable, and verifiable.
 - Synthetic, validating example bundles in [`examples/`](examples/).
 - A conformance suite in [`conformance/`](conformance/) with positive and
   negative fixtures.
-- Tutorial documentation in [`docs/`](docs/).
+- Tutorial documentation in [`docs/`](docs/), including provider
+  references such as [`docs/providers/huggingface.md`](docs/providers/huggingface.md).
 
 ## What this repo IS NOT
 
