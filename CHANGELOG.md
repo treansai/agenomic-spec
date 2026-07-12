@@ -11,6 +11,22 @@ documented here.
 
 ### Added
 
+- **Review · Monitor · Protect (RMP) artifacts.** Five new v0.3 schemas for
+  the continuous safety loop: `rmp-test-scenario` (structured Review
+  scenarios with provenance — `manual`, `generated`, `incident_derived`,
+  `monitor_derived`, `protect_derived`, `user_provided` — expected
+  outputs/tool calls/intent, forbidden behaviors, policy expectations, and
+  evidence/dataset references), `rmp-risk-matrix` (typed risk items with
+  likelihood × impact, impact drivers, associated risks, scenario coverage,
+  and an agent-type assessment), `rmp-enrichment-proposal` (the
+  Monitor/Protect → Review feedback artifact, with the
+  `draft → pending_review → approved → rejected/applied` approval
+  workflow and mandatory `human_approval_required` gating),
+  `rmp-alert` (deduplicated, routed, throttled operator alerts), and
+  `rmp-report` (the unified session report with release recommendation,
+  ledger proof block, and `blake3:` report hash). Conformance fixtures
+  under `conformance/{valid,invalid}/rmp-*`.
+
 - **Hugging Face provider support.** Adds optional Hugging Face fields to
   the genome `runtime` block (`task`, `revision`, `endpoint_url`,
   `organization`, `parameters`) in `schemas/v0.1/genome.schema.json` and

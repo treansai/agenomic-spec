@@ -1,0 +1,7 @@
+{
+  "description": "`source` must be one of the scenario provenance labels.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/source"
+  }
+}
