@@ -42,6 +42,14 @@ const ARTIFACT_TO_SCHEMA = {
   'tracking-session': { file: 'tracking-session.schema.json', versions: ['v0.3'] },
   'tracking-event': { file: 'tracking-event.schema.json', versions: ['v0.3'] },
   'tracking-report': { file: 'tracking-report.schema.json', versions: ['v0.3'] },
+  // RMP (Review · Monitor · Protect) artifacts. Their `spec_version` fields
+  // carry per-artifact versions (`agenomic.rmp*/v0.1`); the schema files live
+  // in v0.3 alongside the tracking family they extend.
+  'rmp-test-scenario': { file: 'rmp-test-scenario.schema.json', versions: ['v0.3'] },
+  'rmp-risk-matrix': { file: 'rmp-risk-matrix.schema.json', versions: ['v0.3'] },
+  'rmp-enrichment-proposal': { file: 'rmp-enrichment-proposal.schema.json', versions: ['v0.3'] },
+  'rmp-alert': { file: 'rmp-alert.schema.json', versions: ['v0.3'] },
+  'rmp-report': { file: 'rmp-report.schema.json', versions: ['v0.3'] },
 };
 
 const ajv = new Ajv({ allErrors: true, strict: false });

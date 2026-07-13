@@ -1,0 +1,7 @@
+{
+  "description": "`status` must follow the approval workflow vocabulary (draft, pending_review, approved, rejected, applied).",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/status"
+  }
+}
