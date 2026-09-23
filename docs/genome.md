@@ -29,7 +29,7 @@ agent:
   id: agent://<org>/<name>
   name: Human-readable name
   domain: claims | support | trading-risk | …
-  criticality: standard | sensitive | regulated_customer_facing | life_critical
+  criticality: low | medium | high | critical | standard | sensitive | regulated_customer_facing | life_critical
 ```
 
 `id` MUST match the URI pattern. `criticality` is consumed by your
