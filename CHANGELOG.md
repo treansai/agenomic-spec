@@ -11,6 +11,11 @@ documented here.
 
 ### Added
 
+- **CLI criticality vocabulary.** `agent.criticality` in `genome.yaml` now
+  also accepts `low`, `medium`, `high` and `critical`, the values emitted by
+  `agm init` and `agm enrich`. The existing `standard`, `sensitive`,
+  `regulated_customer_facing` and `life_critical` values are unchanged.
+
 - **Review · Monitor · Protect (RMP) artifacts.** Five new v0.3 schemas for
   the continuous safety loop: `rmp-test-scenario` (structured Review
   scenarios with provenance — `manual`, `generated`, `incident_derived`,
