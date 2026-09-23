@@ -43,6 +43,10 @@
         "criticality": {
           "type": "string",
           "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical",
             "standard",
             "sensitive",
             "regulated_customer_facing",
