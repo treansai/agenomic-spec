@@ -37,7 +37,7 @@ execution can be reproduced, compared and audited from digests alone.
 
 ### Common rules
 
-- Every document is a JSON object whose first member `schema` is a string
+- Every document is a JSON object whose top-level `schema` member is a string
   `agenomic.<name>/v<major>`. The schema string is the domain separator of
   every digest. A reader that does not know the exact string refuses the
   document; it never guesses a compatible version.
