@@ -69,6 +69,14 @@ const ARTIFACT_TO_SCHEMA = {
   'prompt-file': { file: 'prompt-file.schema.json', versions: ['v0.4'] },
   'experiment-case': { file: 'experiment-case.schema.json', versions: ['v0.4'] },
   'experiment-spec': { file: 'experiment-spec.schema.json', versions: ['v0.4'] },
+  // Coding-session artifacts (RFC 0012): supervision of coding agents
+  // (Claude Code, Codex). The event envelope carries its own
+  // `schema_version` (`agenomic.coding.event/v1`); the schema files live in
+  // v0.3.
+  'coding-event': { file: 'coding-event.schema.json', versions: ['v0.3'] },
+  'coding-session': { file: 'coding-session.schema.json', versions: ['v0.3'] },
+  'coding-capability-manifest': { file: 'coding-capability-manifest.schema.json', versions: ['v0.3'] },
+  'coding-action': { file: 'coding-action.schema.json', versions: ['v0.3'] },
 };
 
 const ajv = new Ajv({ allErrors: true, strict: false });

@@ -1,0 +1,10 @@
+{
+  "event_id": "01K6Y9A1B2C3D4E5F6G7H8J9K0",
+  "schema_version": "agenomic.coding.event/v1",
+  "type": "session.started",
+  "source": "adapter",
+  "trust": "native",
+  "producer_epoch": "01K6Y8Z5Q3M2N4P6R8T0V2W4X6",
+  "producer_seq": 0,
+  "occurred_at": "2026-10-05T09:00:00Z"
+}

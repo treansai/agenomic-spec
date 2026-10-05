@@ -1,0 +1,15 @@
+{
+  "event_id": "01K6Y9A1B2C3D4E5F6G7H8J9K3",
+  "schema_version": "agenomic.coding.event/v1",
+  "type": "approval.resolved",
+  "source": "gateway",
+  "trust": "native",
+  "producer_epoch": "gateway-example",
+  "producer_seq": 1,
+  "occurred_at": "2026-10-05T09:05:40Z",
+  "action_id": "7d0e2a4c-1f3b-4c5d-8e6f-9a0b1c2d3e4f",
+  "payload": {
+    "approval_id": "5c6d7e8f-9a0b-4c1d-8e2f-3a4b5c6d7e8f",
+    "resolution": "approved"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "event_id": "01K6Y9A1B2C3D4E5F6G7H8J9K4",
+  "schema_version": "agenomic.coding.event/v1",
+  "type": "file.changed",
+  "source": "filesystem",
+  "trust": "derived",
+  "producer_epoch": "01K6Y8Z5Q3M2N4P6R8T0V2W4X6",
+  "producer_seq": 9,
+  "occurred_at": "2026-10-05T09:06:02Z",
+  "payload": {
+    "path": "src/example/lib.rs",
+    "change": "modified"
+  }
+}

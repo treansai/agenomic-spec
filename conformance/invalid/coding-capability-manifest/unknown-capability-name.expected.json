@@ -1,0 +1,7 @@
+{
+  "description": "Capability names come from the closed RFC 0012 vocabulary.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/capabilities"
+  }
+}

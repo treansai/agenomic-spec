@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.3/coding-capability-manifest.schema.json",
+  "title": "Agenomic Coding Runtime Capability Manifest (v0.3)",
+  "description": "What a coding-agent runtime installation can do under supervision, as reported by a connector for one runtime version (RFC 0012). Each capability carries the state the adapter announces and the state the connector validated by probing the installed runtime. Only the validated state may be relied upon; unknown never counts as protected.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["runtime", "version", "capabilities"],
+  "properties": {
+    "runtime": { "type": "string", "enum": ["claude_code", "codex"] },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Version of the installed runtime (CLI) the manifest describes."
+    },
+    "sdk_version": { "type": "string", "minLength": 1 },
+    "surfaces": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Integration surfaces in use, for example sdk, cli_hooks, app_server."
+    },
+    "capabilities": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/capabilityName" },
+      "additionalProperties": { "$ref": "#/$defs/capabilityEntry" }
+    }
+  },
+  "$defs": {
+    "capabilityName": {
+      "type": "string",
+      "enum": [
+        "observe",
+        "converse",
+        "remote_approval",
+        "pre_tool_control",
+        "interrupt_turn",
+        "stop_process",
+        "resume",
+        "file_diffs",
+        "user_questions",
+        "subagent_tracking"
+      ]
+    },
+    "capabilityState": {
+      "type": "string",
+      "enum": ["supported_tested", "partial", "experimental", "unsupported", "unknown"]
+    },
+    "capabilityEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["announced", "validated"],
+      "properties": {
+        "announced": { "$ref": "#/$defs/capabilityState" },
+        "validated": { "$ref": "#/$defs/capabilityState" },
+        "detail": { "type": "string" }
+      }
+    }
+  }
+}

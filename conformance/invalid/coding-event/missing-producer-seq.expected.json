@@ -1,0 +1,10 @@
+{
+  "description": "`producer_seq` is required: ordering is defined per source by (producer_epoch, producer_seq).",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "params": {
+      "missingProperty": "producer_seq"
+    }
+  }
+}

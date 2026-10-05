@@ -1,0 +1,10 @@
+{
+  "description": "Every capability carries a validated state; an announced state alone is not evidence.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "/capabilities/converse",
+    "params": {
+      "missingProperty": "validated"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "description": "A pending decision must reference its approval.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/approval_id",
+    "schemaPath": "#/allOf/0/then/properties/approval_id/type"
+  }
+}

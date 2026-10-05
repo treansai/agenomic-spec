@@ -1,0 +1,54 @@
+{
+  "runtime": "claude_code",
+  "version": "2.1.289",
+  "sdk_version": "0.3.289",
+  "surfaces": [
+    "sdk",
+    "cli_hooks"
+  ],
+  "capabilities": {
+    "observe": {
+      "announced": "supported_tested",
+      "validated": "supported_tested"
+    },
+    "converse": {
+      "announced": "supported_tested",
+      "validated": "supported_tested"
+    },
+    "remote_approval": {
+      "announced": "supported_tested",
+      "validated": "partial",
+      "detail": "Approval round-trip validated for Bash, Write and Edit only."
+    },
+    "pre_tool_control": {
+      "announced": "supported_tested",
+      "validated": "supported_tested"
+    },
+    "interrupt_turn": {
+      "announced": "supported_tested",
+      "validated": "supported_tested"
+    },
+    "stop_process": {
+      "announced": "supported_tested",
+      "validated": "supported_tested"
+    },
+    "resume": {
+      "announced": "experimental",
+      "validated": "experimental"
+    },
+    "file_diffs": {
+      "announced": "partial",
+      "validated": "partial",
+      "detail": "Diffs derived from the workspace, not reported natively."
+    },
+    "user_questions": {
+      "announced": "supported_tested",
+      "validated": "supported_tested"
+    },
+    "subagent_tracking": {
+      "announced": "partial",
+      "validated": "unknown",
+      "detail": "Probe did not complete on this version."
+    }
+  }
+}

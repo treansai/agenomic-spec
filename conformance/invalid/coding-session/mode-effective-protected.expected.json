@@ -1,0 +1,8 @@
+{
+  "description": "`protected` is not a governance mode; mode_effective is observe, shadow, enforce, none or blocked.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/mode_effective",
+    "schemaPath": "#/properties/mode_effective/enum"
+  }
+}

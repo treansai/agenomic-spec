@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.3/coding-session.schema.json",
+  "title": "Agenomic Coding Session (v0.3)",
+  "description": "A coding-agent session (Claude Code, Codex) supervised by Agenomic (RFC 0012). origin fixes the control level: launched sessions are controllable, local_connected sessions are observed (policy hooks only), imported sessions are historical and never controllable. mode_effective is never silently lowered below mode_requested: when a prerequisite of the requested mode fails, the session is blocked.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "id",
+    "runtime",
+    "origin",
+    "control",
+    "status",
+    "mode_requested",
+    "mode_effective",
+    "created_at"
+  ],
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "runner_id": { "type": ["string", "null"], "format": "uuid" },
+    "actor_id": { "type": ["string", "null"], "minLength": 1 },
+    "runtime": { "type": "string", "enum": ["claude_code", "codex"] },
+    "runtime_version": { "type": ["string", "null"] },
+    "surface": {
+      "type": ["string", "null"],
+      "description": "Integration surface, for example sdk, cli_hooks, app_server."
+    },
+    "origin": { "type": "string", "enum": ["launched", "local_connected", "imported"] },
+    "control": { "type": "string", "enum": ["controllable", "observed", "imported"] },
+    "runtime_session_id": {
+      "type": ["string", "null"],
+      "description": "The runtime's native session id. Unique per (runner_id, runtime)."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "starting",
+        "running",
+        "idle",
+        "waiting_approval",
+        "waiting_input",
+        "interrupting",
+        "stopping",
+        "stopped",
+        "failed",
+        "lost"
+      ],
+      "description": "lost: no heartbeat within the lease; the process may still be running."
+    },
+    "workspace_id": { "type": ["string", "null"] },
+    "repo": { "type": ["string", "null"] },
+    "branch": { "type": ["string", "null"] },
+    "base_revision": { "type": ["string", "null"] },
+    "model": { "type": ["string", "null"] },
+    "policy_profile": { "type": ["string", "null"] },
+    "policy_refs": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "mode_requested": { "$ref": "#/$defs/governanceMode" },
+    "mode_effective": {
+      "type": "string",
+      "enum": ["observe", "shadow", "enforce", "none", "blocked"],
+      "description": "none: not yet connected. blocked: the requested mode could not be established; the session refuses actions."
+    },
+    "protection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protected": { "type": "array", "items": { "type": "string" } },
+        "not_covered": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "limitations": { "type": "array", "items": { "type": "string" } },
+    "capabilities": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/capabilityName" },
+      "additionalProperties": { "$ref": "#/$defs/capabilityEntry" }
+    },
+    "tool_run_id": { "type": ["string", "null"] },
+    "rmp_session_id": { "type": ["string", "null"] },
+    "trace_id": { "type": ["string", "null"] },
+    "pending_approvals": { "type": "integer", "minimum": 0 },
+    "last_heartbeat_at": { "type": ["string", "null"], "format": "date-time" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "ended_at": { "type": ["string", "null"], "format": "date-time" },
+    "capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Content capture opt-ins. Absent or false means metadata only.",
+      "properties": {
+        "conversation": { "type": "boolean", "default": false },
+        "commands": { "type": "boolean", "default": false },
+        "diffs": { "type": "boolean", "default": false },
+        "outputs": { "type": "boolean", "default": false }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "origin": { "const": "launched" } }, "required": ["origin"] },
+      "then": { "properties": { "control": { "const": "controllable" } } }
+    },
+    {
+      "if": { "properties": { "origin": { "const": "local_connected" } }, "required": ["origin"] },
+      "then": { "properties": { "control": { "const": "observed" } } }
+    },
+    {
+      "if": { "properties": { "origin": { "const": "imported" } }, "required": ["origin"] },
+      "then": { "properties": { "control": { "const": "imported" } } }
+    },
+    {
+      "$comment": "No silent downgrade: a session that requested enforce is enforce, blocked, or not yet connected.",
+      "if": { "properties": { "mode_requested": { "const": "enforce" } }, "required": ["mode_requested"] },
+      "then": { "properties": { "mode_effective": { "enum": ["enforce", "blocked", "none"] } } }
+    },
+    {
+      "$comment": "No silent downgrade: a session that requested shadow is shadow, blocked, or not yet connected.",
+      "if": { "properties": { "mode_requested": { "const": "shadow" } }, "required": ["mode_requested"] },
+      "then": { "properties": { "mode_effective": { "enum": ["shadow", "blocked", "none"] } } }
+    }
+  ],
+  "$defs": {
+    "governanceMode": { "type": "string", "enum": ["observe", "shadow", "enforce"] },
+    "capabilityName": {
+      "type": "string",
+      "enum": [
+        "observe",
+        "converse",
+        "remote_approval",
+        "pre_tool_control",
+        "interrupt_turn",
+        "stop_process",
+        "resume",
+        "file_diffs",
+        "user_questions",
+        "subagent_tracking"
+      ]
+    },
+    "capabilityState": {
+      "type": "string",
+      "enum": ["supported_tested", "partial", "experimental", "unsupported", "unknown"]
+    },
+    "capabilityEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["announced", "validated"],
+      "properties": {
+        "announced": { "$ref": "#/$defs/capabilityState" },
+        "validated": { "$ref": "#/$defs/capabilityState" },
+        "detail": { "type": "string" }
+      }
+    }
+  }
+}

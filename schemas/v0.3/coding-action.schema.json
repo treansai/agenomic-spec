@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.3/coding-action.schema.json",
+  "title": "Agenomic Coding Action (v0.3)",
+  "description": "One native tool call of a coding-agent runtime, classified into the Agenomic coding action vocabulary and decided by the governance layer (RFC 0012). decision records what Agenomic answered; status and outcome record what was later observed. An allow decision is not proof of execution.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "id",
+    "native_request_id",
+    "attempt",
+    "phase",
+    "native_tool",
+    "tool_id",
+    "risk",
+    "decision",
+    "effective_mode",
+    "status",
+    "created_at"
+  ],
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "native_request_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The runtime's own id for the call (Claude Code tool_use id, Codex itemId[:approvalId])."
+    },
+    "runtime_turn_id": { "type": ["string", "null"] },
+    "attempt": { "type": "integer", "minimum": 1 },
+    "phase": { "type": "string", "enum": ["pre_tool", "native_approval"] },
+    "native_tool": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Native tool name, for example Bash, Write, Edit, exec_command, apply_patch, mcp__srv__tool."
+    },
+    "tool_id": {
+      "type": "string",
+      "enum": [
+        "coding.fs.read",
+        "coding.fs.write",
+        "coding.fs.delete",
+        "coding.shell.exec",
+        "coding.shell.interactive_input",
+        "coding.git.read",
+        "coding.git.commit",
+        "coding.git.push",
+        "coding.git.destructive",
+        "coding.dependency.install",
+        "coding.network.fetch",
+        "coding.mcp.call",
+        "coding.agent_config.modify",
+        "coding.subagent.spawn",
+        "coding.web.search",
+        "coding.unknown"
+      ]
+    },
+    "risk": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+    "flags": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "anyOf": [
+          {
+            "enum": [
+              "outside_workspace",
+              "secret_path",
+              "symlink",
+              "compound_shell",
+              "interpreter",
+              "network",
+              "lifecycle_scripts",
+              "force_push",
+              "agent_config"
+            ]
+          },
+          {
+            "type": "string",
+            "pattern": "^x_[a-z0-9_]+$",
+            "description": "Implementation-specific extension flag."
+          }
+        ]
+      }
+    },
+    "preview": {
+      "description": "Redacted, size-bounded preview of the native input. Never raw secrets.",
+      "type": ["string", "object", "null"]
+    },
+    "input_digest": { "type": ["string", "null"] },
+    "patch_digest": { "type": ["string", "null"] },
+    "decision": { "type": "string", "enum": ["allow", "deny", "pending", "defer"] },
+    "effective_mode": { "type": "string", "enum": ["observe", "shadow", "enforce"] },
+    "would_have_been": {
+      "type": ["string", "null"],
+      "enum": ["deny", null],
+      "description": "Shadow mode: the decision enforce would have produced when it differs."
+    },
+    "reason": { "type": ["string", "null"] },
+    "reason_codes": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "approval_id": { "type": ["string", "null"], "format": "uuid" },
+    "approval_status": {
+      "type": ["string", "null"],
+      "enum": ["pending", "approved", "rejected", "expired", null]
+    },
+    "record_id": { "type": ["string", "null"], "format": "uuid" },
+    "status": {
+      "type": "string",
+      "enum": ["requested", "decided", "started", "completed", "failed", "unknown"]
+    },
+    "outcome": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "exit_code": { "type": ["integer", "null"] },
+        "duration_ms": { "type": ["integer", "null"], "minimum": 0 },
+        "summary": { "type": ["string", "null"] }
+      }
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "decided_at": { "type": ["string", "null"], "format": "date-time" },
+    "completed_at": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "allOf": [
+    {
+      "$comment": "A pending decision always references the approval that holds it.",
+      "if": { "properties": { "decision": { "const": "pending" } }, "required": ["decision"] },
+      "then": {
+        "required": ["approval_id"],
+        "properties": { "approval_id": { "type": "string" } }
+      }
+    },
+    {
+      "$comment": "In observe mode Agenomic never blocks: the native permission flow decides.",
+      "if": { "properties": { "effective_mode": { "const": "observe" } }, "required": ["effective_mode"] },
+      "then": { "properties": { "decision": { "const": "defer" } } }
+    }
+  ]
+}

@@ -11,6 +11,20 @@ documented here.
 
 ### Added
 
+- **v0.3 (RFC 0012, Draft): coding sessions.** Portable artifacts for
+  supervising coding agents (Claude Code, Codex) without replacing their
+  loops: `schemas/v0.3/coding-event.schema.json` (closed
+  `agenomic.coding.event/v1` envelope with ULID `event_id`, `source` and
+  `trust`, per-source `(producer_epoch, producer_seq)` ordering and
+  at-least-once deduplication), `coding-session.schema.json` (origin →
+  control pairing, `mode_requested`/`mode_effective` with `blocked` and no
+  silent downgrade, protection and capture settings),
+  `coding-capability-manifest.schema.json` (announced vs validated
+  capability states) and `coding-action.schema.json` (closed `coding.*`
+  `tool_id` vocabulary, risk, flags, decision and observed outcome).
+  Conformance fixtures under
+  `conformance/{valid,invalid}/coding-{event,session,capability-manifest,action}/`.
+
 - **v0.4 (RFC 0012): managed prompts.** New schema directory
   `schemas/v0.4/` with `prompt-common`, `prompt-content`, `prompt-version`,
   `prompt-manifest`, `rendered-prompt`, `prompt-artifact-set`,

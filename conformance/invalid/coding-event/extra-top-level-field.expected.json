@@ -1,0 +1,10 @@
+{
+  "description": "The envelope is closed: content belongs in the redacted `payload`, never at the top level.",
+  "match": {
+    "keyword": "additionalProperties",
+    "instancePath": "",
+    "params": {
+      "additionalProperty": "command"
+    }
+  }
+}

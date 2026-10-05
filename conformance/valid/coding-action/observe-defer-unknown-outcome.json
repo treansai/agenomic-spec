@@ -1,0 +1,21 @@
+{
+  "id": "8e9f0a1b-2c3d-4e5f-8a6b-7c8d9e0f1a2b",
+  "native_request_id": "toolu_example_07",
+  "attempt": 1,
+  "phase": "pre_tool",
+  "native_tool": "Write",
+  "tool_id": "coding.agent_config.modify",
+  "risk": "critical",
+  "flags": [
+    "agent_config",
+    "x_example_flag"
+  ],
+  "preview": {
+    "path": ".claude/settings.json",
+    "bytes": 412
+  },
+  "decision": "defer",
+  "effective_mode": "observe",
+  "status": "unknown",
+  "created_at": "2026-10-05T09:20:00Z"
+}
