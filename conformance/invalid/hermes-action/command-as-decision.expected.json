@@ -1,0 +1,4 @@
+{
+  "description": "pause is a command, not a decision outcome.",
+  "match": { "keyword": "enum", "instancePath": "/decision/outcome" }
+}

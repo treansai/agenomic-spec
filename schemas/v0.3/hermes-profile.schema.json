@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.3/hermes-profile.schema.json",
+  "title": "Agenomic Hermes control profile (agenomic.hermes.profile/v1)",
+  "description": "Immutable, versioned control profile of one Hermes instance: model admission at the Model Gateway, delegation limits, persistence rules, protected paths and heartbeat. It never contains secret values; the upstream credential is a reference to a KMS wrapped provider connection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version"],
+  "properties": {
+    "schema_version": { "const": "agenomic.hermes.profile/v1" },
+    "capture": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "content": { "enum": ["metadata", "redacted_preview"] },
+        "detail_sample_rate": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "model": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "allowed": {
+          "type": "array", "maxItems": 64,
+          "items": { "type": "object", "additionalProperties": false, "required": ["provider", "model"],
+                     "properties": { "provider": { "type": "string", "minLength": 1 }, "model": { "type": "string", "minLength": 1 } } }
+        },
+        "max_tokens_ceiling": { "type": "integer", "minimum": 1, "maximum": 200000 },
+        "max_request_bytes": { "type": "integer", "minimum": 1024, "maximum": 8388608 },
+        "allow_streaming": { "type": "boolean" },
+        "upstream": {
+          "type": "object", "additionalProperties": false, "required": ["base_url"],
+          "properties": {
+            "base_url": { "type": "string", "pattern": "^https?://", "maxLength": 500 },
+            "connection_id": { "type": "string", "format": "uuid" }
+          }
+        },
+        "token_budget_per_root_session": { "type": "integer", "minimum": 0 },
+        "timeout_ms": { "type": "integer", "minimum": 1000, "maximum": 600000 }
+      }
+    },
+    "delegation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["max_depth", "max_children_per_session", "max_concurrent_children", "max_descendants"],
+      "properties": {
+        "max_depth": { "type": "integer", "minimum": 0, "maximum": 8 },
+        "max_children_per_session": { "type": "integer", "minimum": 0, "maximum": 64 },
+        "max_concurrent_children": { "type": "integer", "minimum": 0, "maximum": 64 },
+        "max_descendants": { "type": "integer", "minimum": 0, "maximum": 512 }
+      }
+    },
+    "persistence": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "skills": { "enum": ["proposal", "deny"] },
+        "config": { "enum": ["deny"] },
+        "memory": { "enum": ["allow", "approval", "deny"] }
+      }
+    },
+    "protected_paths": { "type": "array", "maxItems": 64, "items": { "type": "string", "minLength": 1, "maxLength": 400 } },
+    "approvals": {
+      "type": "object", "additionalProperties": false,
+      "properties": { "non_interactive": { "enum": ["deny"] } }
+    },
+    "heartbeat": {
+      "type": "object", "additionalProperties": false, "required": ["interval_secs", "stale_after_secs"],
+      "properties": {
+        "interval_secs": { "type": "integer", "minimum": 5, "maximum": 300 },
+        "stale_after_secs": { "type": "integer", "minimum": 10, "maximum": 3600 }
+      }
+    }
+  }
+}

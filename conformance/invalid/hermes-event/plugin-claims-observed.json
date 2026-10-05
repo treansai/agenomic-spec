@@ -1,0 +1,7 @@
+{
+  "event_id": "01JHERMESEVENT0000000000002",
+  "type": "tool.call.completed",
+  "occurred_at": "2026-10-05T12:00:00Z",
+  "source": "plugin",
+  "trust": "observed"
+}

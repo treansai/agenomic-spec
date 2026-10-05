@@ -1,0 +1,17 @@
+{
+  "schema_version": "agenomic.hermes.action/v1",
+  "tenant_id": "121dcc70-fc4e-47f3-9dcf-6a947dd1fe60",
+  "principal": { "kind": "hermes_runtime", "credential_id": "244e2a87-3766-4ba5-b660-22e5370b7a75" },
+  "agent_ref": "agent://acme/support",
+  "instance_id": "244e2a87-3766-4ba5-b660-22e5370b7a75",
+  "environment": "production",
+  "hermes_session_id": "20261005_120000_ab12cd",
+  "protect_run_id": "4ffa1cec-2b28-4495-a07c-8e646cf5ea75",
+  "logical_call_id": "call_w",
+  "attempt": 1,
+  "action_type": "tool.call",
+  "tool": "write_file",
+  "schema_hash": "blake3:1111111111111111111111111111111111111111111111111111111111111111",
+  "arguments_hash": "blake3:42fb6cda861b2288b0eee0fc8b28d13fafebf2a783d833f4198556f6770d239c",
+  "decision": { "outcome": "require_approval", "effective_mode": "enforce", "reason_codes": ["approval_required"], "approval_id": "ac3342b1-c258-4070-b57d-495941e2a3b5" }
+}

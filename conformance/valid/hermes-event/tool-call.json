@@ -1,0 +1,19 @@
+{
+  "schema_version": "agenomic.hermes.event/v1",
+  "event_id": "01JHERMESEVENT0000000000001",
+  "type": "tool.call.completed",
+  "seq": 12,
+  "occurred_at": "2026-10-05T12:00:00Z",
+  "source": "plugin",
+  "trust": "declared",
+  "hermes_session_id": "20261005_120000_ab12cd",
+  "trace_id": "6e576b40-7bdb-43ab-b4f3-66c3059a141a",
+  "span_id": "call_1",
+  "action_id": "call_1",
+  "attempt_id": 1,
+  "tool": { "name": "read_file" },
+  "decision": "allow",
+  "status": "ok",
+  "latency_ms": 12,
+  "output_hash": "blake3:0f1e2d3c4b5a69788796a5b4c3d2e1f00f1e2d3c4b5a69788796a5b4c3d2e1f0"
+}

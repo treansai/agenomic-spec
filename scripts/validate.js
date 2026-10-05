@@ -50,6 +50,11 @@ const ARTIFACT_TO_SCHEMA = {
   'rmp-enrichment-proposal': { file: 'rmp-enrichment-proposal.schema.json', versions: ['v0.3'] },
   'rmp-alert': { file: 'rmp-alert.schema.json', versions: ['v0.3'] },
   'rmp-report': { file: 'rmp-report.schema.json', versions: ['v0.3'] },
+  // Hermes Agent integration (docs/hermes.md): runtime events, control
+  // profile and the admitted action contract.
+  'hermes-event': { file: 'hermes-event.schema.json', versions: ['v0.3'] },
+  'hermes-profile': { file: 'hermes-profile.schema.json', versions: ['v0.3'] },
+  'hermes-action': { file: 'hermes-action.schema.json', versions: ['v0.3'] },
 };
 
 const ajv = new Ajv({ allErrors: true, strict: false });
