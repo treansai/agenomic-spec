@@ -1,0 +1,562 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.4/experiment-spec.schema.json",
+  "title": "Agenomic frozen experiment spec (v0.4)",
+  "description": "The frozen spec of one prompt experiment, `agenomic.experiment_spec/v1` (RFC 0012). The server builds it from the draft at preflight and freezes it at launch. Every member is always present (optionality is `null` or an empty list or map) and unknown members are refused at every level. The spec is in the Agenomic JSON Subset: every number is an integer, and rates, probabilities, coverages and margins are decimal strings. `spec_digest = \"sha256:\" + hex(sha256(canonical_json(spec without the top-level identity member)))`, so any implementation recomputes it exactly. This schema checks shape and single-member bounds only. Rules that relate several members (every arm a release of `agent_id` and no release twice, a `genome_version` on every candidate, the stage and candidate count, `entry_point` exactly when `level` is `node`, the profile and repetition ranges, a held-out dataset for an exploration, at least 20 paired cases for a bootstrap decision interval, the seed within the unsigned 64-bit range) are validated by the service at preflight. Runners never receive the spec.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "identity",
+    "agent_id",
+    "level",
+    "stage",
+    "profile",
+    "aa_test",
+    "arms",
+    "dataset",
+    "heldout",
+    "entry_point",
+    "node_scope",
+    "repetitions",
+    "initial_state",
+    "tool_mode",
+    "evaluators",
+    "metrics",
+    "analysis",
+    "budgets",
+    "stop_conditions",
+    "retries",
+    "seed",
+    "secret_refs",
+    "price_table",
+    "capture",
+    "runner_selector",
+    "rmp_session_id",
+    "intended_changes",
+    "confounders",
+    "classification"
+  ],
+  "properties": {
+    "schema": { "const": "agenomic.experiment_spec/v1" },
+    "identity": {
+      "description": "Excluded from `spec_digest`, so two launches of the same comparison with the same seed share a digest. `arm_keys` are random per experiment and are the only arm labels a runner or judge sees.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["experiment_id", "org_id", "parent_experiment_id", "created_by", "arm_keys"],
+      "properties": {
+        "experiment_id": { "$ref": "#/$defs/experimentId" },
+        "org_id": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+        "parent_experiment_id": {
+          "anyOf": [{ "$ref": "#/$defs/experimentId" }, { "type": "null" }]
+        },
+        "created_by": {
+          "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/uuidLower" }, { "type": "null" }]
+        },
+        "arm_keys": {
+          "type": "object",
+          "minProperties": 2,
+          "maxProperties": 6,
+          "propertyNames": { "$ref": "#/$defs/armId" },
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^arm_[0-9a-f]{8}$"
+          }
+        }
+      }
+    },
+    "agent_id": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+    "level": { "enum": ["agent", "node"] },
+    "stage": { "enum": ["single", "exploration", "confirmation"] },
+    "profile": { "enum": ["smoke", "standard", "statistical", "custom"] },
+    "aa_test": {
+      "description": "True for a calibration run whose candidate equals the baseline. An A/A test never satisfies the promotion gate.",
+      "type": "boolean"
+    },
+    "arms": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 6,
+      "items": { "$ref": "#/$defs/arm" },
+      "contains": {
+        "type": "object",
+        "required": ["role"],
+        "properties": { "role": { "const": "baseline" } }
+      },
+      "minContains": 1,
+      "maxContains": 1
+    },
+    "dataset": { "$ref": "#/$defs/datasetRef" },
+    "heldout": {
+      "description": "The held-out dataset version of an exploration, frozen in the same form as `dataset`; `null` otherwise.",
+      "anyOf": [{ "$ref": "#/$defs/datasetRef" }, { "type": "null" }]
+    },
+    "entry_point": {
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "kind", "node_path", "seed_as_node", "slot_paths"],
+          "properties": {
+            "name": { "$ref": "#/$defs/label" },
+            "kind": { "enum": ["graph_node", "callable"] },
+            "node_path": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+            },
+            "seed_as_node": {
+              "anyOf": [{ "$ref": "#/$defs/label" }, { "type": "null" }]
+            },
+            "slot_paths": {
+              "type": "array",
+              "items": { "$ref": "prompt-common.schema.json#/$defs/slotPath" }
+            }
+          }
+        }
+      ]
+    },
+    "node_scope": {
+      "description": "For a node experiment, the state the node trial includes and excludes, written by the server and shown verbatim; `null` for an agent experiment.",
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["item", "treatment"],
+            "properties": {
+              "item": { "$ref": "#/$defs/text" },
+              "treatment": { "$ref": "#/$defs/text" }
+            }
+          }
+        }
+      ]
+    },
+    "repetitions": { "type": "integer", "minimum": 1, "maximum": 100 },
+    "initial_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshot_digest", "source"],
+      "properties": {
+        "snapshot_digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" },
+        "source": { "enum": ["dataset_cases"] }
+      }
+    },
+    "tool_mode": {
+      "description": "The inline tool execution configuration is not part of the spec; `tool_config_digest` binds it. Fixture sets are approved `name@version` references with their frozen content hash.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "tool_config_digest", "fixture_sets", "on_fixture_miss", "protect"],
+      "properties": {
+        "mode": { "enum": ["none", "mock", "recorded", "live"] },
+        "tool_config_digest": {
+          "anyOf": [{ "$ref": "#/$defs/blake3Digest" }, { "type": "null" }]
+        },
+        "fixture_sets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ref", "content_hash"],
+            "properties": {
+              "ref": {
+                "type": "string",
+                "pattern": "^[^\\u0000-\\u001f]+@[1-9][0-9]{0,9}$"
+              },
+              "content_hash": { "$ref": "#/$defs/blake3Digest" }
+            }
+          }
+        },
+        "on_fixture_miss": { "enum": ["stop_trial", "tool_error"] },
+        "protect": { "enum": ["enforce", "shadow", "off"] }
+      }
+    },
+    "evaluators": {
+      "description": "Each evaluator is pinned by its digest over `{ schema: \"agenomic.experiment_evaluator/v1\", evaluator_id, kind, version, config }`; the config itself is not part of the spec. At most one evaluator has `success_source: true` (checked by the service).",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evaluator_id", "kind", "version", "digest", "success_source"],
+        "properties": {
+          "evaluator_id": { "$ref": "#/$defs/metricId" },
+          "kind": {
+            "enum": [
+              "output_contract",
+              "expected_match",
+              "tool_selection",
+              "markers",
+              "runner_custom",
+              "model_judge",
+              "human"
+            ]
+          },
+          "version": { "$ref": "#/$defs/positive" },
+          "digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" },
+          "success_source": { "type": "boolean" }
+        }
+      }
+    },
+    "metrics": {
+      "description": "The pre-registered gated metrics: the primary and every guardrail. With no gated metric (`primary: null` and no guardrail) the verdict is `not_applicable`.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primary", "guardrails", "reported"],
+      "properties": {
+        "primary": {
+          "anyOf": [{ "$ref": "#/$defs/metricRule" }, { "type": "null" }]
+        },
+        "guardrails": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/metricRule" }
+        },
+        "reported": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/metricId" }
+        }
+      }
+    },
+    "analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "estimator",
+        "decision_interval",
+        "alpha",
+        "min_paired_cases",
+        "min_case_coverage",
+        "min_rep_coverage",
+        "bootstrap_resamples",
+        "multiplicity",
+        "max_infra_error_rate_gap",
+        "max_fixture_miss_rate_gap",
+        "max_nonevaluable_rate_gap"
+      ],
+      "properties": {
+        "estimator": { "const": "agenomic.experiments.paired_case_mean/v1" },
+        "decision_interval": { "enum": ["paired_t", "paired_bootstrap_percentile", "both_agree"] },
+        "alpha": { "$ref": "#/$defs/decimal" },
+        "min_paired_cases": { "type": "integer", "minimum": 6, "maximum": 9007199254740991 },
+        "min_case_coverage": { "$ref": "#/$defs/decimal" },
+        "min_rep_coverage": { "$ref": "#/$defs/decimal" },
+        "bootstrap_resamples": { "type": "integer", "minimum": 1000, "maximum": 100000 },
+        "multiplicity": { "const": "holm/v1" },
+        "max_infra_error_rate_gap": { "$ref": "#/$defs/decimal" },
+        "max_fixture_miss_rate_gap": { "$ref": "#/$defs/decimal" },
+        "max_nonevaluable_rate_gap": { "$ref": "#/$defs/decimal" }
+      }
+    },
+    "budgets": {
+      "description": "`max_total_tokens` and `max_cost_micros` are `null` when that limit is not set; cost can only be enforced with a `price_table`.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_trials",
+        "max_total_tokens",
+        "max_tokens_per_trial",
+        "max_model_calls_per_trial",
+        "max_cost_micros",
+        "max_live_calls",
+        "max_wall_clock_seconds",
+        "max_trial_seconds",
+        "max_concurrent_trials"
+      ],
+      "properties": {
+        "max_trials": { "$ref": "#/$defs/positive" },
+        "max_total_tokens": {
+          "anyOf": [{ "$ref": "#/$defs/positive" }, { "type": "null" }]
+        },
+        "max_tokens_per_trial": { "$ref": "#/$defs/positive" },
+        "max_model_calls_per_trial": { "$ref": "#/$defs/positive" },
+        "max_cost_micros": {
+          "anyOf": [{ "$ref": "#/$defs/count" }, { "type": "null" }]
+        },
+        "max_live_calls": { "$ref": "#/$defs/count" },
+        "max_wall_clock_seconds": { "$ref": "#/$defs/positive" },
+        "max_trial_seconds": { "$ref": "#/$defs/positive" },
+        "max_concurrent_trials": { "type": "integer", "minimum": 1, "maximum": 64 }
+      }
+    },
+    "stop_conditions": {
+      "description": "Budget and safety stop conditions only; a `null` threshold is not evaluated. No condition looks at effect estimates or p-values.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_infrastructure_error_rate",
+        "infrastructure_error_min_trials",
+        "max_consecutive_infrastructure_errors",
+        "max_recorded_fixture_miss_rate",
+        "max_policy_violations"
+      ],
+      "properties": {
+        "max_infrastructure_error_rate": {
+          "anyOf": [{ "$ref": "#/$defs/decimal" }, { "type": "null" }]
+        },
+        "infrastructure_error_min_trials": { "$ref": "#/$defs/count" },
+        "max_consecutive_infrastructure_errors": {
+          "anyOf": [{ "$ref": "#/$defs/positive" }, { "type": "null" }]
+        },
+        "max_recorded_fixture_miss_rate": {
+          "anyOf": [{ "$ref": "#/$defs/decimal" }, { "type": "null" }]
+        },
+        "max_policy_violations": {
+          "anyOf": [{ "$ref": "#/$defs/count" }, { "type": "null" }]
+        }
+      }
+    },
+    "retries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_attempts", "backoff_seconds", "max_backoff_seconds"],
+      "properties": {
+        "max_attempts": { "$ref": "#/$defs/positive" },
+        "backoff_seconds": { "$ref": "#/$defs/count" },
+        "max_backoff_seconds": { "$ref": "#/$defs/count" }
+      }
+    },
+    "seed": {
+      "description": "A decimal unsigned 64-bit integer as a string.",
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,19})$"
+    },
+    "secret_refs": {
+      "description": "Names of secrets resolved only on the runner, such as `env:OPENAI_API_KEY`; never a secret value.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*:[^\\s\\u0000-\\u001f]+$"
+      }
+    },
+    "price_table": {
+      "description": "Declared model prices in integer micros per million tokens, or `null`. Cost is calculated only from measured tokens and this table.",
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["version", "models"],
+          "properties": {
+            "version": { "$ref": "#/$defs/label" },
+            "models": {
+              "type": "object",
+              "propertyNames": { "$ref": "#/$defs/label" },
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["input_micros_per_mtok", "output_micros_per_mtok"],
+                "properties": {
+                  "input_micros_per_mtok": { "$ref": "#/$defs/count" },
+                  "output_micros_per_mtok": { "$ref": "#/$defs/count" }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outputs", "max_output_bytes"],
+      "properties": {
+        "outputs": { "enum": ["full"] },
+        "max_output_bytes": { "$ref": "#/$defs/positive" }
+      }
+    },
+    "runner_selector": {
+      "description": "An empty list means any eligible runner.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runner_ids"],
+      "properties": {
+        "runner_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^exr_[0-9a-hjkmnp-tv-z]{26}$"
+          }
+        }
+      }
+    },
+    "rmp_session_id": {
+      "anyOf": [
+        { "type": "string", "pattern": "^rmp_[A-Za-z0-9]{1,64}$" },
+        { "type": "null" }
+      ]
+    },
+    "intended_changes": {
+      "description": "The slot-level differences between each candidate manifest and the baseline manifest; `null` stands for an unmanaged slot on that side.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["arm_id", "slot_path", "baseline", "candidate"],
+        "properties": {
+          "arm_id": { "$ref": "#/$defs/armId" },
+          "slot_path": { "$ref": "prompt-common.schema.json#/$defs/slotPath" },
+          "baseline": {
+            "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/promptRefKey" }, { "type": "null" }]
+          },
+          "candidate": {
+            "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/promptRefKey" }, { "type": "null" }]
+          }
+        }
+      }
+    },
+    "confounders": {
+      "description": "Every axis other than the prompt manifest on which a candidate differs from the baseline (`different`) or cannot be compared (`unknown`). The id is `<arm_id>:<axis>`. A confounder is acknowledged at launch, never hidden.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "axis", "status", "baseline", "candidate"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,31}:[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)?$"
+          },
+          "axis": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)?$"
+          },
+          "status": { "enum": ["different", "unknown"] },
+          "baseline": { "type": ["string", "null"], "pattern": "^[^\\u0000]*$" },
+          "candidate": { "type": ["string", "null"], "pattern": "^[^\\u0000]*$" }
+        }
+      }
+    },
+    "classification": { "enum": ["prompt_only", "mixed_change"] }
+  },
+  "$defs": {
+    "experimentId": {
+      "type": "string",
+      "pattern": "^exp_[0-9a-hjkmnp-tv-z]{26}$"
+    },
+    "armId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,31}$"
+    },
+    "metricId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,63}$"
+    },
+    "blake3Digest": {
+      "type": "string",
+      "pattern": "^blake3:[0-9a-f]{64}$"
+    },
+    "decimal": {
+      "description": "A non-negative decimal string with at most six fraction digits.",
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,8})(\\.[0-9]{1,6})?$"
+    },
+    "signedDecimal": {
+      "description": "A decimal string with an optional minus sign and at most six fraction digits.",
+      "type": "string",
+      "pattern": "^-?(0|[1-9][0-9]{0,8})(\\.[0-9]{1,6})?$"
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "positive": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "arm": {
+      "description": "One agent version under test. `release_name` never reaches a runner. `genome_version` and `prompt_manifest_digest` are `null` only for a legacy release, which may be the baseline but never a candidate (checked by the service). `children` holds the child releases frozen at preflight for subagents that the arm manifest does not pin. `runtime_digest` is declared by the runner and cannot be verified by Agenomic, which `runtime_digest_source` states.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "arm_id",
+        "role",
+        "release_id",
+        "release_name",
+        "genome_version",
+        "prompt_manifest_digest",
+        "bundle_id",
+        "runtime_digest",
+        "runtime_digest_source",
+        "children"
+      ],
+      "properties": {
+        "arm_id": { "$ref": "#/$defs/armId" },
+        "role": { "enum": ["baseline", "candidate"] },
+        "release_id": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+        "release_name": { "type": "string", "minLength": 1, "pattern": "^[^\\u0000]+$" },
+        "genome_version": {
+          "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/sha256Digest" }, { "type": "null" }]
+        },
+        "prompt_manifest_digest": {
+          "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/sha256Digest" }, { "type": "null" }]
+        },
+        "bundle_id": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+        "runtime_digest": { "$ref": "prompt-common.schema.json#/$defs/bundleHash" },
+        "runtime_digest_source": { "const": "runner_declared" },
+        "children": {
+          "type": "object",
+          "maxProperties": 64,
+          "propertyNames": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["release_id", "genome_version", "prompt_manifest_digest"],
+            "properties": {
+              "release_id": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+              "genome_version": {
+                "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/sha256Digest" }, { "type": "null" }]
+              },
+              "prompt_manifest_digest": {
+                "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/sha256Digest" }, { "type": "null" }]
+              }
+            }
+          }
+        }
+      }
+    },
+    "datasetRef": {
+      "description": "A frozen dataset version. `digest` and `case_ids_digest` are computed by the server; dataset cases may hold floats, so clients never recompute them.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dataset_id", "version", "digest", "case_count", "case_ids_digest", "provenance"],
+      "properties": {
+        "dataset_id": {
+          "type": "string",
+          "pattern": "^exds_[0-9a-hjkmnp-tv-z]{26}$"
+        },
+        "version": { "$ref": "prompt-common.schema.json#/$defs/versionNumber" },
+        "digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" },
+        "case_count": { "type": "integer", "minimum": 1, "maximum": 5000 },
+        "case_ids_digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" },
+        "provenance": { "enum": ["user_provided", "synthetic", "production_snapshot", "hybrid"] }
+      }
+    },
+    "metricRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metric_id", "direction", "rule", "margin"],
+      "properties": {
+        "metric_id": { "$ref": "#/$defs/metricId" },
+        "direction": { "enum": ["higher_is_better", "lower_is_better"] },
+        "rule": { "enum": ["superiority", "non_inferiority"] },
+        "margin": { "$ref": "#/$defs/signedDecimal" }
+      }
+    }
+  }
+}

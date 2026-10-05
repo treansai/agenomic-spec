@@ -62,6 +62,8 @@ const ARTIFACT_TO_SCHEMA = {
   'prompt-import-plan': { file: 'prompt-import-plan.schema.json', versions: ['v0.4'] },
   'prompts-file': { file: 'prompts-file.schema.json', versions: ['v0.4'] },
   'prompt-file': { file: 'prompt-file.schema.json', versions: ['v0.4'] },
+  'experiment-case': { file: 'experiment-case.schema.json', versions: ['v0.4'] },
+  'experiment-spec': { file: 'experiment-spec.schema.json', versions: ['v0.4'] },
 };
 
 const ajv = new Ajv({ allErrors: true, strict: false });

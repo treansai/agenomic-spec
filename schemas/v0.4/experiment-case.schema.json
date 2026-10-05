@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.4/experiment-case.schema.json",
+  "title": "Agenomic experiment case (v0.4)",
+  "description": "One dataset entry of a prompt experiment, `agenomic.experiment_case/v1` (RFC 0012). Every member except `schema` is always present. `schema` is optional because dataset upload lines (JSONL, one case per line) omit it; the schema id always enters the hash input: `case_digest = \"sha256:\" + hex(sha256(canonical_json({ schema: \"agenomic.experiment_case/v1\", ...case })))`. Case payloads are not restricted to the Agenomic JSON Subset: `input` and `expected` may hold finite floats, so case and dataset digests are computed by the server only and clients never recompute them. A case is at most 256 KiB of canonical JSON, and `case_id` is unique within a dataset version; neither rule is expressible here. Kind `prompt_variables` is accepted by this schema and refused when an experiment is launched.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["case_id", "kind", "input", "expected", "initial_state", "turns", "tags"],
+  "properties": {
+    "schema": { "const": "agenomic.experiment_case/v1" },
+    "case_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "kind": { "enum": ["agent_input", "node_state", "prompt_variables"] },
+    "input": true,
+    "expected": true,
+    "initial_state": { "type": ["object", "null"] },
+    "turns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "oneOf": [
+          {
+            "additionalProperties": false,
+            "required": ["user"],
+            "properties": { "user": { "type": "string" } }
+          },
+          {
+            "additionalProperties": false,
+            "required": ["resume"],
+            "properties": { "resume": true }
+          }
+        ]
+      }
+    },
+    "tags": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$"
+      }
+    }
+  },
+  "if": {
+    "required": ["kind"],
+    "properties": { "kind": { "const": "node_state" } }
+  },
+  "then": {
+    "properties": { "initial_state": { "type": "object" } }
+  }
+}

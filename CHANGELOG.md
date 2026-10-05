@@ -52,6 +52,17 @@ documented here.
   Compatibility and records the open questions they leave, and
   `conformance/README.md` maps the new fixture directories.
 
+- **v0.4 (RFC 0012): experiment documents.** New schemas `experiment-case`
+  (`agenomic.experiment_case/v1`, one dataset entry of a prompt experiment;
+  its `input` and `expected` may hold floats, so case and dataset digests are
+  computed by the server only) and `experiment-spec`
+  (`agenomic.experiment_spec/v1`, the frozen spec of an experiment: two to six
+  arms with exactly one baseline, every number an integer, rates,
+  probabilities and margins as decimal strings, so any implementation
+  recomputes `spec_digest`). Valid fixtures for an agent input case, a node
+  state case and a prompt-only spec, and an invalid spec whose `alpha` is a
+  JSON float.
+
 - **CLI criticality vocabulary.** `agent.criticality` in `genome.yaml` now
   also accepts `low`, `medium`, `high` and `critical`, the values emitted by
   `agm init` and `agm enrich`. The existing `standard`, `sensitive`,

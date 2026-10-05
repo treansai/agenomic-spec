@@ -1,0 +1,7 @@
+{
+  "description": "The frozen spec contains no JSON floats: alpha is a decimal string.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/analysis/alpha"
+  }
+}

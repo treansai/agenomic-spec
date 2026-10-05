@@ -51,3 +51,29 @@ comments.
 - Some vector inputs need exact JSON lexemes (`3.0`, `-0`, `100.0`, a lone
   surrogate escape in R060). Edit those files by hand or with a writer that
   keeps the lexeme; a plain `JSON.stringify` round trip changes them.
+- `experiment-case.schema.json` leaves `input` and `expected` as any JSON
+  instead of the Agenomic JSON Subset: experiment cases may carry user floats,
+  whose canonical form differs across languages. Case and dataset digests are
+  therefore computed by the server only, and no vector recomputes them.
+  `schema` is optional because dataset upload lines omit it; the hash input
+  always includes it.
+- `experiment-spec.schema.json` uses two decimal string definitions:
+  `decimal` (unsigned) for alpha, coverages, rates and gaps, and
+  `signedDecimal` only for metric margins, the one value that may be negative.
+- The frozen spec carries `tool_mode.tool_config_digest`, not the inline tool
+  execution configuration. That configuration holds free JSON values that may
+  contain floats, which would break the integer-only rule and make
+  `spec_digest` non-portable; the digest binds it instead.
+- `aa_test` and `arms[].runtime_digest_source` are spec members although the
+  design example omits them: the promotion gate reads `aa_test` from the
+  frozen spec, and `runtime_digest_source` labels the runtime digest that the
+  runner declares and Agenomic cannot verify.
+- Confounder `axis` is a pattern, not an enum: genome components can grow,
+  and an enum would refuse a new axis in an otherwise valid spec.
+- `rmp_session_id` accepts mixed-case alphanumerics after `rmp_`, because RMP
+  session ids are uppercase ULIDs, unlike the lowercase wire ids of RFC 0012.
+- The spec schema checks shape and single-member bounds only. Rules that
+  relate several members (stage and candidate count, `entry_point` exactly
+  when `level` is `node`, profile and repetitions, the held-out dataset of an
+  exploration, the bootstrap minimum of 20 paired cases) belong to the
+  service, which validates the spec at preflight.
