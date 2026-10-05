@@ -1,0 +1,14 @@
+{
+  "schema_version": "agenomic.hermes.action/v1",
+  "tenant_id": "121dcc70-fc4e-47f3-9dcf-6a947dd1fe60",
+  "agent_ref": "agent://acme/support",
+  "instance_id": "244e2a87-3766-4ba5-b660-22e5370b7a75",
+  "environment": "production",
+  "hermes_session_id": "20261005_120000_ab12cd",
+  "logical_call_id": "call_p",
+  "attempt": 1,
+  "action_type": "tool.call",
+  "tool": "read_file",
+  "arguments_hash": "blake3:42fb6cda861b2288b0eee0fc8b28d13fafebf2a783d833f4198556f6770d239c",
+  "decision": { "outcome": "pause", "effective_mode": "enforce" }
+}

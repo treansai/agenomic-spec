@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.3/hermes-action.schema.json",
+  "title": "Agenomic Hermes action contract (agenomic.hermes.action/v1)",
+  "description": "The action a control plane admits before a Hermes tool executes. Tenant, agent, environment and principal come from the authenticated runtime credential, never from the runtime's request. Decisions (allow, deny, require_approval) are distinct from commands (pause, resume, cancel, quarantine, revoke). An approval and a permit bind the arguments hash; a permit is single use.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "tenant_id", "agent_ref", "instance_id", "environment", "hermes_session_id", "logical_call_id", "attempt", "action_type", "tool", "arguments_hash", "decision"],
+  "properties": {
+    "schema_version": { "const": "agenomic.hermes.action/v1" },
+    "tenant_id": { "type": "string", "format": "uuid" },
+    "principal": { "type": "object", "required": ["kind"], "properties": { "kind": { "const": "hermes_runtime" }, "credential_id": { "type": "string", "format": "uuid" } } },
+    "agent_ref": { "type": "string", "pattern": "^agent://[a-z0-9-]+/[a-z0-9-]+$" },
+    "instance_id": { "type": "string", "format": "uuid" },
+    "environment": { "type": "string", "minLength": 1 },
+    "hermes_session_id": { "type": "string" },
+    "parent_session_id": { "type": "string" },
+    "rmp_session_id": { "type": "string" },
+    "protect_run_id": { "type": "string", "format": "uuid" },
+    "logical_call_id": { "type": "string" },
+    "attempt": { "type": "integer", "minimum": 1 },
+    "action_type": { "enum": ["tool.call", "agent.delegate", "filesystem.operation", "shell.exec", "model.call"] },
+    "tool": { "type": "string" },
+    "destination": { "type": "string" },
+    "schema_hash": { "type": "string", "pattern": "^blake3:[0-9a-f]{64}$" },
+    "arguments_hash": { "type": "string", "pattern": "^blake3:[0-9a-f]{64}$" },
+    "policy_snapshot_digest": { "type": "string" },
+    "genome_digest": { "type": "string" },
+    "decision": {
+      "type": "object", "required": ["outcome", "effective_mode"],
+      "properties": {
+        "outcome": { "enum": ["allow", "deny", "require_approval", "observe"] },
+        "effective_mode": { "enum": ["observe", "shadow", "enforce"] },
+        "counterfactual": { "type": ["object", "null"] },
+        "reason_codes": { "type": "array", "items": { "type": "string" } },
+        "decision_id": { "type": "string", "format": "uuid" },
+        "approval_id": { "type": "string", "format": "uuid" },
+        "permit_ref": { "type": "string" },
+        "expires_at": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

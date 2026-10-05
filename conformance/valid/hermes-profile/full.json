@@ -1,0 +1,18 @@
+{
+  "schema_version": "agenomic.hermes.profile/v1",
+  "capture": { "content": "metadata", "detail_sample_rate": 1.0 },
+  "model": {
+    "allowed": [{ "provider": "custom", "model": "demo-model" }],
+    "max_tokens_ceiling": 4096,
+    "max_request_bytes": 524288,
+    "allow_streaming": true,
+    "upstream": { "base_url": "https://api.scaleway.ai/v1", "connection_id": "6e576b40-7bdb-43ab-b4f3-66c3059a141a" },
+    "token_budget_per_root_session": 200000,
+    "timeout_ms": 120000
+  },
+  "delegation": { "max_depth": 2, "max_children_per_session": 4, "max_concurrent_children": 2, "max_descendants": 8 },
+  "persistence": { "skills": "proposal", "config": "deny", "memory": "allow" },
+  "protected_paths": ["~/.hermes/skills", "~/.hermes/config.yaml"],
+  "approvals": { "non_interactive": "deny" },
+  "heartbeat": { "interval_secs": 15, "stale_after_secs": 60 }
+}
