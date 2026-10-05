@@ -1,0 +1,7 @@
+{
+  "description": "Version numbers start at 1.",
+  "match": {
+    "keyword": "minimum",
+    "instancePath": "/version"
+  }
+}

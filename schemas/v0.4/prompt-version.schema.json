@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.4/prompt-version.schema.json",
+  "title": "Agenomic prompt version (v0.4)",
+  "description": "The stored and exported form of one immutable prompt version, `agenomic.prompt_version/v1` (RFC 0012). Only the nested `content` object is hashed; `content_digest` is its sha256 digest. Identity and metadata stay outside the digest, so identical content shares a digest across prompts and versions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "workspace_id",
+    "prompt_id",
+    "version",
+    "prompt_kind",
+    "content_digest",
+    "content",
+    "metadata"
+  ],
+  "properties": {
+    "schema": { "const": "agenomic.prompt_version/v1" },
+    "workspace_id": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+    "prompt_id": { "$ref": "prompt-common.schema.json#/$defs/promptId" },
+    "version": { "$ref": "prompt-common.schema.json#/$defs/versionNumber" },
+    "prompt_kind": { "$ref": "prompt-common.schema.json#/$defs/promptKind" },
+    "content_digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" },
+    "content": { "$ref": "prompt-content.schema.json" },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parent_version",
+        "change_message",
+        "author",
+        "created_at",
+        "variable_descriptions",
+        "provenance"
+      ],
+      "properties": {
+        "parent_version": {
+          "anyOf": [
+            { "$ref": "prompt-common.schema.json#/$defs/versionNumber" },
+            { "type": "null" }
+          ]
+        },
+        "change_message": { "type": "string", "maxLength": 2000 },
+        "author": {
+          "$ref": "prompt-common.schema.json#/$defs/actor",
+          "oneOf": [
+            { "properties": { "user_id": { "type": "string" }, "api_key_id": { "type": "null" } } },
+            { "properties": { "user_id": { "type": "null" }, "api_key_id": { "type": "string" } } }
+          ]
+        },
+        "created_at": { "$ref": "prompt-common.schema.json#/$defs/timestamp" },
+        "variable_descriptions": {
+          "type": "object",
+          "propertyNames": { "$ref": "prompt-common.schema.json#/$defs/variableName" },
+          "additionalProperties": { "type": "string", "maxLength": 500 }
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "draft_revision",
+            "import_id",
+            "item_id",
+            "source_file",
+            "source_line"
+          ],
+          "properties": {
+            "source": {
+              "enum": [
+                "editor",
+                "api",
+                "import",
+                "family",
+                "declaration",
+                "candidate",
+                "ai_suggestion",
+                "observed_rendered"
+              ]
+            },
+            "draft_revision": { "type": ["integer", "null"], "minimum": 0 },
+            "import_id": {
+              "anyOf": [
+                { "type": "string", "pattern": "^imp_[0-9a-hjkmnp-tv-z]{26}$" },
+                { "type": "null" }
+              ]
+            },
+            "item_id": {
+              "anyOf": [
+                { "type": "string", "pattern": "^cand_[0-9a-f]{16}$" },
+                { "type": "null" }
+              ]
+            },
+            "source_file": {
+              "anyOf": [
+                { "$ref": "prompt-common.schema.json#/$defs/repoPath" },
+                { "type": "null" }
+              ]
+            },
+            "source_line": { "type": ["integer", "null"], "minimum": 1 }
+          }
+        }
+      }
+    }
+  },
+  "if": {
+    "required": ["prompt_kind"],
+    "properties": { "prompt_kind": { "const": "chat" } }
+  },
+  "then": {
+    "properties": { "content": { "properties": { "kind": { "const": "chat" } } } }
+  },
+  "else": {
+    "properties": { "content": { "properties": { "kind": { "const": "text" } } } }
+  }
+}

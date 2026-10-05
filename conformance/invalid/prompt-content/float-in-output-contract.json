@@ -1,0 +1,17 @@
+{
+  "schema": "agenomic.prompt_content/v1",
+  "template_format": "agenomic-fstring/v1",
+  "renderer_version": "1",
+  "kind": "text",
+  "body": "Rate it.",
+  "variables": {},
+  "partials": {},
+  "output_contract": {
+    "type": "json_schema",
+    "json_schema": {
+      "type": "number",
+      "minimum": 0.5
+    }
+  },
+  "fragments": {}
+}

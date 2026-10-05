@@ -16,6 +16,7 @@ const SCHEMA_DIRS = {
   'v0.1': path.join(ROOT, 'schemas', 'v0.1'),
   'v0.2': path.join(ROOT, 'schemas', 'v0.2'),
   'v0.3': path.join(ROOT, 'schemas', 'v0.3'),
+  'v0.4': path.join(ROOT, 'schemas', 'v0.4'),
 };
 
 // Artifact kinds and the schema versions in which they are published.
@@ -50,6 +51,13 @@ const ARTIFACT_TO_SCHEMA = {
   'rmp-enrichment-proposal': { file: 'rmp-enrichment-proposal.schema.json', versions: ['v0.3'] },
   'rmp-alert': { file: 'rmp-alert.schema.json', versions: ['v0.3'] },
   'rmp-report': { file: 'rmp-report.schema.json', versions: ['v0.3'] },
+  'prompt-content': { file: 'prompt-content.schema.json', versions: ['v0.4'] },
+  'prompt-version': { file: 'prompt-version.schema.json', versions: ['v0.4'] },
+  'prompt-manifest': { file: 'prompt-manifest.schema.json', versions: ['v0.4'] },
+  'rendered-prompt': { file: 'rendered-prompt.schema.json', versions: ['v0.4'] },
+  'prompt-artifact-set': { file: 'prompt-artifact-set.schema.json', versions: ['v0.4'] },
+  'prompt-bundle': { file: 'prompt-bundle.schema.json', versions: ['v0.4'] },
+  'execution-binding': { file: 'execution-binding.schema.json', versions: ['v0.4'] },
 };
 
 const ajv = new Ajv({ allErrors: true, strict: false });
@@ -97,6 +105,15 @@ function schemaRefFor(artifact, doc) {
   return { version, file: entry.file, label: version + '/' + entry.file };
 }
 
+let v04SchemasAdded = false;
+function addV04Schemas() {
+  if (v04SchemasAdded) return;
+  v04SchemasAdded = true;
+  for (const name of fs.readdirSync(SCHEMA_DIRS['v0.4']).filter(n => n.endsWith('.schema.json')).sort()) {
+    ajv.addSchema(JSON.parse(fs.readFileSync(path.join(SCHEMA_DIRS['v0.4'], name), 'utf8')));
+  }
+}
+
 const compiledByPath = new Map();
 function getValidator(ref) {
   if (!compiledByPath.has(ref.label)) {
@@ -108,7 +125,12 @@ function getValidator(ref) {
         ajv.addSchema(JSON.parse(fs.readFileSync(registryPath, 'utf8')));
       }
     }
-    compiledByPath.set(ref.label, ajv.compile(schema));
+    if (ref.version === 'v0.4') {
+      addV04Schemas();
+      compiledByPath.set(ref.label, ajv.getSchema(schema.$id));
+    } else {
+      compiledByPath.set(ref.label, ajv.compile(schema));
+    }
   }
   return compiledByPath.get(ref.label);
 }

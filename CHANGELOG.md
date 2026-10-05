@@ -11,6 +11,20 @@ documented here.
 
 ### Added
 
+- **v0.4 (RFC 0012): managed prompts.** New schema directory
+  `schemas/v0.4/` with `prompt-common`, `prompt-content`, `prompt-version`,
+  `prompt-manifest`, `rendered-prompt`, `prompt-artifact-set`,
+  `prompt-bundle` (online and signed exported forms, with the signed
+  `governance` member, `release.legacy` and a mandatory `expires_at` on
+  signed bundles), `execution-binding` and `conformance-vector`. Conformance
+  fixtures under `conformance/{valid,invalid}/` for the seven new artifact
+  kinds. Cross-language conformance vectors under
+  `conformance/vectors/prompts/` (render R001 to R066, template T001 to T069,
+  digest D001 to D028, ref F001 to F054, secrets S001 to S014), pinned by a
+  checksummed `MANIFEST.json` and checked by the new `scripts/vectors.js`,
+  which `npm run validate` runs and which recomputes every digest with
+  `node:crypto`. User guide in `docs/prompts.md`.
+
 - **CLI criticality vocabulary.** `agent.criticality` in `genome.yaml` now
   also accepts `low`, `medium`, `high` and `critical`, the values emitted by
   `agm init` and `agm enrich`. The existing `standard`, `sensitive`,

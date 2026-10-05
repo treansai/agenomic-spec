@@ -1,0 +1,10 @@
+{
+  "description": "Every hashed member is always present; an absent `partials` is written `{}`.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "params": {
+      "missingProperty": "partials"
+    }
+  }
+}

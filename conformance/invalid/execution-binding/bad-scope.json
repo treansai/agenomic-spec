@@ -1,0 +1,43 @@
+{
+  "schema": "agenomic.execution_binding/v1",
+  "binding_id": "bnd_01j9x2a4c6e8g0j2m4p6r8t0v2",
+  "workspace_id": "0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f",
+  "agent_id": "2b1e5c3a-8d4f-4e6a-9b0c-1d2e3f4a5b6c",
+  "thread_key": "thread:sha256:29a937ab201166ce8e61cdb7a17da91d1764d66823f3a7344435ca7b8103f0e9",
+  "scope": "session",
+  "release_id": "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+  "release_name": "av_0042",
+  "genome_version": "sha256:e6083c135fa1a9419b150615393fc03bc4aa9bcaa5db57836ca44feb0025e9a5",
+  "prompt_manifest_digest": "sha256:018530e2a4a6640d0bc5a0df3762a03334b0cd7c7828240b7fae348e028c64aa",
+  "runtime": {
+    "bundle_id": "9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b",
+    "bundle_hash": "blake3:338c00b56a0fda6dc3be33f84c0531fc5724a9c10f689160262e35081ce03b88"
+  },
+  "resolved_from": {
+    "channel": "production",
+    "generation": 12
+  },
+  "children": {
+    "7f3c9a1e-0b2d-4c5e-8f6a-9b0c1d2e3f4a": {
+      "release_id": "d4e5f6a7-b8c9-4d0e-8f1a-2b3c4d5e6f70",
+      "genome_version": "sha256:4f3a8950ee0d00309660f03040b9a8e49423f8596cdffe20f61b1f835e900fcf",
+      "prompt_manifest_digest": "sha256:191cc0b3bafaeb4f9fd9ac2d9dfee013695b256a46224d6f09d94a7d7c05d246",
+      "source": "manifest",
+      "channel": null,
+      "generation": null
+    }
+  },
+  "parent_binding_id": null,
+  "experiment": null,
+  "runtime_client": {
+    "sdk": "agenomic-python",
+    "sdk_version": "0.4.0",
+    "adapter": "langgraph",
+    "adapter_version": "1.2.11"
+  },
+  "created_at": "2026-10-04T21:12:30Z",
+  "created_by": {
+    "user_id": null,
+    "api_key_id": "4f3e2d1c-0b9a-4876-a5b4-c3d2e1f0a9b8"
+  }
+}

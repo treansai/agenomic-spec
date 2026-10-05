@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.4/rendered-prompt.schema.json",
+  "title": "Agenomic rendered prompt (v0.4)",
+  "description": "The `agenomic.rendered_prompt/v1` document (RFC 0012) whose sha256 digest is the `rendered_hash` of one render. Template-rendered messages are kept; placeholder contents are replaced by their item count and history items by `history_count`, so the hash is stable across conversation turns and never contains conversation data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "content_digest", "kind", "text", "messages", "history_count"],
+  "properties": {
+    "schema": { "const": "agenomic.rendered_prompt/v1" },
+    "content_digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" },
+    "kind": { "enum": ["text", "chat"] },
+    "text": { "type": ["string", "null"], "pattern": "^[^\\u0000]*$" },
+    "messages": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "object",
+        "if": { "required": ["role"] },
+        "then": {
+          "additionalProperties": false,
+          "required": ["role", "content"],
+          "properties": {
+            "role": { "enum": ["system", "user", "assistant"] },
+            "content": { "type": "string", "pattern": "^[^\\u0000]*$" }
+          }
+        },
+        "else": {
+          "additionalProperties": false,
+          "required": ["placeholder", "count"],
+          "properties": {
+            "placeholder": { "$ref": "prompt-common.schema.json#/$defs/variableName" },
+            "count": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "history_count": { "type": "integer", "minimum": 0 }
+  },
+  "if": {
+    "required": ["kind"],
+    "properties": { "kind": { "const": "text" } }
+  },
+  "then": {
+    "properties": {
+      "text": { "type": "string" },
+      "messages": { "type": "null" },
+      "history_count": { "const": 0 }
+    }
+  },
+  "else": {
+    "properties": {
+      "text": { "type": "null" },
+      "messages": { "type": "array" }
+    }
+  }
+}

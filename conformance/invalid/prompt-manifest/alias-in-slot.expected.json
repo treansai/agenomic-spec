@@ -1,0 +1,7 @@
+{
+  "description": "Manifests pin immutable versions only; an alias never appears in a manifest.",
+  "match": {
+    "keyword": "additionalProperties",
+    "instancePath": "/slots/planner.system"
+  }
+}

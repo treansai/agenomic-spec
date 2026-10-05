@@ -1,0 +1,10 @@
+{
+  "description": "An exported bundle carries `issuer` and `governance`, so it must also carry `signature`.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "params": {
+      "missingProperty": "signature"
+    }
+  }
+}

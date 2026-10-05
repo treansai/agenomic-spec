@@ -1,0 +1,7 @@
+{
+  "description": "Binding scope is thread or execution.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/scope"
+  }
+}
