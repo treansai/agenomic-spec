@@ -24,6 +24,7 @@ const DOCUMENT_SCHEMAS = {
   'agenomic.prompt_artifact_set/v1': 'prompt-artifact-set.schema.json',
   'agenomic.prompt_bundle/v1': 'prompt-bundle.schema.json',
   'agenomic.execution_binding/v1': 'execution-binding.schema.json',
+  'agenomic.prompt_import_plan/v1': 'prompt-import-plan.schema.json',
 };
 
 const ajv = new Ajv({ allErrors: true, strict: false });
@@ -211,7 +212,8 @@ function checkDigestDocument(v) {
   if (canonical(doc) !== expected.canonical) return 'canonical differs from the recomputed canonical JSON';
   if (sha256(expected.canonical) !== expected.digest) return 'digest differs from the recomputed sha256';
   const schemaFile = DOCUMENT_SCHEMAS[doc.schema];
-  if (schemaFile) {
+  const withoutPlanDigest = input.projection && input.projection.rule === 'without_plan_digest';
+  if (schemaFile && !withoutPlanDigest) {
     const errors = schemaErrors(schemaFile, doc);
     if (errors) return `document fails ${schemaFile}: ${errors}`;
   }
@@ -266,6 +268,12 @@ function checkBundleLoad(v) {
   return null;
 }
 
+function checkPromptsFileYaml(v) {
+  if (!v.expected.ok) return null;
+  const errors = schemaErrors('prompts-file.schema.json', v.expected.json);
+  return errors ? `expected.json fails prompts-file: ${errors}` : null;
+}
+
 function checkVector(full, ids) {
   const rel = relPath(full);
   let v;
@@ -295,6 +303,7 @@ function checkVector(full, ids) {
     if (v.suite === 'render') problem = checkRender(rel, v);
     else if (v.suite === 'template') problem = checkTemplate(rel, v);
     else if (v.suite === 'digest') problem = v.input.operation === 'bundle_load' ? checkBundleLoad(v) : checkDigestDocument(v);
+    else if (v.suite === 'prompts-file-yaml') problem = checkPromptsFileYaml(v);
   } catch (e) {
     problem = e.message;
   }

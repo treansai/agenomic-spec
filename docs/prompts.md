@@ -17,6 +17,10 @@ conformance vectors in
 | `agenomic.prompt_artifact_set/v1` | `prompt-artifact-set.schema.json` | yes, whole | the input of `prompt_bundle_digest` |
 | `agenomic.prompt_bundle/v1` | `prompt-bundle.schema.json` | no (signed when exported) | the exact prompt closure of an agent version, for offline use |
 | `agenomic.execution_binding/v1` | `execution-binding.schema.json` | no | the pin of one thread or execution to an agent version |
+| `agenomic.prompt_discovery_report/v1` | `prompt-discovery-report.schema.json` | yes, whole | what a static scan found in a code base, without the code |
+| `agenomic.prompt_import_plan/v1` | `prompt-import-plan.schema.json` | yes, without `plan_digest` | the reviewable plan computed from a report or a prompts file |
+| `agenomic.prompts_file/v1` | `prompts-file.schema.json` | no (authoring form) | a declarative family of prompts plus the slot mapping of one agent |
+| `agenomic.prompt_file/v1` | `prompt-file.schema.json` | no | one prompt as a local file, for push, pull, render and digest |
 
 Every hashed member is always present: absence is `null`, `{}` or `[]`, never a
 missing key, and unknown members are refused.
@@ -121,6 +125,79 @@ refused when it is published, saved as a draft or imported, with the pattern
 id and position only. A variable whose name looks like a secret (`api_key`,
 `clientSecret`) produces a warning, and its values are redacted wherever they
 are stored or exported.
+
+## Discovering and importing prompts
+
+A static scanner reads source files without importing or executing them and
+writes an `agenomic.prompt_discovery_report/v1`. The report is the only thing
+that leaves the developer's machine: paths are repository-relative, the
+scanned files appear only as sha256 hashes, and every candidate carries a
+location, a proposal (prompt id, kind, slot path, node path, usage) and, when
+it is supported, the extracted `content` with its `content_digest`.
+
+| Candidate status | Meaning | `content` |
+|---|---|---|
+| `supported` | a template the scanner could port exactly | set |
+| `unsupported` | a recognized construct with a refused feature (for example a mustache template) | `null` |
+| `unresolved` | a dynamic construct: an f-string, `.format`, a remote prompt, a call result, a subgraph node | `null` |
+| `blocked_secret` | the template contains a credential; only the pattern id and location are reported | `null` |
+
+`candidate_id` is `cand_` plus the first 16 hex digits of the sha256 of the
+canonical JSON of `{ path, line, column, construct }`, so it is stable across
+rescans of an unchanged file.
+
+The server answers with an `agenomic.prompt_import_plan/v1`: one item per
+candidate, each with a proposed action (`create_prompt`, `create_version`,
+`reuse_version`, `map_slot_only`, `skip` or `blocked`) and a proposed slot.
+Unresolved candidates are always listed with slot status `unresolved` and
+action `skip`: an import never marks a prompt as managed that it could not
+port, and a plan never claims complete coverage. `summary` counts the items
+per action, plus the unresolved ones. Applying a plan cites its
+`plan_digest`, the digest of the plan without that member, so the approval
+binds to exactly the plan that was reviewed.
+
+## Prompt files
+
+An `agenomic.prompts_file/v1` declares a family of prompts and, optionally,
+the slot mapping of one agent. It is an authoring format: `schema`,
+`template_format`, `renderer_version`, `partials`, `output_contract` and
+`fragments` may be omitted from each `content` and take their defaults. A
+fragment entry names a prompt of the same file by `{ prompt_id }`, meaning the
+version this file produces, or an existing version by `{ prompt_id, version }`,
+optionally checked with `content_digest`. File-local fragment references must
+not form a cycle. Servers accept the JSON form only and plan it like a report,
+with `source.kind = "prompts_file"`; such a plan is not stored, so its
+`plan_id` and `created_at` are `null`.
+
+An `agenomic.prompt_file/v1` holds one prompt with its full content, for
+command line tools that push, pull, render and digest a single prompt. Its
+`version` and `content_digest` are written on pull and checked on push.
+
+YAML files follow the `agenomic-yaml/1` profile, so that every YAML parser
+reads them the same way:
+
+| Rule | Result |
+|---|---|
+| documents | exactly one (`yaml_multiple_documents`) |
+| anchors, aliases, merge keys | refused (`yaml_alias_unsupported`) |
+| tags, even `!!str` | refused (`yaml_tag_unsupported`) |
+| duplicate keys | refused (`yaml_duplicate_key`) |
+| plain `true`, `false` | booleans; `yes`, `on`, `Off`, `True` stay strings |
+| plain `null`, `~`, empty | null |
+| plain `[-+]?[0-9]+` | an integer within plus or minus 2^53 - 1 |
+| plain float form (`1.5`, `1e3`, `.inf`) | refused (`float_not_allowed`) |
+| block scalars | YAML 1.2 chomping: the literal indicator keeps one final line feed, its strip form (`-`) none, its keep form (`+`) all |
+
+The `prompts-file-yaml` vectors (Y001 to Y010) pin these rules.
+
+## Release attestations, version 2
+
+A release attestation of an agent version linked to a genome has
+`schema_version: 2` and adds `genome_version`, the agent version digest, and
+`prompt_manifest_digest`, both covered by the signature. Releases without a
+genome keep `schema_version: 1`, and every version 1 attestation stays valid.
+The schema is `schemas/v0.4/release-attestation.schema.json`, which accepts
+both versions.
 
 ## Consuming the conformance vectors
 

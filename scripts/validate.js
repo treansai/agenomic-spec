@@ -29,7 +29,7 @@ const ARTIFACT_TO_SCHEMA = {
   'behavior-contract': { file: 'behavior-contract.schema.json', versions: ['v0.1'] },
   'trace-event': { file: 'trace-event.schema.json', versions: ['v0.1', 'v0.3'] },
   'replay-report': { file: 'replay-report.schema.json', versions: ['v0.1'] },
-  'release-attestation': { file: 'release-attestation.schema.json', versions: ['v0.1'] },
+  'release-attestation': { file: 'release-attestation.schema.json', versions: ['v0.1', 'v0.4'] },
   'atep-event': { file: 'atep-event.schema.json', versions: ['v0.1'] },
   'workflow': { file: 'workflow.schema.json', versions: ['v0.2'] },
   'system': { file: 'system.schema.json', versions: ['v0.2'] },
@@ -58,6 +58,10 @@ const ARTIFACT_TO_SCHEMA = {
   'prompt-artifact-set': { file: 'prompt-artifact-set.schema.json', versions: ['v0.4'] },
   'prompt-bundle': { file: 'prompt-bundle.schema.json', versions: ['v0.4'] },
   'execution-binding': { file: 'execution-binding.schema.json', versions: ['v0.4'] },
+  'prompt-discovery-report': { file: 'prompt-discovery-report.schema.json', versions: ['v0.4'] },
+  'prompt-import-plan': { file: 'prompt-import-plan.schema.json', versions: ['v0.4'] },
+  'prompts-file': { file: 'prompts-file.schema.json', versions: ['v0.4'] },
+  'prompt-file': { file: 'prompt-file.schema.json', versions: ['v0.4'] },
 };
 
 const ajv = new Ajv({ allErrors: true, strict: false });
@@ -96,6 +100,10 @@ function validateTraceV03Custom(doc) {
 function schemaRefFor(artifact, doc) {
   const entry = ARTIFACT_TO_SCHEMA[artifact];
   if (!entry) return null;
+  if (artifact === 'release-attestation') {
+    const version = doc && doc.schema_version === 2 ? 'v0.4' : 'v0.1';
+    return { version, file: entry.file, label: version + '/' + entry.file };
+  }
   const declared = doc && typeof doc.spec_version === 'string'
     ? doc.spec_version.replace(/^agenomic\//, '')
     : null;

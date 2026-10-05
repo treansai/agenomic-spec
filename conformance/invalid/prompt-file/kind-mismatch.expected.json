@@ -1,0 +1,7 @@
+{
+  "description": "A fragment prompt has text content; the prompt-level kind must agree with content.kind.",
+  "match": {
+    "keyword": "const",
+    "instancePath": "/content/kind"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "description": "A discovery report carries repository-relative POSIX paths only; an absolute path would disclose the developer machine layout.",
+  "match": {
+    "keyword": "pattern",
+    "instancePath": "/files/0/path"
+  }
+}

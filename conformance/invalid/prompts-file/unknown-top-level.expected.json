@@ -1,0 +1,10 @@
+{
+  "description": "A prompts file never moves channels; unknown top-level members are refused.",
+  "match": {
+    "keyword": "additionalProperties",
+    "instancePath": "",
+    "params": {
+      "additionalProperty": "channels"
+    }
+  }
+}

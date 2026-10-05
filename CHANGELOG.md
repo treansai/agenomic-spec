@@ -25,6 +25,24 @@ documented here.
   which `npm run validate` runs and which recomputes every digest with
   `node:crypto`. User guide in `docs/prompts.md`.
 
+- **v0.4 (RFC 0012): prompt discovery, import and prompt files.** New
+  schemas `prompt-discovery-report` (the static scanner output, which carries
+  no source code, no absolute path and no secret), `prompt-import-plan`
+  (applied by citing its `plan_digest`; unresolved candidates are always
+  listed as `skip`, never as managed), `prompts-file` (the declarative
+  registration of a prompt family and its slot mapping) and `prompt-file`
+  (the local single-prompt file), with valid and invalid fixtures. New
+  conformance suite `prompts-file-yaml` (Y001 to Y010, Python) pinning the
+  `agenomic-yaml/1` profile for YAML authoring files. The D025 import plan
+  vector is now also validated against its schema.
+
+- **Release attestation version 2.** `schemas/v0.4/release-attestation.schema.json`
+  accepts `schema_version` 1, unchanged, and 2, which adds the required
+  `genome_version` and `prompt_manifest_digest` of agent versions linked to a
+  genome. `scripts/validate.js` validates an attestation whose
+  `schema_version` is 2 against v0.4 and every other attestation against
+  v0.1, so existing attestations validate exactly as before.
+
 - **CLI criticality vocabulary.** `agent.criticality` in `genome.yaml` now
   also accepts `low`, `medium`, `high` and `critical`, the values emitted by
   `agm init` and `agm enrich`. The existing `standard`, `sensitive`,

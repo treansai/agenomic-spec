@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "attestation_type": "release",
+  "agent_id": "agent://acme/support-agent",
+  "release_id": "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+  "bundle_logical_hash": "blake3-merkle-v1:7c85dd31441e2f8c976b48647b0b8741911ad90f5644e5796bf49876cf67ece7",
+  "bundle_archive_hash": "blake3:cacd387607b4f9938d9f0e8aee8a817833475d03ad062dea12b5311832ef48c9",
+  "bundle_hash_algorithm": "blake3-merkle-v1",
+  "prompt_manifest_digest": "sha256:9e60d2cfae4ec4a42006cdb0e1034ca56361bc24c066ce0d408b3dbe0b01d968",
+  "approval_status": "approved",
+  "approvals": [
+    {
+      "approver_role": "maintainer",
+      "status": "approved",
+      "user_id": "8a7b6c5d-4e3f-4a2b-9c1d-0e9f8a7b6c5d",
+      "at": "2026-10-04T21:05:00Z"
+    }
+  ],
+  "issued_at": "2026-10-04T21:06:00Z",
+  "issuer": {
+    "key_id": "orgkey_2026_09",
+    "algorithm": "ed25519"
+  }
+}

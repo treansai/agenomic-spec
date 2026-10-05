@@ -281,7 +281,28 @@
     },
     {
       "if": { "properties": { "suite": { "const": "prompts-file-yaml" } } },
-      "then": { "properties": { "id": { "pattern": "^Y" } } }
+      "then": {
+        "properties": {
+          "id": { "pattern": "^Y" },
+          "input": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["yaml"],
+            "properties": { "yaml": { "type": "string" } }
+          },
+          "expected": {
+            "if": { "properties": { "ok": { "const": true } } },
+            "then": {
+              "additionalProperties": false,
+              "required": ["ok", "json"],
+              "properties": {
+                "ok": { "const": true },
+                "json": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
     }
   ],
   "$defs": {

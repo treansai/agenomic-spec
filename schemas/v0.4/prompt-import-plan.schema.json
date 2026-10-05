@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.4/prompt-import-plan.schema.json",
+  "title": "Agenomic prompt import plan (v0.4)",
+  "description": "The `agenomic.prompt_import_plan/v1` document a server computes from a discovery report, a prompts file or a runtime LangChain import (RFC 0012). Applying a plan cites its `plan_digest`, the digest of the plan without the `plan_digest` member, so an approval binds to exactly the reviewed plan. Every member is always present and unknown members are refused. Unresolved candidates are listed with slot status `unresolved` and action `skip`, never as managed, and the plan never claims complete coverage. A plan computed from a prompts file is not persisted, so its `plan_id` and `created_at` are null and its digest is a function of the file and the server state it reads. `summary` must equal the counts recomputed from `items` (`unresolved` counts the items whose slot status is `unresolved`); JSON Schema cannot express that rule.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_id",
+    "workspace_id",
+    "agent_id",
+    "source",
+    "created_at",
+    "items",
+    "summary",
+    "plan_digest"
+  ],
+  "properties": {
+    "schema": { "const": "agenomic.prompt_import_plan/v1" },
+    "plan_id": {
+      "anyOf": [
+        { "type": "string", "pattern": "^imp_[0-9a-hjkmnp-tv-z]{26}$" },
+        { "type": "null" }
+      ]
+    },
+    "workspace_id": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+    "agent_id": {
+      "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/uuidLower" }, { "type": "null" }]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "digest"],
+      "properties": {
+        "kind": { "enum": ["discovery_report", "prompts_file", "langchain_runtime"] },
+        "digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" }
+      }
+    },
+    "created_at": {
+      "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/timestamp" }, { "type": "null" }]
+    },
+    "items": { "type": "array", "items": { "$ref": "#/$defs/item" } },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "create_prompt",
+        "create_version",
+        "reuse_version",
+        "map_slot_only",
+        "skip",
+        "blocked",
+        "unresolved"
+      ],
+      "properties": {
+        "create_prompt": { "$ref": "#/$defs/count" },
+        "create_version": { "$ref": "#/$defs/count" },
+        "reuse_version": { "$ref": "#/$defs/count" },
+        "map_slot_only": { "$ref": "#/$defs/count" },
+        "skip": { "$ref": "#/$defs/count" },
+        "blocked": { "$ref": "#/$defs/count" },
+        "unresolved": { "$ref": "#/$defs/count" }
+      }
+    },
+    "plan_digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["source"],
+        "properties": { "source": { "properties": { "kind": { "const": "prompts_file" } } } }
+      },
+      "then": {
+        "properties": {
+          "plan_id": { "type": "null" },
+          "created_at": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["source"],
+        "properties": { "source": { "properties": { "kind": { "const": "discovery_report" } } } }
+      },
+      "then": {
+        "properties": {
+          "plan_id": { "type": "string" },
+          "created_at": { "type": "string" }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "count": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+    "slot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slot_path", "node_path", "subagent_id", "usage", "status"],
+      "properties": {
+        "slot_path": {
+          "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/slotPath" }, { "type": "null" }]
+        },
+        "node_path": {
+          "anyOf": [{ "$ref": "prompt-discovery-report.schema.json#/$defs/nodePath" }, { "type": "null" }]
+        },
+        "subagent_id": {
+          "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/uuidLower" }, { "type": "null" }]
+        },
+        "usage": {
+          "anyOf": [{ "$ref": "prompt-discovery-report.schema.json#/$defs/slotUsage" }, { "type": "null" }]
+        },
+        "status": { "enum": ["managed", "discovered", "unresolved", "observed_only", "unused"] }
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_id",
+        "action",
+        "prompt_id",
+        "prompt_kind",
+        "base_version",
+        "content",
+        "content_digest",
+        "existing_version_with_same_digest",
+        "slot",
+        "issues",
+        "secret_findings",
+        "provenance"
+      ],
+      "properties": {
+        "item_id": { "type": "string", "pattern": "^cand_[0-9a-f]{16}$" },
+        "action": {
+          "enum": ["create_prompt", "create_version", "reuse_version", "map_slot_only", "skip", "blocked"]
+        },
+        "prompt_id": {
+          "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/promptId" }, { "type": "null" }]
+        },
+        "prompt_kind": {
+          "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/promptKind" }, { "type": "null" }]
+        },
+        "base_version": {
+          "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/versionNumber" }, { "type": "null" }]
+        },
+        "content": {
+          "anyOf": [{ "$ref": "prompt-content.schema.json" }, { "type": "null" }]
+        },
+        "content_digest": {
+          "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/sha256Digest" }, { "type": "null" }]
+        },
+        "existing_version_with_same_digest": {
+          "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/versionNumber" }, { "type": "null" }]
+        },
+        "slot": {
+          "anyOf": [{ "$ref": "#/$defs/slot" }, { "type": "null" }]
+        },
+        "issues": {
+          "type": "array",
+          "items": { "$ref": "prompt-discovery-report.schema.json#/$defs/issue" }
+        },
+        "secret_findings": {
+          "type": "array",
+          "items": { "$ref": "prompt-discovery-report.schema.json#/$defs/secretFinding" }
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source_file", "source_line"],
+          "properties": {
+            "source_file": {
+              "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/repoPath" }, { "type": "null" }]
+            },
+            "source_line": {
+              "anyOf": [{ "$ref": "prompt-discovery-report.schema.json#/$defs/position" }, { "type": "null" }]
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "content": { "type": "null" } } },
+          "then": { "properties": { "content_digest": { "type": "null" } } },
+          "else": { "properties": { "content_digest": { "type": "string" } } }
+        },
+        {
+          "if": { "properties": { "action": { "const": "blocked" } } },
+          "then": { "properties": { "content": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "action": { "enum": ["create_prompt", "create_version"] } } },
+          "then": {
+            "properties": {
+              "prompt_id": { "type": "string" },
+              "prompt_kind": { "type": "string" },
+              "content": { "type": "object" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "action": { "const": "create_prompt" } } },
+          "then": { "properties": { "base_version": { "type": "null" } } }
+        },
+        {
+          "if": { "properties": { "action": { "const": "create_version" } } },
+          "then": { "properties": { "base_version": { "type": "integer" } } }
+        },
+        {
+          "if": { "properties": { "action": { "const": "reuse_version" } } },
+          "then": {
+            "properties": {
+              "prompt_id": { "type": "string" },
+              "content_digest": { "type": "string" },
+              "existing_version_with_same_digest": { "type": "integer" }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["slot"],
+            "properties": {
+              "slot": { "type": "object", "required": ["status"], "properties": { "status": { "const": "unresolved" } } }
+            }
+          },
+          "then": { "properties": { "action": { "const": "skip" } } }
+        },
+        {
+          "if": {
+            "required": ["prompt_kind", "content"],
+            "properties": { "prompt_kind": { "const": "chat" }, "content": { "type": "object" } }
+          },
+          "then": { "properties": { "content": { "properties": { "kind": { "const": "chat" } } } } }
+        },
+        {
+          "if": {
+            "required": ["prompt_kind", "content"],
+            "properties": { "prompt_kind": { "enum": ["text", "fragment"] }, "content": { "type": "object" } }
+          },
+          "then": { "properties": { "content": { "properties": { "kind": { "const": "text" } } } } }
+        }
+      ]
+    }
+  }
+}

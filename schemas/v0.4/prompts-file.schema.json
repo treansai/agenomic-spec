@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.4/prompts-file.schema.json",
+  "title": "Agenomic prompts file (v0.4)",
+  "description": "The authoring document `agenomic.prompts_file/v1` (RFC 0012): a desired state for a family of prompts plus the slot mapping of one agent. It is not hashed. A server accepts it as JSON only; YAML files are converted by the client under the `agenomic-yaml/1` profile, which the `prompts-file-yaml` conformance vectors pin. Each `content` is completed into a full `agenomic.prompt_content/v1`: `schema`, `template_format`, `renderer_version`, `partials`, `output_contract` and `fragments` may be omitted and default to `agenomic.prompt_content/v1`, `agenomic-fstring/v1`, the string `\"1\"`, an empty map, null and an empty map. A fragment entry is `{ prompt_id }` (a prompt defined in the same file, at the version this file produces), `{ prompt_id, version }` (an existing version) or `{ prompt_id, version, content_digest }` (checked). File-local fragment references must not form a cycle (`fragment_cycle`); JSON Schema cannot express that rule.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "prompts"],
+  "properties": {
+    "schema": { "const": "agenomic.prompts_file/v1" },
+    "agent_id": {
+      "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/uuidLower" }, { "type": "null" }]
+    },
+    "prompts": { "type": "array", "items": { "$ref": "#/$defs/prompt" } },
+    "slots": { "type": "array", "maxItems": 256, "items": { "$ref": "#/$defs/slot" } }
+  },
+  "if": {
+    "required": ["slots"],
+    "properties": { "slots": { "minItems": 1 } }
+  },
+  "then": {
+    "required": ["agent_id"],
+    "properties": { "agent_id": { "type": "string" } }
+  },
+  "$defs": {
+    "prompt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prompt_id", "kind", "name", "content"],
+      "properties": {
+        "prompt_id": { "$ref": "prompt-common.schema.json#/$defs/promptId" },
+        "kind": { "$ref": "prompt-common.schema.json#/$defs/promptKind" },
+        "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "tags": {
+          "type": "array",
+          "maxItems": 32,
+          "items": { "type": "string", "minLength": 1, "maxLength": 200 }
+        },
+        "expected_latest_version": {
+          "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/versionNumber" }, { "type": "null" }]
+        },
+        "change_message": { "type": "string", "maxLength": 2000 },
+        "content": { "$ref": "#/$defs/content" }
+      },
+      "if": {
+        "required": ["kind"],
+        "properties": { "kind": { "const": "chat" } }
+      },
+      "then": { "properties": { "content": { "properties": { "kind": { "const": "chat" } } } } },
+      "else": { "properties": { "content": { "properties": { "kind": { "const": "text" } } } } }
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "body", "variables"],
+      "properties": {
+        "schema": { "const": "agenomic.prompt_content/v1" },
+        "template_format": { "const": "agenomic-fstring/v1" },
+        "renderer_version": { "const": "1" },
+        "kind": { "enum": ["text", "chat"] },
+        "body": { "type": ["string", "array"] },
+        "variables": { "$ref": "prompt-content.schema.json#/properties/variables" },
+        "partials": { "$ref": "prompt-content.schema.json#/properties/partials" },
+        "output_contract": { "$ref": "prompt-content.schema.json#/properties/output_contract" },
+        "fragments": {
+          "type": "object",
+          "maxProperties": 32,
+          "propertyNames": { "$ref": "prompt-common.schema.json#/$defs/variableName" },
+          "additionalProperties": { "$ref": "#/$defs/fragmentRef" }
+        }
+      },
+      "if": {
+        "required": ["kind"],
+        "properties": { "kind": { "const": "text" } }
+      },
+      "then": {
+        "properties": { "body": { "$ref": "prompt-common.schema.json#/$defs/templateString" } }
+      },
+      "else": {
+        "properties": {
+          "body": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 256,
+            "items": { "$ref": "prompt-common.schema.json#/$defs/chatEntry" }
+          }
+        }
+      }
+    },
+    "fragmentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prompt_id"],
+      "properties": {
+        "prompt_id": { "$ref": "prompt-common.schema.json#/$defs/promptId" },
+        "version": { "$ref": "prompt-common.schema.json#/$defs/versionNumber" },
+        "content_digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" }
+      },
+      "dependentRequired": { "content_digest": ["version"] }
+    },
+    "slot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slot_path", "usage", "prompt_id"],
+      "properties": {
+        "slot_path": { "$ref": "prompt-common.schema.json#/$defs/slotPath" },
+        "node_path": {
+          "anyOf": [{ "$ref": "prompt-discovery-report.schema.json#/$defs/nodePath" }, { "type": "null" }]
+        },
+        "subagent_id": {
+          "anyOf": [{ "$ref": "prompt-common.schema.json#/$defs/uuidLower" }, { "type": "null" }]
+        },
+        "usage": { "$ref": "prompt-discovery-report.schema.json#/$defs/slotUsage" },
+        "prompt_id": { "$ref": "prompt-common.schema.json#/$defs/promptId" }
+      }
+    }
+  }
+}

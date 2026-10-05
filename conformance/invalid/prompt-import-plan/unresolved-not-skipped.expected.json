@@ -1,0 +1,7 @@
+{
+  "description": "An unresolved candidate is listed with action skip, never mapped or managed by the plan.",
+  "match": {
+    "keyword": "const",
+    "instancePath": "/items/3/action"
+  }
+}
