@@ -508,9 +508,13 @@ SDK idiomatic and dependency-free, at the cost of maintaining the vectors.
 - The numeric limits (65 536 template code points, 262 144 content bytes,
   256 expansions, 256 slots, 4096 bundle prompts) were chosen without
   production data.
-- Experiment documents build on these documents; their schemas follow in a
-  later revision of v0.4. The discovery report, import plan, prompts file and
-  prompt file schemas are part of v0.4 (see Compatibility).
+- Experiment cases may carry floats, whose canonical form differs across
+  languages, so case and dataset digests are computed by the server only and
+  no vector pins them. The frozen experiment spec stays in the Agenomic JSON
+  Subset, so any implementation recomputes `spec_digest`, but its schema checks
+  shape and single-member bounds only: rules that relate several members are
+  validated by the server. The discovery, import and experiment document
+  schemas are part of v0.4 (see Compatibility).
 - An import plan computed from a prompts file has no member for the revision
   of the agent's slot declarations, although applying it may rewrite them.
   Servers check that revision as a separate precondition of the apply call; a
@@ -555,8 +559,9 @@ The change is additive. It adds a new schema directory, `schemas/v0.4/`, with
 `rendered-prompt`, `prompt-artifact-set`, `prompt-bundle`,
 `execution-binding` and `conformance-vector` schemas; the discovery and import
 schemas `prompt-discovery-report`, `prompt-import-plan`, `prompts-file` and
-`prompt-file`; and a v0.4 `release-attestation` schema. It adds conformance
-fixtures for the eleven new artifact kinds and for version 2 attestations, and
+`prompt-file`; the experiment schemas `experiment-case` and `experiment-spec`;
+and a v0.4 `release-attestation` schema. It adds conformance
+fixtures for the thirteen new artifact kinds and for version 2 attestations, and
 the six vector suites. No schema of an earlier version, no other RFC and no
 existing fixture changes. Readers of earlier versions ignore the new
 documents, but refuse a version 2 attestation (see below). Renderer version `"1"` and the secret pattern set

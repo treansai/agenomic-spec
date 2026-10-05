@@ -58,6 +58,8 @@ schema:
 | `prompt-import-plan/` | `schemas/v0.4/prompt-import-plan.schema.json` |
 | `prompts-file/`       | `schemas/v0.4/prompts-file.schema.json`     |
 | `prompt-file/`        | `schemas/v0.4/prompt-file.schema.json`      |
+| `experiment-case/`    | `schemas/v0.4/experiment-case.schema.json`  |
+| `experiment-spec/`    | `schemas/v0.4/experiment-spec.schema.json`  |
 
 For artifact kinds published in more than one schema version, the
 fixture's own `spec_version` selects the directory: for `genome`,

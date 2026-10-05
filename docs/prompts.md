@@ -21,6 +21,8 @@ conformance vectors in
 | `agenomic.prompt_import_plan/v1` | `prompt-import-plan.schema.json` | yes, without `plan_digest` | the reviewable plan computed from a report or a prompts file |
 | `agenomic.prompts_file/v1` | `prompts-file.schema.json` | no (authoring form) | a declarative family of prompts plus the slot mapping of one agent |
 | `agenomic.prompt_file/v1` | `prompt-file.schema.json` | no | one prompt as a local file, for push, pull, render and digest |
+| `agenomic.experiment_case/v1` | `experiment-case.schema.json` | by the server only, always with `schema` (cases may hold floats) | one dataset entry of a prompt experiment; dataset upload lines omit `schema` |
+| `agenomic.experiment_spec/v1` | `experiment-spec.schema.json` | yes, without `identity` | the frozen spec of one experiment: arms, dataset, tool mode, evaluators, metrics, analysis and budgets |
 
 Every hashed member is always present: absence is `null`, `{}` or `[]`, never a
 missing key, and unknown members are refused.
