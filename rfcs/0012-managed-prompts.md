@@ -455,10 +455,12 @@ id.
 
 ### Conformance vectors
 
-`conformance/vectors/prompts/` holds five suites (render R001 to R066,
+`conformance/vectors/prompts/` holds six suites (render R001 to R066,
 template T001 to T069, digest D001 to D028, ref F001 to F054, secrets S001 to
-S014), pinned by a checksummed `MANIFEST.json` and checked by
-`scripts/vectors.js`, which recomputes every digest. Implementations vendor the
+S014, and prompts-file-yaml Y001 to Y010, which pins the `agenomic-yaml/1`
+profile of YAML authoring files for Python), pinned by a checksummed
+`MANIFEST.json` and checked by `scripts/vectors.js`, which recomputes every
+digest. Implementations vendor the
 directory with a lock file and run every vector that names them. The vector
 README defines the file format and the matching rules.
 
@@ -506,8 +508,24 @@ SDK idiomatic and dependency-free, at the cost of maintaining the vectors.
 - The numeric limits (65 536 template code points, 262 144 content bytes,
   256 expansions, 256 slots, 4096 bundle prompts) were chosen without
   production data.
-- Discovery reports, import plans, YAML prompt files and experiment documents
-  build on these documents; their schemas follow in a later revision of v0.4.
+- Experiment documents build on these documents; their schemas follow in a
+  later revision of v0.4. The discovery report, import plan, prompts file and
+  prompt file schemas are part of v0.4 (see Compatibility).
+- An import plan computed from a prompts file has no member for the revision
+  of the agent's slot declarations, although applying it may rewrite them.
+  Servers check that revision as a separate precondition of the apply call; a
+  later plan version may carry it, which would change the hashed member set
+  that vector D025 pins.
+- Only Python consumes the `prompts-file-yaml` vectors. Other implementations
+  accept the JSON form of a prompts file until they have a YAML parser that
+  works at the event level, which the `agenomic-yaml/1` profile needs to refuse
+  aliases, tags and duplicate keys.
+- Discovery covers Python sources (`scanner.python_grammar` is required), and
+  neither the scanner nor the import rewrites source code: replacing a
+  discovered string by a managed reference is left to the developer.
+- A declared subagent selected by an explicit release cannot yet be pinned in
+  an execution binding: `children[*].source` admits `manifest` and `channel`
+  only. Pinning it needs a `release` source.
 
 ## Security considerations
 
@@ -535,11 +553,29 @@ SDK idiomatic and dependency-free, at the cost of maintaining the vectors.
 The change is additive. It adds a new schema directory, `schemas/v0.4/`, with
 `prompt-common`, `prompt-content`, `prompt-version`, `prompt-manifest`,
 `rendered-prompt`, `prompt-artifact-set`, `prompt-bundle`,
-`execution-binding` and `conformance-vector` schemas, conformance fixtures for
-the seven new artifact kinds and the vector suites. No existing schema, RFC or
-fixture changes. Readers of earlier versions ignore the new documents.
-Renderer version `"1"` and the secret pattern set `agenomic-secrets/1` are
-frozen by the vectors: any output change requires new identifiers.
+`execution-binding` and `conformance-vector` schemas; the discovery and import
+schemas `prompt-discovery-report`, `prompt-import-plan`, `prompts-file` and
+`prompt-file`; and a v0.4 `release-attestation` schema. It adds conformance
+fixtures for the eleven new artifact kinds and for version 2 attestations, and
+the six vector suites. No schema of an earlier version, no other RFC and no
+existing fixture changes. Readers of earlier versions ignore the new
+documents, but refuse a version 2 attestation (see below). Renderer version `"1"` and the secret pattern set
+`agenomic-secrets/1` are frozen by the vectors: any output change requires new
+identifiers.
+
+Release attestations keep the RFC 0008 format and signature. The v0.4 schema
+accepts `schema_version` 1, unchanged, and 2, which adds the required
+`genome_version` and `prompt_manifest_digest` of an agent version linked to a
+genome. Validators pick the schema from `schema_version`, since attestations
+carry no `spec_version`: 2 selects v0.4, anything else v0.1, so every version 1
+attestation validates exactly as before. A verifier that knows only the v0.1
+schema refuses a version 2 attestation, whose `schema_version` is not the
+constant 1 there, so verifiers adopt v0.4 before an issuer emits version 2.
+Releases without a genome keep version 1.
+
+Implementations that vendor the vectors must know the `prompts-file-yaml`
+suite, even to skip it by `consumers`, and record the new `MANIFEST.json` hash
+in their lock file.
 
 ## References
 

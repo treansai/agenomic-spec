@@ -43,6 +43,15 @@ documented here.
   `schema_version` is 2 against v0.4 and every other attestation against
   v0.1, so existing attestations validate exactly as before.
 
+- **Discovery, import and attestation version 2 documentation.**
+  `docs/prompts.md` walks through the discovery report and the import plan
+  with excerpts of the conformance fixtures (candidate and item ids, actions,
+  `summary`, recomputing `plan_digest`, the preconditions of an apply).
+  `docs/attestations.md` describes `schema_version: 2` and the checks it adds.
+  RFC 0012 lists the discovery, import and attestation schemas under
+  Compatibility and records the open questions they leave, and
+  `conformance/README.md` maps the new fixture directories.
+
 - **CLI criticality vocabulary.** `agent.criticality` in `genome.yaml` now
   also accepts `low`, `medium`, `high` and `critical`, the values emitted by
   `agm init` and `agm enrich`. The existing `standard`, `sensitive`,
@@ -50,8 +59,8 @@ documented here.
 
 - **Review · Monitor · Protect (RMP) artifacts.** Five new v0.3 schemas for
   the continuous safety loop: `rmp-test-scenario` (structured Review
-  scenarios with provenance — `manual`, `generated`, `incident_derived`,
-  `monitor_derived`, `protect_derived`, `user_provided` — expected
+  scenarios with provenance (`manual`, `generated`, `incident_derived`,
+  `monitor_derived`, `protect_derived`, `user_provided`), expected
   outputs/tool calls/intent, forbidden behaviors, policy expectations, and
   evidence/dataset references), `rmp-risk-matrix` (typed risk items with
   likelihood × impact, impact drivers, associated risks, scenario coverage,
@@ -76,25 +85,25 @@ documented here.
   `conformance/valid/{genome,agent-lock}/huggingface.yaml`, and provider
   reference `docs/providers/huggingface.md` (provider name `huggingface`
   with aliases `hf`/`hugging_face`, env vars `HUGGINGFACE_API_TOKEN` /
-  `HF_TOKEN`, security notes — tokens are never stored in artifacts and
+  `HF_TOKEN`, security notes: tokens are never stored in artifacts and
   endpoint references are REDACTED `scheme://host[/path]`).
-- **v0.3: online tracking.** Adds `schemas/v0.3/tracking-session.schema.json`, `schemas/v0.3/tracking-event.schema.json`, and `schemas/v0.3/tracking-report.schema.json` for real-time monitoring of production agents (drift, loops, intent shifts, runtime-harness / policy / behavior-contract violations). Tracking events are a production-time projection of the canonical run trace (RFC 0010) and ATEP (RFC 0003) event models — same dotted vocabulary, `sequence_number`, `parent_event_id`, content `*_hash` fields, a `prev_event_hash`/`event_hash` hash-link, and an optional detached signature. The tracking report is the tracking analogue of the replay report, content-addressed with a `report_hash`. See `docs/online-tracking.md`. Conformance fixtures under `conformance/{valid,invalid}/tracking-{session,event,report}/`.
+- **v0.3: online tracking.** Adds `schemas/v0.3/tracking-session.schema.json`, `schemas/v0.3/tracking-event.schema.json`, and `schemas/v0.3/tracking-report.schema.json` for real-time monitoring of production agents (drift, loops, intent shifts, runtime-harness / policy / behavior-contract violations). Tracking events are a production-time projection of the canonical run trace (RFC 0010) and ATEP (RFC 0003) event models: same dotted vocabulary, `sequence_number`, `parent_event_id`, content `*_hash` fields, a `prev_event_hash`/`event_hash` hash-link, and an optional detached signature. The tracking report is the tracking analogue of the replay report, content-addressed with a `report_hash`. See `docs/online-tracking.md`. Conformance fixtures under `conformance/{valid,invalid}/tracking-{session,event,report}/`.
 - **v0.3 (RFC 0011): behavioral contracts / policy DSL.** Adds `schemas/v0.3/policy.schema.json` encoding an ABC contract `C=(P,I,G,R)`: `policy_id`, `type`, `scope`, `rules[]` with `modality ∈ {forbidden, obligation, permission, temporal_invariant}` and ABC `aspect ∈ {precondition, invariant, guarantee}`, `when`/`then` predicates, a past-time PLTL `formula`, an `enforce` action, a `recovery` block (R), and `(p,δ,k)` `satisfaction` with drift parameters `α,γ` (`D*=α/γ`). Conformance fixtures under `conformance/{valid,invalid}/policy/`.
 - **v0.3 (RFC 0010): canonical run traces.** Adds intra-run event hash chaining, causal execution graph, evidence package, event registry, replay taxonomy, conformance fixtures, and a trace-chain verifier.
 
 - **v0.2 (RFC 0009): workflows and multi-agent systems.** New schema
   overlay directory `schemas/v0.2/` with:
-  - `workflow.schema.json` — declarative workflows: agent/tool/human/
+  - `workflow.schema.json`: declarative workflows: agent/tool/human/
     wait/sub-workflow/loop steps, `depends_on` DAG, `when` guards,
     retries, timeouts, signals, triggers, escalation rules;
-  - `system.schema.json` — multi-agent systems: member roles with
+  - `system.schema.json`: multi-agent systems: member roles with
     autonomy envelopes, orchestration styles (pipeline, graph,
     supervisor, swarm, custom) with engine hints, shared state, signals,
     owned workflows, communication guardrails, escalation rules,
     `forbidden_autonomy`;
-  - `genome.schema.json` (v0.2) — v0.1 genome plus optional `triggers`,
+  - `genome.schema.json` (v0.2): v0.1 genome plus optional `triggers`,
     `autonomy`, `guardrails`, `escalation_rules`, and `collaboration`.
-- RFC 0009 (Draft) — Workflows and Multi-Agent Systems.
+- RFC 0009 (Draft): Workflows and Multi-Agent Systems.
 - Example bundles `claims-orchestra` (multi-agent system) and
   `guest-claims-pipeline` (staged LLM workflow).
 - Conformance fixtures for `workflow`, `system`, and the v0.2 genome;

@@ -128,12 +128,80 @@ are stored or exported.
 
 ## Discovering and importing prompts
 
-A static scanner reads source files without importing or executing them and
-writes an `agenomic.prompt_discovery_report/v1`. The report is the only thing
-that leaves the developer's machine: paths are repository-relative, the
-scanned files appear only as sha256 hashes, and every candidate carries a
-location, a proposal (prompt id, kind, slot path, node path, usage) and, when
-it is supported, the extracted `content` with its `content_digest`.
+Importing existing prompts takes four steps:
+
+1. A static scanner reads the source files without importing or executing
+   them and writes an `agenomic.prompt_discovery_report/v1`.
+2. The report, never the source code, is uploaded. The server answers with an
+   `agenomic.prompt_import_plan/v1` that proposes one action per candidate.
+3. A person reviews the plan and decides each item.
+4. The apply call cites the plan's `plan_digest`, so it writes exactly the
+   plan that was reviewed.
+
+Neither the scanner nor the import ever modifies a source file. Replacing a
+string constant by a managed reference stays a change the developer makes.
+
+The excerpts below come from the conformance fixtures
+[`valid/prompt-discovery-report/mixed-statuses.json`](../conformance/valid/prompt-discovery-report/mixed-statuses.json)
+and
+[`valid/prompt-import-plan/from-discovery-report.json`](../conformance/valid/prompt-import-plan/from-discovery-report.json).
+The plan is the one a server computes from that report.
+
+### The discovery report
+
+The report is the only thing that leaves the developer's machine: paths are
+repository-relative, the scanned files appear only as sha256 hashes, and
+source text appears only as the extracted templates. One supported candidate,
+with the report header and one file entry:
+
+```json
+{
+  "schema": "agenomic.prompt_discovery_report/v1",
+  "scanner": { "name": "agenomic-python", "version": "0.4.0", "python_grammar": "3.10", "secret_patterns": "agenomic-secrets/1" },
+  "root": { "label": "support-agent", "vcs": { "kind": "git", "commit": "fda6e0b1853563d3aa6593712c0d4a1ae85cb069" } },
+  "generated_at": "2026-10-04T21:30:00Z",
+  "limits": { "max_files": 4000, "max_file_bytes": 524288 },
+  "files": [
+    { "path": "app/prompts.py", "sha256": "sha256:82daeaa56356c06c8c08180a907acca0f2212cc5197f50b2512a8efd6ee86279", "status": "scanned", "skip_reason": null }
+  ],
+  "candidates": [
+    {
+      "candidate_id": "cand_f094f4c2e661f8ba",
+      "status": "supported",
+      "construct": "python.string_constant",
+      "source": { "path": "app/prompts.py", "line": 12, "column": 17, "end_line": 15, "end_column": 4, "symbol": "WRITER_PROMPT", "enclosing_function": null },
+      "proposal": { "prompt_id": "prm_support_writer", "prompt_kind": "text", "slot_path": "writer.instructions", "node_path": "writer", "usage": "instructions" },
+      "content": {
+        "schema": "agenomic.prompt_content/v1",
+        "template_format": "agenomic-fstring/v1",
+        "renderer_version": "1",
+        "kind": "text",
+        "body": "Write a short answer to {question}.\nKeep it under 120 words.",
+        "variables": { "question": { "type": "string", "required": true } },
+        "partials": {},
+        "output_contract": null,
+        "fragments": {}
+      },
+      "content_digest": "sha256:66cbaaecfb9b9a20c4f8feb1e3a679f7f1c216995e15672b553b8aaf80f919f3",
+      "issues": [],
+      "secret_findings": []
+    }
+  ]
+}
+```
+
+| Member | Rule |
+|---|---|
+| `scanner` | the scanner name and version, the Python grammar it parsed, and the secret pattern set it applied |
+| `root.label` | free text of at most 128 code points, never an absolute path (a leading `/`, `\`, `~` or drive letter is refused) |
+| `root.vcs` | `null` or `{ "kind": "git", "commit": <40 hex> }` |
+| `files[].path`, `source.path` | repository-relative POSIX path: no leading `/`, no `..` segment, no backslash |
+| `files[].sha256` | the sha256 of the file bytes, which lets a server detect that a plan went stale |
+| `files[].status`, `skip_reason` | `scanned` with `null`, or `skipped` with `too_large`, `syntax_error`, `not_utf8`, `excluded` or `limit_reached` |
+| `source.line`, `source.column` | 1-based; columns count code points |
+| `proposal` | the proposed prompt id, prompt kind, slot path, node path and slot usage (`system`, `instructions`, `user`, `chat`, `tool_description` or `other`); `node_path` comes only from the graph node rules, never from a guess |
+| `issues[]` | `{ code, severity, line, column, message }` with severity `error`, `warning` or `info`; the message never quotes source text |
+| `secret_findings[]` | `{ pattern, line, column, length }`: the pattern id and a location, never the matched text |
 
 | Candidate status | Meaning | `content` |
 |---|---|---|
@@ -142,19 +210,107 @@ it is supported, the extracted `content` with its `content_digest`.
 | `unresolved` | a dynamic construct: an f-string, `.format`, a remote prompt, a call result, a subgraph node | `null` |
 | `blocked_secret` | the template contains a credential; only the pattern id and location are reported | `null` |
 
+The `construct` names what the scanner recognized: a LangChain prompt,
+message or message template, the prompt of a LangGraph or LangChain agent
+constructor, a module string constant, a graph node that runs a subgraph, or
+`dynamic`. A `dynamic` construct is always `unresolved`. A graph node backed by
+a compiled subgraph or an agent constructor is a `langgraph.subagent_node`
+candidate: always `unresolved`, with a `node_path` and the issue
+`subagent_unmapped`, until someone maps it to a child agent. Issue codes are
+lowercase identifiers, for example `python_fstring`, `dynamic_template`,
+`remote_prompt`, `unsupported_template_format`, `node_unresolved`,
+`secret_detected` or a template syntax reason such as `format_spec`.
+
 `candidate_id` is `cand_` plus the first 16 hex digits of the sha256 of the
 canonical JSON of `{ path, line, column, construct }`, so it is stable across
-rescans of an unchanged file.
+rescans of an unchanged file. For the planner candidate of the fixture, the
+canonical JSON is
+`{"column":18,"construct":"langchain.chat_prompt_template","line":42,"path":"app/graph.py"}`
+and its id is `cand_2a913ea2ec842236`.
 
-The server answers with an `agenomic.prompt_import_plan/v1`: one item per
-candidate, each with a proposed action (`create_prompt`, `create_version`,
-`reuse_version`, `map_slot_only`, `skip` or `blocked`) and a proposed slot.
-Unresolved candidates are always listed with slot status `unresolved` and
-action `skip`: an import never marks a prompt as managed that it could not
-port, and a plan never claims complete coverage. `summary` counts the items
-per action, plus the unresolved ones. Applying a plan cites its
-`plan_digest`, the digest of the plan without that member, so the approval
-binds to exactly the plan that was reviewed.
+The report is hashed whole. Its digest is the `source.digest` of every plan
+computed from it.
+
+### The import plan
+
+The server answers with one item per candidate, each with a proposed action
+and a proposed slot. The item that the fixture plan computes for the candidate
+above:
+
+```json
+{
+  "item_id": "cand_f094f4c2e661f8ba",
+  "action": "create_prompt",
+  "prompt_id": "prm_support_writer",
+  "prompt_kind": "text",
+  "base_version": null,
+  "content": { "schema": "agenomic.prompt_content/v1", "...": "the candidate content, unchanged" },
+  "content_digest": "sha256:66cbaaecfb9b9a20c4f8feb1e3a679f7f1c216995e15672b553b8aaf80f919f3",
+  "existing_version_with_same_digest": null,
+  "slot": { "slot_path": "writer.instructions", "node_path": "writer", "subagent_id": null, "usage": "instructions", "status": "discovered" },
+  "issues": [],
+  "secret_findings": [],
+  "provenance": { "source_file": "app/prompts.py", "source_line": 12 }
+}
+```
+
+| Action | Meaning | Members it requires |
+|---|---|---|
+| `create_prompt` | a new prompt, version 1 | `prompt_id`, `prompt_kind`, `content`; `base_version` is `null` |
+| `create_version` | a new version of an existing prompt | `prompt_id`, `prompt_kind`, `content`, and `base_version`, the latest version when the plan was computed |
+| `reuse_version` | a version with the same `content_digest` is already published; nothing is created | `prompt_id`, `content_digest`, `existing_version_with_same_digest` |
+| `map_slot_only` | the slot is mapped, no prompt is written | |
+| `skip` | nothing is written | |
+| `blocked` | a secret, a refused construct or invalid content; nothing can be written | `content` is `null` |
+
+- `content` and `content_digest` are `null` together, and `prompt_kind`
+  agrees with `content.kind` (`chat` for a chat prompt, `text` or `fragment`
+  for text content).
+- `slot` is `{ slot_path, node_path, subagent_id, usage, status }`, with status
+  `managed`, `discovered`, `unresolved`, `observed_only` or `unused`.
+- Unresolved candidates are always listed with slot status `unresolved` and
+  action `skip`: an import never marks a prompt as managed that it could not
+  port, and a plan never claims complete coverage.
+- `summary` counts the items per action, plus `unresolved`, the number of items
+  whose slot status is `unresolved`. It is hashed and must equal the counts
+  recomputed from `items`. The fixture plan counts one `create_prompt`, one
+  `create_version`, one `reuse_version`, two `skip` (both unresolved) and two
+  `blocked` (the secret and the mustache template).
+
+`plan_digest` is the digest of the plan without its `plan_digest` member
+(vector D025). To check it, drop the member and hash the rest:
+
+```sh
+node -e 'const fs = require("fs"); const p = JSON.parse(fs.readFileSync(process.argv[1], "utf8")); delete p.plan_digest; fs.writeFileSync(process.argv[2], JSON.stringify(p))' \
+  conformance/valid/prompt-import-plan/from-discovery-report.json /tmp/plan-body.json
+node scripts/vectors.js --compute /tmp/plan-body.json
+```
+
+The printed digest equals the fixture's `plan_digest`
+(`sha256:13d9302f58ce3b2aaf9b6cd13e6f5c2c33f39bcf544232b99633f13ff0672ada`).
+
+### Applying a plan
+
+An apply call cites `plan_digest` and decides each item. A server applies
+nothing when the cited digest differs from the plan it computed, when a
+`create_version` item's `base_version` is no longer the latest version, or
+when a prompts file's `expected_latest_version` no longer matches; each of
+these is `prompt_import_plan_stale`. A stored plan is applied at most once.
+
+`source.kind` says what the plan was computed from:
+
+| `source.kind` | `plan_id`, `created_at` | `item_id` |
+|---|---|---|
+| `discovery_report` | set: the plan is stored until it is applied | the `candidate_id` |
+| `prompts_file` | `null`: the plan is not stored, and the apply call recomputes it and compares the digest | `cand_` plus the first 16 hex digits of the sha256 of the UTF-8 bytes of the `prompt_id` |
+
+The schema also reserves `langchain_runtime` for templates imported from a
+running LangChain application.
+
+The plan does not carry the revision of the agent's slot declarations.
+Applying a prompts file that declares slots therefore also states the slot
+revision it was planned against, as a separate precondition, and a moved
+revision refuses the apply.
 
 ## Prompt files
 
@@ -197,7 +353,8 @@ A release attestation of an agent version linked to a genome has
 `prompt_manifest_digest`, both covered by the signature. Releases without a
 genome keep `schema_version: 1`, and every version 1 attestation stays valid.
 The schema is `schemas/v0.4/release-attestation.schema.json`, which accepts
-both versions.
+both versions. [Reading and verifying attestations](attestations.md) shows a
+version 2 document and the checks it adds.
 
 ## Consuming the conformance vectors
 
