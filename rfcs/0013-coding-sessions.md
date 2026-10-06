@@ -212,8 +212,7 @@ cancel, or the hook may never return.
 
 The correlation key of a tool call is `(coding_session_id,
 payload.native_request_id, attempt_id)`; it matches the coding action's
-`(coding_session_id, native_request_id, attempt)`. A retry of the same
-native call is a new attempt with its own key. A `tool.started`,
+`(coding_session_id, native_request_id, attempt)`. A `tool.started`,
 `tool.completed` or `tool.failed` event without `action_id` observes a
 call that never went through a decision (for example, hooks installed
 while the call was running, or the gateway unreachable in `observe`
