@@ -6,6 +6,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "validate": "bash scripts/validate.sh",
+    "vectors": "node scripts/vectors.js",
     "lint": "bash scripts/lint-rfcs.sh && markdownlint '**/*.md' --ignore node_modules --ignore CODE_OF_CONDUCT.md"
   },
   "devDependencies": {

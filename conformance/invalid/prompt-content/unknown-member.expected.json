@@ -1,0 +1,7 @@
+{
+  "description": "Unknown members are refused at every level; `description` is version metadata, not content.",
+  "match": {
+    "keyword": "additionalProperties",
+    "instancePath": ""
+  }
+}

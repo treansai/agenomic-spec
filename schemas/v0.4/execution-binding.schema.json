@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.4/execution-binding.schema.json",
+  "title": "Agenomic execution binding (v0.4)",
+  "description": "The durable pin of one thread or execution to an agent version, `agenomic.execution_binding/v1` (RFC 0012). It is not hashed and carries no secret and no prompt text. `prompt_manifest_digest` is never null: a legacy release uses the digest of the agent's empty manifest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "binding_id",
+    "workspace_id",
+    "agent_id",
+    "thread_key",
+    "scope",
+    "release_id",
+    "release_name",
+    "genome_version",
+    "prompt_manifest_digest",
+    "runtime",
+    "resolved_from",
+    "children",
+    "parent_binding_id",
+    "experiment",
+    "runtime_client",
+    "created_at",
+    "created_by"
+  ],
+  "properties": {
+    "schema": { "const": "agenomic.execution_binding/v1" },
+    "binding_id": { "$ref": "prompt-common.schema.json#/$defs/bindingId" },
+    "workspace_id": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+    "agent_id": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+    "thread_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[^\\s\\u0000-\\u001f\\u007f-\\u009f]([^\\u0000-\\u001f\\u007f-\\u009f]*[^\\s\\u0000-\\u001f\\u007f-\\u009f])?$"
+    },
+    "scope": { "enum": ["thread", "execution"] },
+    "release_id": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+    "release_name": { "type": "string", "minLength": 1 },
+    "genome_version": {
+      "anyOf": [
+        { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" },
+        { "type": "null" }
+      ]
+    },
+    "prompt_manifest_digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bundle_id", "bundle_hash"],
+      "properties": {
+        "bundle_id": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+        "bundle_hash": { "$ref": "prompt-common.schema.json#/$defs/bundleHash" }
+      }
+    },
+    "resolved_from": {
+      "type": "object",
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "required": ["channel", "generation"],
+          "properties": {
+            "channel": { "$ref": "prompt-common.schema.json#/$defs/channelName" },
+            "generation": { "type": "integer", "minimum": 0 }
+          }
+        },
+        {
+          "additionalProperties": false,
+          "required": ["release_id"],
+          "properties": {
+            "release_id": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" }
+          }
+        }
+      ]
+    },
+    "children": {
+      "type": "object",
+      "maxProperties": 64,
+      "propertyNames": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["release_id", "genome_version", "prompt_manifest_digest", "source", "channel", "generation"],
+        "properties": {
+          "release_id": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+          "genome_version": {
+            "anyOf": [
+              { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" },
+              { "type": "null" }
+            ]
+          },
+          "prompt_manifest_digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" },
+          "source": { "enum": ["manifest", "channel"] },
+          "channel": {
+            "anyOf": [
+              { "$ref": "prompt-common.schema.json#/$defs/channelName" },
+              { "type": "null" }
+            ]
+          },
+          "generation": { "type": ["integer", "null"], "minimum": 0 }
+        },
+        "if": {
+          "required": ["source"],
+          "properties": { "source": { "const": "channel" } }
+        },
+        "then": {
+          "properties": { "channel": { "type": "string" }, "generation": { "type": "integer" } }
+        },
+        "else": {
+          "properties": { "channel": { "type": "null" }, "generation": { "type": "null" } }
+        }
+      }
+    },
+    "parent_binding_id": {
+      "anyOf": [
+        { "$ref": "prompt-common.schema.json#/$defs/bindingId" },
+        { "type": "null" }
+      ]
+    },
+    "experiment": {
+      "anyOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["experiment_id", "trial_id", "arm_key", "attempt"],
+          "properties": {
+            "experiment_id": { "type": "string", "pattern": "^exp_[0-9a-hjkmnp-tv-z]{26}$" },
+            "trial_id": { "type": "string", "pattern": "^extr_[0-9a-hjkmnp-tv-z]{26}$" },
+            "arm_key": { "type": "string", "pattern": "^arm_[0-9a-f]{8}$" },
+            "attempt": { "type": "integer", "minimum": 1 }
+          }
+        }
+      ]
+    },
+    "runtime_client": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sdk", "sdk_version", "adapter", "adapter_version"],
+      "properties": {
+        "sdk": { "type": ["string", "null"] },
+        "sdk_version": { "type": ["string", "null"] },
+        "adapter": { "type": ["string", "null"] },
+        "adapter_version": { "type": ["string", "null"] }
+      }
+    },
+    "created_at": { "$ref": "prompt-common.schema.json#/$defs/timestamp" },
+    "created_by": { "$ref": "prompt-common.schema.json#/$defs/actor" }
+  }
+}

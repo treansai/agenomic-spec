@@ -43,16 +43,47 @@ schema:
 | `behavior-contract/`  | `schemas/v0.1/behavior-contract.schema.json`|
 | `trace-event/`        | `schemas/v0.1/trace-event.schema.json`      |
 | `replay-report/`      | `schemas/v0.1/replay-report.schema.json`    |
-| `release-attestation/`| `schemas/v0.1/release-attestation.schema.json` |
+| `release-attestation/`| `schemas/v0.1/release-attestation.schema.json` or `schemas/v0.4/release-attestation.schema.json` (see below) |
 | `atep-event/`         | `schemas/v0.1/atep-event.schema.json`       |
 | `workflow/`           | `schemas/v0.2/workflow.schema.json`         |
 | `system/`             | `schemas/v0.2/system.schema.json`           |
+| `prompt-content/`     | `schemas/v0.4/prompt-content.schema.json`   |
+| `prompt-version/`     | `schemas/v0.4/prompt-version.schema.json`   |
+| `prompt-manifest/`    | `schemas/v0.4/prompt-manifest.schema.json`  |
+| `rendered-prompt/`    | `schemas/v0.4/rendered-prompt.schema.json`  |
+| `prompt-artifact-set/`| `schemas/v0.4/prompt-artifact-set.schema.json` |
+| `prompt-bundle/`      | `schemas/v0.4/prompt-bundle.schema.json`    |
+| `execution-binding/`  | `schemas/v0.4/execution-binding.schema.json` |
+| `prompt-discovery-report/` | `schemas/v0.4/prompt-discovery-report.schema.json` |
+| `prompt-import-plan/` | `schemas/v0.4/prompt-import-plan.schema.json` |
+| `prompts-file/`       | `schemas/v0.4/prompts-file.schema.json`     |
+| `prompt-file/`        | `schemas/v0.4/prompt-file.schema.json`      |
+| `experiment-case/`    | `schemas/v0.4/experiment-case.schema.json`  |
+| `experiment-spec/`    | `schemas/v0.4/experiment-spec.schema.json`  |
 
-For artifact kinds published in more than one schema version (currently
-only `genome`), the fixture's own `spec_version` selects the directory:
+For artifact kinds published in more than one schema version, the
+fixture's own `spec_version` selects the directory: for `genome`,
 `agenomic/v0.2` selects `schemas/v0.2/`, anything else falls back to
 the artifact's first published version. v0.2 is an overlay (RFC 0009):
 artifact kinds not redefined there keep validating against v0.1.
+Release attestations carry no `spec_version`, so `schema_version`
+selects instead: 2 selects `schemas/v0.4/`, anything else
+`schemas/v0.1/`.
+
+The managed prompt documents of RFC 0012 (`schemas/v0.4/`) are validated
+here for shape only. Their semantics (canonical JSON and digests, the prompt
+reference grammar, template syntax, rendering and secret detection) are pinned
+by the cross-language vectors under `conformance/vectors/prompts/`, which
+`scripts/validate.js` does not walk. `scripts/vectors.js`, run by
+`npm run validate`, checks them: schema, names, the checksummed
+`MANIFEST.json` and every digest. See
+[`vectors/prompts/README.md`](vectors/prompts/README.md) for the file format
+and the matching rules that every implementation applies.
+
+The runner asserts `format` keywords through `ajv-formats`, so a v0.4
+timestamp must match its pattern and also be a valid `date-time`:
+`invalid/prompt-version/impossible-created-at.json` has the timestamp shape but
+names February 30.
 
 ## `.expected.json` format
 

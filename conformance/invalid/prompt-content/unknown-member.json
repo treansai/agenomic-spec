@@ -1,0 +1,12 @@
+{
+  "schema": "agenomic.prompt_content/v1",
+  "template_format": "agenomic-fstring/v1",
+  "renderer_version": "1",
+  "kind": "text",
+  "body": "Hello",
+  "variables": {},
+  "partials": {},
+  "output_contract": null,
+  "fragments": {},
+  "description": "Greets"
+}

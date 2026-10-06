@@ -1,0 +1,7 @@
+{
+  "description": "A non-integral number inside `output_contract.json_schema` is outside the Agenomic JSON Subset.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/output_contract/json_schema/minimum"
+  }
+}

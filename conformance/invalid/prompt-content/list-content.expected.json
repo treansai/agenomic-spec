@@ -1,0 +1,7 @@
+{
+  "description": "Message content is one template string; content block lists are refused in v1.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/body/0/content"
+  }
+}

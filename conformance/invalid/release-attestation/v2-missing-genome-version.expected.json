@@ -1,0 +1,10 @@
+{
+  "description": "A version 2 attestation binds the agent version digest; genome_version is required.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "params": {
+      "missingProperty": "genome_version"
+    }
+  }
+}

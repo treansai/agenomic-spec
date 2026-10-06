@@ -32,3 +32,4 @@ if [[ ! -d node_modules ]]; then
 fi
 
 node scripts/validate.js
+node scripts/vectors.js

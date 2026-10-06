@@ -1,0 +1,13 @@
+{
+  "schema": "agenomic.prompt_manifest/v1",
+  "agent_id": "2b1e5c3a-8d4f-4e6a-9b0c-1d2e3f4a5b6c",
+  "slots": {
+    "planner.system": {
+      "prompt_id": "prm_support_planner",
+      "alias": "staging",
+      "version": 8,
+      "content_digest": "sha256:1dd16c2c558681bae42bfcf83578b1d486a420dc30ed557fd5186bf88230fa15"
+    }
+  },
+  "children": {}
+}

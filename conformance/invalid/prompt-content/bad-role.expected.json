@@ -1,0 +1,7 @@
+{
+  "description": "Template roles are system, user and assistant.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/body/0/role"
+  }
+}

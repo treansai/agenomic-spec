@@ -1,0 +1,450 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.4/conformance-vector.schema.json",
+  "title": "Agenomic managed prompts conformance vector (v0.4)",
+  "description": "One cross-language conformance vector under conformance/vectors/prompts/ (RFC 0012). Every implementation runs the vectors whose `consumers` name it and asserts exact equality on every member present in `expected`, and on nothing else.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "suite", "id", "intent", "consumers", "input", "expected"],
+  "properties": {
+    "schema": { "const": "agenomic.conformance_vector/v1" },
+    "suite": { "enum": ["render", "template", "digest", "ref", "secrets", "prompts-file-yaml"] },
+    "id": { "type": "string", "pattern": "^[RTDFSY][0-9]{3}$" },
+    "intent": { "type": "string", "minLength": 1 },
+    "consumers": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["rust-cloud", "rust-cli", "python", "typescript"] }
+    },
+    "input": { "type": "object" },
+    "expected": {
+      "type": "object",
+      "required": ["ok"],
+      "properties": { "ok": { "type": "boolean" } },
+      "if": { "properties": { "ok": { "const": false } } },
+      "then": {
+        "additionalProperties": false,
+        "required": ["ok", "error"],
+        "properties": {
+          "ok": { "const": false },
+          "error": { "$ref": "#/$defs/error" }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "suite": { "const": "render" } } },
+      "then": {
+        "properties": {
+          "id": { "pattern": "^R" },
+          "input": { "$ref": "#/$defs/renderInput" },
+          "expected": {
+            "if": { "properties": { "ok": { "const": true } } },
+            "then": { "$ref": "#/$defs/renderSuccess" }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "suite": { "const": "template" } } },
+      "then": {
+        "properties": {
+          "id": { "pattern": "^T" },
+          "input": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["template"],
+                "properties": { "template": { "type": "string" } }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["content", "fragments"],
+                "properties": {
+                  "content": {},
+                  "fragments": { "$ref": "#/$defs/fragmentMap" }
+                }
+              }
+            ]
+          },
+          "expected": {
+            "if": { "properties": { "ok": { "const": true } } },
+            "then": {
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "required": ["ok", "tokens", "source"],
+                  "properties": {
+                    "ok": { "const": true },
+                    "tokens": { "type": "array", "items": { "$ref": "#/$defs/token" } },
+                    "source": { "type": "string" }
+                  }
+                },
+                {
+                  "additionalProperties": false,
+                  "required": ["ok", "validation"],
+                  "properties": {
+                    "ok": { "const": true },
+                    "validation": { "$ref": "#/$defs/validation" }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "suite": { "const": "digest" } } },
+      "then": {
+        "properties": {
+          "id": { "pattern": "^D" },
+          "input": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["operation", "document"],
+                "properties": {
+                  "operation": { "const": "digest" },
+                  "document": {},
+                  "projection": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["rule", "from"],
+                    "properties": {
+                      "rule": { "enum": ["content", "without_plan_digest"] },
+                      "from": { "type": "object" }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["operation", "bundle", "expected_bundle_digest", "expected_workspace_id", "expected_agent_id"],
+                "properties": {
+                  "operation": { "const": "bundle_load" },
+                  "bundle": { "type": "object" },
+                  "expected_bundle_digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" },
+                  "expected_workspace_id": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+                  "expected_agent_id": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" }
+                }
+              }
+            ]
+          },
+          "expected": {
+            "if": { "properties": { "ok": { "const": true } } },
+            "then": {
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "required": ["ok", "document_type", "canonical", "digest"],
+                  "properties": {
+                    "ok": { "const": true },
+                    "document_type": { "type": "string", "pattern": "^agenomic\\.[a-z_]+/v[0-9]+$" },
+                    "canonical": { "type": "string" },
+                    "digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" }
+                  }
+                },
+                {
+                  "additionalProperties": false,
+                  "required": ["ok", "prompt_bundle_digest", "prompt_manifest_digest", "prompt_refs", "managed_slots"],
+                  "properties": {
+                    "ok": { "const": true },
+                    "prompt_bundle_digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" },
+                    "prompt_manifest_digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" },
+                    "prompt_refs": { "type": "array", "items": { "$ref": "prompt-common.schema.json#/$defs/promptRefKey" } },
+                    "managed_slots": { "type": "array", "items": { "$ref": "prompt-common.schema.json#/$defs/slotPath" } }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "suite": { "const": "ref" } } },
+      "then": {
+        "properties": {
+          "id": { "pattern": "^F" },
+          "input": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ref", "context", "workspace_id"],
+            "properties": {
+              "ref": { "type": "string" },
+              "context": { "enum": ["management", "execution"] },
+              "workspace_id": {
+                "anyOf": [
+                  { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+                  { "type": "null" }
+                ]
+              }
+            }
+          },
+          "expected": {
+            "if": { "properties": { "ok": { "const": true } } },
+            "then": {
+              "additionalProperties": false,
+              "required": ["ok", "form", "prompt_id", "version", "alias", "workspace_id", "canonical", "version_ref"],
+              "properties": {
+                "ok": { "const": true },
+                "form": { "enum": ["prompt_id", "version", "alias", "uri"] },
+                "prompt_id": { "$ref": "prompt-common.schema.json#/$defs/promptId" },
+                "version": { "type": ["integer", "null"] },
+                "alias": { "type": ["string", "null"] },
+                "workspace_id": { "type": ["string", "null"] },
+                "canonical": { "type": "string" },
+                "version_ref": { "type": ["string", "null"] }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "suite": { "const": "secrets" } } },
+      "then": {
+        "properties": {
+          "id": { "pattern": "^S" },
+          "input": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["operation", "text"],
+                "properties": { "operation": { "const": "scan" }, "text": { "type": "string" } }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["operation", "keys"],
+                "properties": {
+                  "operation": { "const": "secret_shaped" },
+                  "keys": { "type": "array", "items": { "type": "string" } }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["operation", "value"],
+                "properties": { "operation": { "const": "scrub_json" }, "value": {} }
+              }
+            ]
+          },
+          "expected": {
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "required": ["ok", "findings", "scrubbed"],
+                "properties": {
+                  "ok": { "const": true },
+                  "findings": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["pattern", "offset", "length"],
+                      "properties": {
+                        "pattern": { "$ref": "#/$defs/secretPattern" },
+                        "offset": { "type": "integer", "minimum": 0 },
+                        "length": { "type": "integer", "minimum": 1 }
+                      }
+                    }
+                  },
+                  "scrubbed": { "type": "string" }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "required": ["ok", "secret_shaped"],
+                "properties": {
+                  "ok": { "const": true },
+                  "secret_shaped": { "type": "array", "items": { "type": "boolean" } }
+                }
+              },
+              {
+                "additionalProperties": false,
+                "required": ["ok", "scrubbed"],
+                "properties": { "ok": { "const": true }, "scrubbed": {} }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "suite": { "const": "prompts-file-yaml" } } },
+      "then": {
+        "properties": {
+          "id": { "pattern": "^Y" },
+          "input": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["yaml"],
+            "properties": { "yaml": { "type": "string" } }
+          },
+          "expected": {
+            "if": { "properties": { "ok": { "const": true } } },
+            "then": {
+              "additionalProperties": false,
+              "required": ["ok", "json"],
+              "properties": {
+                "ok": { "const": true },
+                "json": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "fragmentMap": {
+      "type": "object",
+      "propertyNames": { "$ref": "prompt-common.schema.json#/$defs/promptRefKey" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["prompt_kind", "content"],
+        "properties": {
+          "prompt_kind": { "$ref": "prompt-common.schema.json#/$defs/promptKind" },
+          "content": { "type": "object" }
+        }
+      }
+    },
+    "renderInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "content", "fragments", "variables", "options"],
+      "properties": {
+        "method": { "enum": ["render", "text", "messages"] },
+        "content": { "type": "object" },
+        "fragments": { "$ref": "#/$defs/fragmentMap" },
+        "variables": { "type": "object" },
+        "options": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["strict", "history", "allow_duplicate_system", "secret_policy"],
+          "properties": {
+            "strict": { "type": "boolean" },
+            "history": { "type": ["array", "null"] },
+            "allow_duplicate_system": { "type": "boolean" },
+            "secret_policy": { "enum": ["off", "error"] }
+          }
+        }
+      }
+    },
+    "renderSuccess": {
+      "additionalProperties": false,
+      "required": [
+        "ok",
+        "kind",
+        "text",
+        "messages",
+        "expanded_template",
+        "rendered_document",
+        "rendered_hash",
+        "warnings",
+        "langchain_parity"
+      ],
+      "properties": {
+        "ok": { "const": true },
+        "kind": { "enum": ["text", "chat"] },
+        "text": { "type": ["string", "null"] },
+        "messages": { "type": ["array", "null"] },
+        "expanded_template": { "type": ["string", "array"] },
+        "rendered_document": { "type": "object" },
+        "rendered_hash": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" },
+        "warnings": { "type": "array", "items": { "$ref": "#/$defs/item" } },
+        "langchain_parity": { "type": "boolean" }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["variables", "warnings", "content_digest"],
+      "properties": {
+        "variables": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["declared", "referenced", "placeholders"],
+          "properties": {
+            "declared": { "type": "array", "items": { "type": "string" } },
+            "referenced": { "type": "array", "items": { "type": "string" } },
+            "placeholders": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "warnings": { "type": "array", "items": { "$ref": "#/$defs/item" } },
+        "content_digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" }
+      }
+    },
+    "token": {
+      "type": "object",
+      "if": { "properties": { "t": { "const": "literal" } } },
+      "then": {
+        "additionalProperties": false,
+        "required": ["t", "text"],
+        "properties": { "t": { "const": "literal" }, "text": { "type": "string" } }
+      },
+      "else": {
+        "additionalProperties": false,
+        "required": ["t", "name", "offset"],
+        "properties": {
+          "t": { "enum": ["var", "include"] },
+          "name": { "type": "string" },
+          "offset": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "syntax": { "type": "string" },
+        "variable": { "type": "string" },
+        "value_path": { "type": "string", "pattern": "^(/.*)?$" },
+        "path": { "type": "string", "pattern": "^(/.*)?$" },
+        "offset": { "type": "integer", "minimum": 0 },
+        "line": { "type": "integer", "minimum": 1 },
+        "column": { "type": "integer", "minimum": 1 },
+        "pattern": { "$ref": "#/$defs/secretPattern" },
+        "fragment": { "$ref": "prompt-common.schema.json#/$defs/promptRefKey" }
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "code": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "reason": { "type": "string" },
+        "item": { "$ref": "#/$defs/item" },
+        "details": { "type": "object" }
+      }
+    },
+    "secretPattern": {
+      "enum": [
+        "bearer_token",
+        "private_key_block",
+        "openai_key",
+        "stripe_key",
+        "aws_access_key",
+        "github_token",
+        "huggingface_token",
+        "slack_token",
+        "google_api_key",
+        "jwt",
+        "agenomic_api_key"
+      ]
+    }
+  }
+}

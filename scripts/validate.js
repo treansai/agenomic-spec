@@ -16,6 +16,7 @@ const SCHEMA_DIRS = {
   'v0.1': path.join(ROOT, 'schemas', 'v0.1'),
   'v0.2': path.join(ROOT, 'schemas', 'v0.2'),
   'v0.3': path.join(ROOT, 'schemas', 'v0.3'),
+  'v0.4': path.join(ROOT, 'schemas', 'v0.4'),
 };
 
 // Artifact kinds and the schema versions in which they are published.
@@ -28,7 +29,7 @@ const ARTIFACT_TO_SCHEMA = {
   'behavior-contract': { file: 'behavior-contract.schema.json', versions: ['v0.1'] },
   'trace-event': { file: 'trace-event.schema.json', versions: ['v0.1', 'v0.3'] },
   'replay-report': { file: 'replay-report.schema.json', versions: ['v0.1'] },
-  'release-attestation': { file: 'release-attestation.schema.json', versions: ['v0.1'] },
+  'release-attestation': { file: 'release-attestation.schema.json', versions: ['v0.1', 'v0.4'] },
   'atep-event': { file: 'atep-event.schema.json', versions: ['v0.1'] },
   'workflow': { file: 'workflow.schema.json', versions: ['v0.2'] },
   'system': { file: 'system.schema.json', versions: ['v0.2'] },
@@ -55,6 +56,19 @@ const ARTIFACT_TO_SCHEMA = {
   'hermes-event': { file: 'hermes-event.schema.json', versions: ['v0.3'] },
   'hermes-profile': { file: 'hermes-profile.schema.json', versions: ['v0.3'] },
   'hermes-action': { file: 'hermes-action.schema.json', versions: ['v0.3'] },
+  'prompt-content': { file: 'prompt-content.schema.json', versions: ['v0.4'] },
+  'prompt-version': { file: 'prompt-version.schema.json', versions: ['v0.4'] },
+  'prompt-manifest': { file: 'prompt-manifest.schema.json', versions: ['v0.4'] },
+  'rendered-prompt': { file: 'rendered-prompt.schema.json', versions: ['v0.4'] },
+  'prompt-artifact-set': { file: 'prompt-artifact-set.schema.json', versions: ['v0.4'] },
+  'prompt-bundle': { file: 'prompt-bundle.schema.json', versions: ['v0.4'] },
+  'execution-binding': { file: 'execution-binding.schema.json', versions: ['v0.4'] },
+  'prompt-discovery-report': { file: 'prompt-discovery-report.schema.json', versions: ['v0.4'] },
+  'prompt-import-plan': { file: 'prompt-import-plan.schema.json', versions: ['v0.4'] },
+  'prompts-file': { file: 'prompts-file.schema.json', versions: ['v0.4'] },
+  'prompt-file': { file: 'prompt-file.schema.json', versions: ['v0.4'] },
+  'experiment-case': { file: 'experiment-case.schema.json', versions: ['v0.4'] },
+  'experiment-spec': { file: 'experiment-spec.schema.json', versions: ['v0.4'] },
 };
 
 const ajv = new Ajv({ allErrors: true, strict: false });
@@ -93,6 +107,10 @@ function validateTraceV03Custom(doc) {
 function schemaRefFor(artifact, doc) {
   const entry = ARTIFACT_TO_SCHEMA[artifact];
   if (!entry) return null;
+  if (artifact === 'release-attestation') {
+    const version = doc && doc.schema_version === 2 ? 'v0.4' : 'v0.1';
+    return { version, file: entry.file, label: version + '/' + entry.file };
+  }
   const declared = doc && typeof doc.spec_version === 'string'
     ? doc.spec_version.replace(/^agenomic\//, '')
     : null;
@@ -100,6 +118,15 @@ function schemaRefFor(artifact, doc) {
     ? declared
     : entry.versions[0];
   return { version, file: entry.file, label: version + '/' + entry.file };
+}
+
+let v04SchemasAdded = false;
+function addV04Schemas() {
+  if (v04SchemasAdded) return;
+  v04SchemasAdded = true;
+  for (const name of fs.readdirSync(SCHEMA_DIRS['v0.4']).filter(n => n.endsWith('.schema.json')).sort()) {
+    ajv.addSchema(JSON.parse(fs.readFileSync(path.join(SCHEMA_DIRS['v0.4'], name), 'utf8')));
+  }
 }
 
 const compiledByPath = new Map();
@@ -113,7 +140,12 @@ function getValidator(ref) {
         ajv.addSchema(JSON.parse(fs.readFileSync(registryPath, 'utf8')));
       }
     }
-    compiledByPath.set(ref.label, ajv.compile(schema));
+    if (ref.version === 'v0.4') {
+      addV04Schemas();
+      compiledByPath.set(ref.label, ajv.getSchema(schema.$id));
+    } else {
+      compiledByPath.set(ref.label, ajv.compile(schema));
+    }
   }
   return compiledByPath.get(ref.label);
 }

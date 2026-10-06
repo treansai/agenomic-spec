@@ -1,0 +1,16 @@
+{
+  "schema": "agenomic.prompt_content/v1",
+  "template_format": "agenomic-fstring/v1",
+  "renderer_version": "1",
+  "kind": "text",
+  "body": "Hello {name}",
+  "variables": {
+    "name": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "partials": {},
+  "output_contract": null,
+  "fragments": {}
+}

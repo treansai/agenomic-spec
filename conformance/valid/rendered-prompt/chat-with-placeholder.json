@@ -1,0 +1,21 @@
+{
+  "schema": "agenomic.rendered_prompt/v1",
+  "content_digest": "sha256:280b5fd21416acbe44d32d0239ff8ba8f464570264b08666ec135fb0f436ca61",
+  "kind": "chat",
+  "text": null,
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a support planner."
+    },
+    {
+      "placeholder": "history",
+      "count": 3
+    },
+    {
+      "role": "user",
+      "content": "Where is my parcel?"
+    }
+  ],
+  "history_count": 0
+}

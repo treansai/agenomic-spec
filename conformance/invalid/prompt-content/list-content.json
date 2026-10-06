@@ -1,0 +1,21 @@
+{
+  "schema": "agenomic.prompt_content/v1",
+  "template_format": "agenomic-fstring/v1",
+  "renderer_version": "1",
+  "kind": "chat",
+  "body": [
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": "hi"
+        }
+      ]
+    }
+  ],
+  "variables": {},
+  "partials": {},
+  "output_contract": null,
+  "fragments": {}
+}
