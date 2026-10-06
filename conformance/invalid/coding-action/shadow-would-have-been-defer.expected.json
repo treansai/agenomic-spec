@@ -1,0 +1,7 @@
+{
+  "description": "`would_have_been` records what enforce would have returned: allow, deny or pending.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/would_have_been"
+  }
+}

@@ -11,10 +11,10 @@
     "outside_workspace"
   ],
   "preview": "rm -r ../shared-cache",
-  "decision": "defer",
+  "decision": "allow",
   "effective_mode": "shadow",
-  "would_have_been": "deny",
-  "reason": "Deletes outside the workspace; enforce would deny.",
+  "would_have_been": "allow",
+  "reason": "Allowed by coding-isolated-dev@1.0.0.",
   "reason_codes": [
     "outside_workspace"
   ],

@@ -13,7 +13,7 @@
   "preview": "rm -r ../shared-cache",
   "decision": "defer",
   "effective_mode": "shadow",
-  "would_have_been": "deny",
+  "would_have_been": "defer",
   "reason": "Deletes outside the workspace; enforce would deny.",
   "reason_codes": [
     "outside_workspace"

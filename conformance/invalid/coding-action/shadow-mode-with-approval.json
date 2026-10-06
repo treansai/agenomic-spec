@@ -13,13 +13,13 @@
   "preview": "rm -r ../shared-cache",
   "decision": "defer",
   "effective_mode": "shadow",
-  "would_have_been": "deny",
-  "reason": "Deletes outside the workspace; enforce would deny.",
+  "would_have_been": "pending",
+  "reason": "Deletes outside the workspace; enforce would require approval.",
   "reason_codes": [
     "outside_workspace"
   ],
-  "approval_id": null,
-  "approval_status": null,
+  "approval_id": "5c6d7e8f-9a0b-4c1d-8e2f-3a4b5c6d7e8f",
+  "approval_status": "pending",
   "record_id": "2a3b4c5d-6e7f-4a8b-9c0d-1e2f3a4b5c6d",
   "status": "started",
   "outcome": null,

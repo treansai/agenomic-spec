@@ -1,0 +1,8 @@
+{
+  "description": "No approval is requested in shadow: a would-be pending is recorded as `would_have_been: \"pending\"` without an `approval_id`.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/approval_id",
+    "schemaPath": "#/allOf/2/then/properties/approval_id/type"
+  }
+}

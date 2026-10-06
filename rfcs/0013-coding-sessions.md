@@ -88,9 +88,12 @@ present `lost` as `stopped`.
 
 - `observe` — events are recorded; every decision is `defer` (the
   runtime's native permission flow decides).
-- `shadow` — policy is evaluated and the decision that `enforce` would
-  have produced is recorded in `would_have_been`, but the answer to the
-  runtime is `defer`.
+- `shadow` — policy is evaluated but never binds: the action's
+  `decision` is always `defer` (the native permission flow decides), and
+  what `enforce` would have returned (`allow`, `deny` or `pending`) is
+  recorded in `would_have_been`. No approval is requested in shadow: a
+  would-be `pending` is recorded as `would_have_been: "pending"`, with no
+  `approval_id`.
 - `enforce` — the policy decision (`allow`, `deny`, `pending`) is
   returned to the runtime's hook and is binding.
 
@@ -289,7 +292,8 @@ The action records `decision` (`allow`, `deny`, `pending`, `defer`),
 `reason_codes`, the approval link, and later the observed `status`
 (`requested`, `decided`, `started`, `completed`, `failed`, `unknown`)
 and `outcome`. The schema enforces that a `pending` decision references
-an `approval_id` and that `observe` mode only ever answers `defer`.
+an `approval_id`, that `observe` and `shadow` modes only ever answer
+`defer`, and that a `shadow` action references no approval.
 
 ### Command lifecycle
 
@@ -365,6 +369,11 @@ consumed once: a second consume MUST answer `deny`.
 - **Falling back to `observe` when `enforce` fails.** Convenient, but it
   turns a configuration failure into silent loss of protection. `blocked`
   makes the failure visible.
+- **Approvals in shadow.** Letting a `shadow` session escalate to
+  `pending` would make shadow binding: the call waits on a reviewer.
+  Shadow therefore always answers `defer` and records a would-be
+  approval as `would_have_been: "pending"`, so a team can measure how
+  many approvals `enforce` would raise before switching to it.
 - **A single capability state.** Merging announced and validated hides
   the difference between a vendor claim and a tested installation, which
   is exactly what a reviewer needs to see.
@@ -379,8 +388,6 @@ consumed once: a second consume MUST answer `deny`.
   actions whose status became `unknown` meanwhile?
 - Should `risk` be computed only by the governance layer, or may
   connectors propose a pre-classification?
-- Is a `shadow` session allowed to escalate to `pending` approvals, or
-  is `defer` always the answer in shadow?
 
 ## Security considerations
 
