@@ -60,10 +60,10 @@ schema:
 | `prompt-file/`        | `schemas/v0.4/prompt-file.schema.json`      |
 | `experiment-case/`    | `schemas/v0.4/experiment-case.schema.json`  |
 | `experiment-spec/`    | `schemas/v0.4/experiment-spec.schema.json`  |
-| `coding-event/`       | `schemas/v0.3/coding-event.schema.json` (RFC 0012) |
-| `coding-session/`     | `schemas/v0.3/coding-session.schema.json` (RFC 0012) |
-| `coding-capability-manifest/` | `schemas/v0.3/coding-capability-manifest.schema.json` (RFC 0012) |
-| `coding-action/`      | `schemas/v0.3/coding-action.schema.json` (RFC 0012) |
+| `coding-event/`       | `schemas/v0.3/coding-event.schema.json` (RFC 0013) |
+| `coding-session/`     | `schemas/v0.3/coding-session.schema.json` (RFC 0013) |
+| `coding-capability-manifest/` | `schemas/v0.3/coding-capability-manifest.schema.json` (RFC 0013) |
+| `coding-action/`      | `schemas/v0.3/coding-action.schema.json` (RFC 0013) |
 
 For artifact kinds published in more than one schema version, the
 fixture's own `spec_version` selects the directory: for `genome`,

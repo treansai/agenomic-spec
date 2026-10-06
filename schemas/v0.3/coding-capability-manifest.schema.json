@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agenomic.dev/spec/v0.3/coding-capability-manifest.schema.json",
   "title": "Agenomic Coding Runtime Capability Manifest (v0.3)",
-  "description": "What a coding-agent runtime installation can do under supervision, as reported by a connector for one runtime version (RFC 0012). Each capability carries the state the adapter announces and the state the connector validated by probing the installed runtime. Only the validated state may be relied upon; unknown never counts as protected.",
+  "description": "What a coding-agent runtime installation can do under supervision, as reported by a connector for one runtime version (RFC 0013). Each capability carries the state the adapter announces and the state the connector validated by probing the installed runtime. Only the validated state may be relied upon; unknown never counts as protected.",
   "type": "object",
   "additionalProperties": true,
   "required": ["runtime", "version", "capabilities"],

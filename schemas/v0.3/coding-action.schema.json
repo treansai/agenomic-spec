@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agenomic.dev/spec/v0.3/coding-action.schema.json",
   "title": "Agenomic Coding Action (v0.3)",
-  "description": "One native tool call of a coding-agent runtime, classified into the Agenomic coding action vocabulary and decided by the governance layer (RFC 0012). decision records what Agenomic answered; status and outcome record what was later observed. An allow decision is not proof of execution.",
+  "description": "One native tool call of a coding-agent runtime, classified into the Agenomic coding action vocabulary and decided by the governance layer (RFC 0013). decision records what Agenomic answered; status and outcome record what was later observed. An allow decision is not proof of execution.",
   "type": "object",
   "additionalProperties": true,
   "required": [

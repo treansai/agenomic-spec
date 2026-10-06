@@ -11,7 +11,7 @@ documented here.
 
 ### Added
 
-- **v0.3 (RFC 0012, Draft): coding sessions.** Portable artifacts for
+- **v0.3 (RFC 0013, Draft): coding sessions.** Portable artifacts for
   supervising coding agents (Claude Code, Codex) without replacing their
   loops: `schemas/v0.3/coding-event.schema.json` (closed
   `agenomic.coding.event/v1` envelope with ULID `event_id`, `source` and

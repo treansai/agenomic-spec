@@ -1,4 +1,4 @@
-# RFC 0012: Coding Sessions
+# RFC 0013: Coding Sessions
 
 | Field        | Value                                      |
 |--------------|--------------------------------------------|
@@ -11,7 +11,7 @@
 
 ## Summary
 
-RFC 0012 defines the portable artifacts Agenomic uses to supervise
+RFC 0013 defines the portable artifacts Agenomic uses to supervise
 **coding agents** such as Claude Code and Codex: a session object, an
 event envelope (`agenomic.coding.event/v1`), a runtime capability
 manifest, and a classified, decided coding action. Together they let a
