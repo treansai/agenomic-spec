@@ -1,0 +1,8 @@
+{
+  "description": "A blocked action requests no approval: no reviewer can lift a block, which lasts until the missing prerequisite is restored.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/approval_id",
+    "schemaPath": "#/allOf/4/then/properties/approval_id/type"
+  }
+}

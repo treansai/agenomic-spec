@@ -35,7 +35,9 @@ documented here.
   outcome; `observe` and `shadow` always decide `defer` and `enforce`
   never does, shadow records what `enforce` would have returned,
   `allow`, `deny` or `pending`, in a required, non-null
-  `would_have_been` and requests no approval). Conformance fixtures under
+  `would_have_been` and requests no approval, and a `blocked` action,
+  refused because the session cannot honour its requested mode, decides
+  `deny` and requests no approval). Conformance fixtures under
   `conformance/{valid,invalid}/coding-{event,session,capability-manifest,action}/`.
   `scripts/validate.js` registers the v0.3 schemas referenced across
   files (the event type registry and `coding-action`) before compiling

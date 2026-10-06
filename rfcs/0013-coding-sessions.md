@@ -110,6 +110,34 @@ actions. A producer MUST NOT silently lower `mode_effective` below
 with `mode_effective: observe` (and likewise for `shadow`). Lowering a
 mode is a new, explicit request by a user, recorded as such.
 
+**Action modes.** Each coding action records in `effective_mode` the
+mode that applied to that call: `observe`, `shadow`, `enforce` or
+`blocked`. Its `decision` follows from it, and the action schema
+enforces the pairing:
+
+| Action `effective_mode` | `decision` | Approval |
+|---|---|---|
+| `observe` | `defer` | — |
+| `shadow` | `defer`, with a non-null `would_have_been` (`allow`, `deny` or `pending`) | none: `approval_id` and `approval_status` are `null` or absent |
+| `enforce` | `allow`, `deny` or `pending`, never `defer` | a `pending` decision references its `approval_id` |
+| `blocked` | `deny` | none: `approval_id` and `approval_status` are `null` or absent |
+
+An action's mode can differ from the session's `mode_effective`. In an
+`enforce` session, a call for which the policy layer evaluated every
+contributing policy binding in shadow mode is a `shadow` action and
+follows the shadow rules: it answers `defer` and records
+`would_have_been`. This is not a downgrade of the session; its other
+calls stay enforced.
+
+A `blocked` action is a call refused because the session cannot honour
+its requested mode: `mode_effective` is `blocked`, or a prerequisite of
+the requested mode (a validated capability, a released policy) no
+longer holds when the call is decided. The refusal is not a policy
+outcome a reviewer could approve, so a `blocked` action decides `deny`
+and requests no approval; its `reason_codes` name the cause (for
+example `enforce_prerequisite_missing`). Calls stay blocked until the
+prerequisite is restored or a user explicitly requests a lower mode.
+
 `protection.protected` lists the coding tool ids (the closed `tool_id`
 vocabulary of [Action classification](#action-classification)) whose
 calls are actually gated in this session; `protection.not_covered`
@@ -312,8 +340,10 @@ The action records its intent digest `input_digest` (required; see
 (`requested`, `decided`, `started`, `completed`, `failed`, `unknown`)
 and `outcome`. The schema enforces that a `pending` decision references
 an `approval_id`, that `observe` and `shadow` modes only ever answer
-`defer` while `enforce` never does, and that a `shadow` action carries
-a non-null `would_have_been` and references no approval.
+`defer` while `enforce` never does, that a `shadow` action carries a
+non-null `would_have_been` and references no approval, and that a
+`blocked` action decides `deny` and references no approval (see
+[Governance modes](#governance-modes)).
 
 ### Command lifecycle
 
