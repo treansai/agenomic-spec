@@ -90,7 +90,7 @@
     "would_have_been": {
       "type": ["string", "null"],
       "enum": ["allow", "deny", "pending", null],
-      "description": "Shadow mode: what enforce would have returned (allow, deny or pending). The decision itself is defer; a would-be pending is recorded here and no approval is requested."
+      "description": "Shadow mode: what enforce would have returned (allow, deny or pending). Required and non-null on a shadow action, whose decision itself is defer; a would-be pending is recorded here and no approval is requested."
     },
     "reason": { "type": ["string", "null"] },
     "reason_codes": { "type": "array", "items": { "type": "string", "minLength": 1 } },
@@ -156,11 +156,13 @@
       "then": { "properties": { "decision": { "const": "defer" } } }
     },
     {
-      "$comment": "Shadow never binds: the answer is defer, what enforce would have returned goes in would_have_been, and no approval is requested.",
+      "$comment": "Shadow never binds: the answer is defer, what enforce would have returned (allow, deny or pending, never null) goes in the required would_have_been, and no approval is requested.",
       "if": { "properties": { "effective_mode": { "const": "shadow" } }, "required": ["effective_mode"] },
       "then": {
+        "required": ["would_have_been"],
         "properties": {
           "decision": { "const": "defer" },
+          "would_have_been": { "enum": ["allow", "deny", "pending"] },
           "approval_id": { "type": "null" },
           "approval_status": { "type": "null" }
         }

@@ -91,7 +91,9 @@ present `lost` as `stopped`.
 - `shadow` — policy is evaluated but never binds: the action's
   `decision` is always `defer` (the native permission flow decides), and
   what `enforce` would have returned (`allow`, `deny` or `pending`) is
-  recorded in `would_have_been`. No approval is requested in shadow: a
+  recorded in `would_have_been`, which every shadow action MUST carry and
+  which is never `null` there: without it a shadow rollout cannot tell
+  what `enforce` would do. No approval is requested in shadow: a
   would-be `pending` is recorded as `would_have_been: "pending"`, with no
   `approval_id`.
 - `enforce` — the policy decision (`allow`, `deny`, `pending`) is
@@ -310,8 +312,8 @@ The action records its intent digest `input_digest` (required; see
 (`requested`, `decided`, `started`, `completed`, `failed`, `unknown`)
 and `outcome`. The schema enforces that a `pending` decision references
 an `approval_id`, that `observe` and `shadow` modes only ever answer
-`defer` while `enforce` never does, and that a `shadow` action
-references no approval.
+`defer` while `enforce` never does, and that a `shadow` action carries
+a non-null `would_have_been` and references no approval.
 
 ### Command lifecycle
 

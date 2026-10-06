@@ -1,0 +1,8 @@
+{
+  "description": "On a shadow action `would_have_been` is allow, deny or pending, never null.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/would_have_been",
+    "schemaPath": "#/allOf/2/then/properties/would_have_been/enum"
+  }
+}

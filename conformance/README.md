@@ -98,7 +98,8 @@ are validated for shape and for the rules their schemas encode:
 - an `enforce` `coding-action` decides `allow`, `deny` or `pending`, never
   `defer`;
 - a `shadow` `coding-action` decides `defer`, records what `enforce` would
-  have returned in `would_have_been` and references no approval;
+  have returned in a required, non-null `would_have_been` (`allow`,
+  `deny` or `pending`) and references no approval;
 - a `coding-session`'s `protection.protected` and `protection.not_covered`
   hold unique ids from the coding action `tool_id` vocabulary, and
   `protection.notes` holds at most 32 strings of at most 300 characters.
