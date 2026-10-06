@@ -2,11 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agenomic.dev/spec/v0.3/coding-event.schema.json",
   "title": "Agenomic Coding Session Event (agenomic.coding.event/v1)",
-  "description": "Envelope of one event observed in a supervised coding-agent session (Claude Code, Codex). RFC 0013. Events are delivered at least once and deduplicated on (coding_session_id, event_id) and on (coding_session_id, source, producer_epoch, producer_seq). Ordering is defined per source by (producer_epoch, producer_seq); there is no global producer order. A request, a decision, an observed start and an observed result are distinct facts carried by distinct events: an allow decision is not proof of execution. Content fields inside payload (text, command, diff, output) appear only when the session's capture settings allow them and are redacted by the producer before export.",
+  "description": "Envelope of one event observed in a supervised coding-agent session (Claude Code, Codex). RFC 0013. Every envelope names its session in coding_session_id. Events are delivered at least once and deduplicated on (coding_session_id, event_id) and on (coding_session_id, source, producer_epoch, producer_seq). Ordering is defined per source by (producer_epoch, producer_seq); there is no global producer order. A request, a decision, an observed start and an observed result are distinct facts carried by distinct events: an allow decision is not proof of execution. Content fields inside payload (text, command, diff, output) appear only when the session's capture settings allow them and are redacted by the producer before export.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "event_id",
+    "coding_session_id",
     "schema_version",
     "type",
     "source",
@@ -20,6 +21,11 @@
       "type": "string",
       "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$",
       "description": "ULID (Crockford base32, 26 characters). Re-delivering the same event_id is a no-op."
+    },
+    "coding_session_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id of the Agenomic coding session (coding-session.schema.json `id`) the event belongs to. Scopes deduplication and the tool-call correlation key. Producers always set it; stored and served events carry it exactly once."
     },
     "schema_version": { "const": "agenomic.coding.event/v1" },
     "type": {

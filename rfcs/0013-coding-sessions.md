@@ -116,6 +116,7 @@ Every event is an `agenomic.coding.event/v1` envelope:
 ```json
 {
   "event_id": "01K6Y9A1B2C3D4E5F6G7H8J9K1",
+  "coding_session_id": "3f2b8c1d-6e4a-4b9f-8c7d-1a2b3c4d5e6f",
   "schema_version": "agenomic.coding.event/v1",
   "type": "tool.requested",
   "source": "runtime",
@@ -132,6 +133,15 @@ Every event is an `agenomic.coding.event/v1` envelope:
 
 The top level is closed (`additionalProperties: false`); type-specific
 data lives in `payload`.
+
+**Session.** `coding_session_id` (uuid) is required: it names the
+Agenomic coding session (the session object's `id`) the event belongs
+to, so an event stays attributable when it is stored, batched or
+exported outside a session-scoped transport. Producers MUST set it. A
+receiver that ingests events on a session-scoped endpoint MUST reject an
+event whose `coding_session_id` names a different session, and MAY fill
+an absent value from that endpoint before storing the event. Every event
+a receiver stores or serves carries `coding_session_id` exactly once.
 
 **Source and trust.** `source` names the producing component:
 `runtime` (the agent's own hook or SDK message), `adapter` (the
@@ -154,8 +164,9 @@ one source.
 
 **Delivery and deduplication.** Delivery is at-least-once. A receiver
 MUST deduplicate on `(coding_session_id, event_id)` and on
-`(coding_session_id, source, producer_epoch, producer_seq)`; a
-duplicate is acknowledged, not stored twice.
+`(coding_session_id, source, producer_epoch, producer_seq)`, taking
+`coding_session_id` from the envelope; a duplicate is acknowledged, not
+stored twice.
 
 **Event types.** `session.started`, `session.ended`, `turn.started`,
 `turn.completed`, `turn.interrupted`, `message.user`,

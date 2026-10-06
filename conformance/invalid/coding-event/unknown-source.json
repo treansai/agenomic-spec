@@ -1,5 +1,6 @@
 {
   "event_id": "01K6Y9A1B2C3D4E5F6G7H8J9K0",
+  "coding_session_id": "3f2b8c1d-6e4a-4b9f-8c7d-1a2b3c4d5e6f",
   "schema_version": "agenomic.coding.event/v1",
   "type": "session.started",
   "source": "model",

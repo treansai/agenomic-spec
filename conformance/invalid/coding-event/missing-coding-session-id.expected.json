@@ -1,0 +1,10 @@
+{
+  "description": "Every envelope names its coding session: deduplication and tool-call correlation are scoped by `coding_session_id`.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "params": {
+      "missingProperty": "coding_session_id"
+    }
+  }
+}
