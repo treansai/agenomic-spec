@@ -1,0 +1,11 @@
+{
+  "description": "Every coding action names its session: `(coding_session_id, native_request_id, attempt)` is the tool-call correlation key, and a native request id alone is ambiguous across sessions.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "schemaPath": "#/required",
+    "params": {
+      "missingProperty": "coding_session_id"
+    }
+  }
+}

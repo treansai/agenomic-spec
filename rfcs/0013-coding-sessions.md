@@ -292,6 +292,14 @@ with `x_`. A compound shell command (`a && b`, pipes, subshells) or an
 interpreter invocation (`python -c`, `node -e`) SHOULD be classified by
 its riskiest component.
 
+Every coding action names its session in `coding_session_id` (uuid,
+required), so it stays attributable when it is stored or exported
+outside a session-scoped container. Together with `native_request_id`
+and `attempt` it forms the tool-call correlation key of
+[Event envelope](#event-envelope); a native request id alone is
+ambiguous across sessions. Every action a receiver stores or serves
+carries it.
+
 The action records `decision` (`allow`, `deny`, `pending`, `defer`),
 `effective_mode`, `would_have_been` (shadow), `reason`,
 `reason_codes`, the approval link, and later the observed `status`

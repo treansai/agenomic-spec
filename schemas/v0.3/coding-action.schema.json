@@ -7,6 +7,7 @@
   "additionalProperties": true,
   "required": [
     "id",
+    "coding_session_id",
     "native_request_id",
     "attempt",
     "phase",
@@ -23,7 +24,7 @@
     "coding_session_id": {
       "type": "string",
       "format": "uuid",
-      "description": "The coding session the action belongs to. (coding_session_id, native_request_id, attempt) is the tool-call correlation key that tool.* events carry as (coding_session_id, payload.native_request_id, attempt_id)."
+      "description": "The coding session the action belongs to (the session object's id). Required, so an action stays attributable when it is stored or exported outside a session-scoped container. (coding_session_id, native_request_id, attempt) is the tool-call correlation key that tool.* events carry as (coding_session_id, payload.native_request_id, attempt_id)."
     },
     "native_request_id": {
       "type": "string",

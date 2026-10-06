@@ -25,11 +25,12 @@ documented here.
   downgrade, capture settings, and `protection` lists of unique coding
   tool ids with optional `protection.notes`),
   `coding-capability-manifest.schema.json` (announced vs validated
-  capability states) and `coding-action.schema.json` (closed `coding.*`
-  `tool_id` vocabulary in `$defs/toolId`, risk, flags, decision and
-  observed outcome; `observe` and `shadow` always decide `defer`, shadow
-  records what `enforce` would have returned, `allow`, `deny` or
-  `pending`, in `would_have_been` and requests no approval). Conformance
+  capability states) and `coding-action.schema.json` (a required
+  `coding_session_id`, closed `coding.*` `tool_id` vocabulary in
+  `$defs/toolId`, risk, flags, decision and observed outcome; `observe`
+  and `shadow` always decide `defer`, shadow records what `enforce`
+  would have returned, `allow`, `deny` or `pending`, in
+  `would_have_been` and requests no approval). Conformance
   fixtures under
   `conformance/{valid,invalid}/coding-{event,session,capability-manifest,action}/`.
   `scripts/validate.js` registers the v0.3 schemas referenced across

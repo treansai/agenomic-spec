@@ -87,7 +87,8 @@ and the matching rules that every implementation applies.
 The coding-session documents of RFC 0013 (`schemas/v0.3/coding-*.schema.json`)
 are validated for shape and for the rules their schemas encode:
 
-- every `coding-event` names its session in `coding_session_id`;
+- every `coding-event` and every `coding-action` names its session in
+  `coding_session_id`;
 - every `tool.requested`, `tool.started`, `tool.completed` and
   `tool.failed` event carries `attempt_id` (the decimal attempt number)
   and `payload.native_request_id`, and `tool.requested` also carries
