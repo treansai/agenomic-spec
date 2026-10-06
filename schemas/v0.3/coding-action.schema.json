@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agenomic.dev/spec/v0.3/coding-action.schema.json",
   "title": "Agenomic Coding Action (v0.3)",
-  "description": "One native tool call of a coding-agent runtime, classified into the Agenomic coding action vocabulary and decided by the governance layer (RFC 0013). decision records what Agenomic answered; status and outcome record what was later observed. An allow decision is not proof of execution. Only enforce binds: observe and shadow always answer defer.",
+  "description": "One native tool call of a coding-agent runtime, classified into the Agenomic coding action vocabulary and decided by the governance layer (RFC 0013). decision records what Agenomic answered; status and outcome record what was later observed. An allow decision is not proof of execution. Only enforce binds: observe and shadow always answer defer. input_digest binds an approval to the intent it was granted for.",
   "type": "object",
   "additionalProperties": true,
   "required": [
@@ -14,6 +14,7 @@
     "native_tool",
     "tool_id",
     "risk",
+    "input_digest",
     "decision",
     "effective_mode",
     "status",
@@ -75,8 +76,15 @@
       "description": "Redacted, size-bounded preview of the native input. Never raw secrets.",
       "type": ["string", "object", "null"]
     },
-    "input_digest": { "type": ["string", "null"] },
-    "patch_digest": { "type": ["string", "null"] },
+    "input_digest": {
+      "type": "string",
+      "pattern": "^blake3:[0-9a-f]{64}$",
+      "description": "Intent digest (RFC 0013, Approval binding): blake3: plus the lowercase hex BLAKE3 hash of the compact JSON, keys sorted by code point at every level, of {runtime, native_tool, input, cwd, workspace_root, base_revision, patch_digest, sandbox, permission_mode, network_scope, paths, symlink_escapes}, absent values null and absent lists []. Computed by the gateway. An approval is bound to it: a re-submitted call whose recomputed digest differs is refused with input_changed and needs a new request."
+    },
+    "patch_digest": {
+      "type": ["string", "null"],
+      "description": "Digest of the patch a file change applies; part of the intent object behind input_digest."
+    },
     "decision": { "type": "string", "enum": ["allow", "deny", "pending", "defer"] },
     "effective_mode": { "type": "string", "enum": ["observe", "shadow", "enforce"] },
     "would_have_been": {

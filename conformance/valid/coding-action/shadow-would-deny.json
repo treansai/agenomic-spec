@@ -12,6 +12,7 @@
     "outside_workspace"
   ],
   "preview": "rm -r ../shared-cache",
+  "input_digest": "blake3:df3fcdf3ea264d32c7cd37142593a4a93bc7b69529a562a875511229bb530731",
   "decision": "defer",
   "effective_mode": "shadow",
   "would_have_been": "deny",

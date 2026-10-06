@@ -12,6 +12,7 @@
     "compound_shell"
   ],
   "preview": "cargo test -p example && git status",
+  "input_digest": "blake3:6f2613c3fc82deacf9d9ab9854345904abe9647b39fd5e8415008d04eb3b90c3",
   "decision": "allow",
   "effective_mode": "enforce",
   "would_have_been": null,

@@ -13,7 +13,7 @@
     "force_push"
   ],
   "preview": "git push --force-with-lease origin agenomic/fix-123",
-  "input_digest": "blake3:4ae3b78177a9b3587b0028c4bd15773cc88b7131c205d6ae22ff3ee277966318",
+  "input_digest": "sha256:4ae3b78177a9b3587b0028c4bd15773cc88b7131c205d6ae22ff3ee277966318",
   "decision": "pending",
   "effective_mode": "enforce",
   "would_have_been": null,

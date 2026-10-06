@@ -15,6 +15,7 @@
     "path": ".claude/settings.json",
     "bytes": 412
   },
+  "input_digest": "blake3:e4d501f7df609567076b2bbd416ea4f7375ec7cb67c8fdde65db02a7ba253e1b",
   "decision": "defer",
   "effective_mode": "observe",
   "status": "unknown",

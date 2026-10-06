@@ -1,0 +1,11 @@
+{
+  "description": "Every coding action carries its intent digest: an approval is bound to `input_digest`, so an action without one could be re-submitted with a changed intent under the same approval.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "schemaPath": "#/required",
+    "params": {
+      "missingProperty": "input_digest"
+    }
+  }
+}

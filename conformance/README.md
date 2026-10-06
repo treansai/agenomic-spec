@@ -93,11 +93,19 @@ are validated for shape and for the rules their schemas encode:
   `tool.failed` event carries `attempt_id` (the decimal attempt number)
   and `payload.native_request_id`, and `tool.requested` also carries
   `action_id`;
+- every `coding-action` carries its intent digest `input_digest`, never
+  `null` and of the form `blake3:` plus 64 lowercase hex digits;
 - a `shadow` `coding-action` decides `defer`, records what `enforce` would
   have returned in `would_have_been` and references no approval;
 - a `coding-session`'s `protection.protected` and `protection.not_covered`
   hold unique ids from the coding action `tool_id` vocabulary, and
   `protection.notes` holds at most 32 strings of at most 300 characters.
+
+The schema checks the form of `input_digest` only: the intent object it
+hashes (RFC 0013, Approval binding) is not part of the action.
+`valid/coding-action/bash-force-push-reference-digest.json` carries the
+digest of the RFC's reference vector,
+`blake3:52b6752cf5f974d3c5e9e0b4ce2b1ec2adc150a77b3e80199e5a93ec287f463c`.
 
 `coding-session.schema.json` references that vocabulary at
 `coding-action.schema.json#/$defs/toolId`, so a validator that loads the

@@ -27,11 +27,14 @@ documented here.
   `coding-capability-manifest.schema.json` (announced vs validated
   capability states) and `coding-action.schema.json` (a required
   `coding_session_id`, closed `coding.*` `tool_id` vocabulary in
-  `$defs/toolId`, risk, flags, decision and observed outcome; `observe`
-  and `shadow` always decide `defer`, shadow records what `enforce`
-  would have returned, `allow`, `deny` or `pending`, in
-  `would_have_been` and requests no approval). Conformance
-  fixtures under
+  `$defs/toolId`, risk, flags, a required intent digest `input_digest`
+  (`blake3:` plus 64 lowercase hex digits over the compact, key-sorted
+  JSON of the call and its context, with a reference vector in RFC 0013;
+  a re-submitted call whose digest differs is refused with
+  `input_changed` and needs a new request), decision and observed
+  outcome; `observe` and `shadow` always decide `defer`, shadow records
+  what `enforce` would have returned, `allow`, `deny` or `pending`, in
+  `would_have_been` and requests no approval). Conformance fixtures under
   `conformance/{valid,invalid}/coding-{event,session,capability-manifest,action}/`.
   `scripts/validate.js` registers the v0.3 schemas referenced across
   files (the event type registry and `coding-action`) before compiling

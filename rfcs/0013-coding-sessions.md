@@ -300,7 +300,9 @@ and `attempt` it forms the tool-call correlation key of
 ambiguous across sessions. Every action a receiver stores or serves
 carries it.
 
-The action records `decision` (`allow`, `deny`, `pending`, `defer`),
+The action records its intent digest `input_digest` (required; see
+[Approval binding](#approval-binding)) and, for a file change,
+`patch_digest`, then `decision` (`allow`, `deny`, `pending`, `defer`),
 `effective_mode`, `would_have_been` (shadow), `reason`,
 `reason_codes`, the approval link, and later the observed `status`
 (`requested`, `decided`, `started`, `completed`, `failed`, `unknown`)
@@ -333,20 +335,103 @@ may issue commands to a session.
 
 ### Approval binding
 
-An approval authorizes one **intent**, not one tool name. The intent is
-bound by digest to:
+An approval authorizes one **intent**, not one tool name. Every coding
+action carries the digest of its intent in `input_digest`: required,
+never `null`, and of the form `blake3:` followed by 64 lowercase
+hexadecimal digits (`^blake3:[0-9a-f]{64}$`). The gateway computes it
+when it classifies the call and is the source of truth for its value;
+a connector reports the call and its context, not the digest.
 
-- for a shell action: the command, the `cwd` and the permission context
-  (sandbox, permission mode, network scope);
-- for a file change: the patch digest, the set of paths and the
-  `base_revision` of the workspace.
+**Intent object.** The digest covers a JSON object with exactly these
+twelve members. Each member is always present: an absent context value
+is `null` and an absent list is `[]`, never an omitted member.
 
-When the agent retries after approval with the same
-`native_request_id` and `attempt`, the governance layer recomputes the
-digest. Any significant change (different command, different patch,
-different paths, moved base revision, widened permissions) is a **new
-intent** and MUST be denied with `approval_invalid`. An approval is
-consumed once: a second consume MUST answer `deny`.
+| Member | Value |
+|---|---|
+| `runtime` | The runtime id: `claude_code` or `codex`. |
+| `native_tool` | The native tool name, as in the action's `native_tool`. |
+| `input` | The native tool input as the runtime submitted it (any JSON value). |
+| `cwd` | Working directory of the call, or `null`. |
+| `workspace_root` | Root of the declared workspace, or `null`. |
+| `base_revision` | Workspace revision the call starts from (for git, the commit id), or `null`. |
+| `patch_digest` | Digest of the patch a file change applies (the action's `patch_digest`), or `null`. |
+| `sandbox` | Sandbox setting of the runtime, or `null`. |
+| `permission_mode` | Permission mode of the runtime, or `null`. |
+| `network_scope` | Network scope of the call (any JSON value), or `null`. |
+| `paths` | Array of the paths the connector resolved for the call (patch targets, changed files), relative to the workspace when inside it, in reported order; `[]` when none. |
+| `symlink_escapes` | Array of the paths whose real path leaves the workspace although the lexical path does not, in reported order; `[]` when none. |
+
+On the action itself, `patch_digest` is optional and nullable.
+
+**Serialization.** The intent object is serialized as compact JSON and
+encoded in UTF-8 (no BOM):
+
+- no insignificant whitespace;
+- object keys sorted by Unicode code point, at every level, including
+  inside `input` and `network_scope`;
+- arrays keep their order;
+- strings escaped as JSON requires and no further: `"` as `\"`, `\` as
+  `\\`, U+0008, U+0009, U+000A, U+000C and U+000D as `\b`, `\t`, `\n`,
+  `\f` and `\r`, any other character below U+0020 as `\u00xx` (lowercase
+  hex); every other character, `/` and non-ASCII included, is emitted as
+  itself in UTF-8;
+- `null`, `true` and `false` as themselves, and integers in plain
+  decimal.
+
+For values in the Agenomic JSON Subset of RFC 0012, this is the
+canonical form of RFC 0012 except for the key order (RFC 0012 compares
+UTF-16 code units; the two orders differ only for keys that mix
+characters above U+FFFF with U+E000 to U+FFFF). A number
+written with a fraction or an exponent has no portable serialization
+across languages; a verifier recomputing the digest of an input that
+holds one may disagree with the gateway, whose value is authoritative.
+
+**Digest.** `input_digest` is `blake3:` followed by the lowercase hex
+of the 32-byte BLAKE3 hash of those bytes.
+
+**Reference vector.** A Claude Code `Bash` call with this intent object:
+
+```json
+{
+  "runtime": "claude_code",
+  "native_tool": "Bash",
+  "input": { "command": "git push --force origin main", "description": "push" },
+  "cwd": "/work/demo",
+  "workspace_root": "/work/demo",
+  "base_revision": "0123456789abcdef0123456789abcdef01234567",
+  "patch_digest": null,
+  "sandbox": "workspace-write",
+  "permission_mode": "default",
+  "network_scope": null,
+  "paths": [],
+  "symlink_escapes": []
+}
+```
+
+serializes to these 355 bytes (one line):
+
+```text
+{"base_revision":"0123456789abcdef0123456789abcdef01234567","cwd":"/work/demo","input":{"command":"git push --force origin main","description":"push"},"native_tool":"Bash","network_scope":null,"patch_digest":null,"paths":[],"permission_mode":"default","runtime":"claude_code","sandbox":"workspace-write","symlink_escapes":[],"workspace_root":"/work/demo"}
+```
+
+and its `input_digest` is
+`blake3:52b6752cf5f974d3c5e9e0b4ce2b1ec2adc150a77b3e80199e5a93ec287f463c`.
+
+**Binding.** An approval is bound to the `input_digest` of the action
+that requested it. When the agent submits the same call again (same
+`coding_session_id`, `native_request_id` and `attempt`), for example
+after the approval was granted, the gateway recomputes the digest. If it
+differs from the stored action's `input_digest`, because any member of
+the intent object changed (a different command or input, another `cwd`,
+a different patch or set of paths, a moved base revision, another
+sandbox, permission mode or network scope), the call is a **new
+intent**: the gateway MUST NOT apply the approval to it and
+MUST answer `deny` with the reason code `input_changed` (a shadow
+session records that as `would_have_been: "deny"` and answers `defer`).
+The changed call needs a new request, under a new `native_request_id`
+or `attempt`, which gets its own action, decision and, if required, its
+own approval. An approval is consumed once: a second consume MUST answer
+`deny`.
 
 ### Privacy defaults
 
@@ -387,6 +472,12 @@ consumed once: a second consume MUST answer `deny`.
   Shadow therefore always answers `defer` and records a would-be
   approval as `would_have_been: "pending"`, so a team can measure how
   many approvals `enforce` would raise before switching to it.
+- **Reusing the RFC 0012 canonical form for the intent digest.** RFC
+  0012 hashes with SHA-256 and sorts keys by UTF-16 code units. The
+  intent digest is computed by the gateway alone, which already hashes
+  with BLAKE3 like RFC 0010 and sorts keys by code point; the two
+  serializations agree except for keys that mix characters above U+FFFF
+  with U+E000 to U+FFFF.
 - **A single capability state.** Merging announced and validated hides
   the difference between a vendor claim and a tested installation, which
   is exactly what a reviewer needs to see.
@@ -414,8 +505,14 @@ consumed once: a second consume MUST answer `deny`.
   rule turns that into `blocked`, never into `observe`. `unknown` never
   counts as protected.
 - **Replay and freshness.** Event deduplication prevents double
-  counting; approvals are bound to a digest of the intent and consumed
-  once; commands expire.
+  counting; approvals are bound to the intent digest `input_digest` and
+  consumed once, and a re-submitted call whose recomputed digest differs
+  is refused with `input_changed`; commands expire.
+- **Intent digest scope.** The digest binds only what the intent object
+  holds. A change the connector does not report (for example the
+  contents of a file a command reads) does not change it: an approval
+  covers the reported call and context, not the state of the machine
+  the call runs on.
 - **Key compromise / rotation impact.** Revoking a runner revokes its
   credentials and marks its active sessions `lost`; decisions already
   recorded remain valid evidence of what was decided, not of what ran.
