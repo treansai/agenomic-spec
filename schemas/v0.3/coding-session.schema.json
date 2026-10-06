@@ -64,12 +64,33 @@
     "protection": {
       "type": "object",
       "additionalProperties": false,
+      "description": "Which coding tool ids are actually gated in this session. A protected badge is derived from mode_effective together with a non-empty protected list, never from mode_requested or notes.",
       "properties": {
-        "protected": { "type": "array", "items": { "type": "string" } },
-        "not_covered": { "type": "array", "items": { "type": "string" } }
+        "protected": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "coding-action.schema.json#/$defs/toolId" },
+          "description": "Tool ids whose calls are gated by Agenomic in this session."
+        },
+        "not_covered": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "coding-action.schema.json#/$defs/toolId" },
+          "description": "Tool ids whose calls are not gated in this session."
+        },
+        "notes": {
+          "type": "array",
+          "maxItems": 32,
+          "items": { "type": "string", "maxLength": 300 },
+          "description": "Human-readable descriptions of the mechanisms behind the coverage (sandbox, settings not loaded, ...). Caveats about what is not covered go to limitations."
+        }
       }
     },
-    "limitations": { "type": "array", "items": { "type": "string" } },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Human-readable caveats, including what protection does not cover."
+    },
     "capabilities": {
       "type": "object",
       "propertyNames": { "$ref": "#/$defs/capabilityName" },

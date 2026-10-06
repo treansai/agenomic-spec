@@ -22,7 +22,7 @@
   "mode_effective": "enforce",
   "protection": {
     "protected": [
-      "coding.shell.exec",
+      "coding.shell.exce",
       "coding.fs.write",
       "coding.git.push"
     ],

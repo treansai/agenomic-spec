@@ -25,6 +25,9 @@
     "not_covered": [
       "coding.shell.exec",
       "coding.fs.write"
+    ],
+    "notes": [
+      "Pre-tool control probe did not complete on this runtime version."
     ]
   },
   "limitations": [

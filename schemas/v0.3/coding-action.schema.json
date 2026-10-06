@@ -42,27 +42,7 @@
       "minLength": 1,
       "description": "Native tool name, for example Bash, Write, Edit, exec_command, apply_patch, mcp__srv__tool."
     },
-    "tool_id": {
-      "type": "string",
-      "enum": [
-        "coding.fs.read",
-        "coding.fs.write",
-        "coding.fs.delete",
-        "coding.shell.exec",
-        "coding.shell.interactive_input",
-        "coding.git.read",
-        "coding.git.commit",
-        "coding.git.push",
-        "coding.git.destructive",
-        "coding.dependency.install",
-        "coding.network.fetch",
-        "coding.mcp.call",
-        "coding.agent_config.modify",
-        "coding.subagent.spawn",
-        "coding.web.search",
-        "coding.unknown"
-      ]
-    },
+    "tool_id": { "$ref": "#/$defs/toolId" },
     "risk": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
     "flags": {
       "type": "array",
@@ -127,6 +107,30 @@
     "created_at": { "type": "string", "format": "date-time" },
     "decided_at": { "type": ["string", "null"], "format": "date-time" },
     "completed_at": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "$defs": {
+    "toolId": {
+      "$comment": "The closed coding tool vocabulary of RFC 0013. coding-session.schema.json references it for protection.protected and protection.not_covered.",
+      "type": "string",
+      "enum": [
+        "coding.fs.read",
+        "coding.fs.write",
+        "coding.fs.delete",
+        "coding.shell.exec",
+        "coding.shell.interactive_input",
+        "coding.git.read",
+        "coding.git.commit",
+        "coding.git.push",
+        "coding.git.destructive",
+        "coding.dependency.install",
+        "coding.network.fetch",
+        "coding.mcp.call",
+        "coding.agent_config.modify",
+        "coding.subagent.spawn",
+        "coding.web.search",
+        "coding.unknown"
+      ]
+    }
   },
   "allOf": [
     {

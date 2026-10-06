@@ -27,7 +27,7 @@
       "coding.git.push"
     ],
     "not_covered": [
-      "coding.mcp.call"
+      "mcp"
     ],
     "notes": [
       "Shell, file and git calls are gated by the app-server approval hook.",

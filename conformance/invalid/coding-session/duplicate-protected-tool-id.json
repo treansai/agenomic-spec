@@ -24,7 +24,7 @@
     "protected": [
       "coding.shell.exec",
       "coding.fs.write",
-      "coding.git.push"
+      "coding.shell.exec"
     ],
     "not_covered": [
       "coding.mcp.call"

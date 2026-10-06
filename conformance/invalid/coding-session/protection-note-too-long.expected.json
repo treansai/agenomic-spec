@@ -1,0 +1,7 @@
+{
+  "description": "Each `protection.notes` entry is at most 300 characters.",
+  "match": {
+    "keyword": "maxLength",
+    "instancePath": "/protection/notes/0"
+  }
+}

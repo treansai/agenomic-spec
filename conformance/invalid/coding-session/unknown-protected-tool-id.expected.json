@@ -1,0 +1,7 @@
+{
+  "description": "`protection.protected` lists coding tool ids from the closed coding-action `tool_id` vocabulary; a misspelled id cannot be matched to any action.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/protection/protected/0"
+  }
+}

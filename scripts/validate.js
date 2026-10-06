@@ -137,20 +137,33 @@ function addV04Schemas() {
   }
 }
 
+// v0.3 schemas that other v0.3 schemas reference across files by $id
+// (tracking and trace events use the event type registry; the coding session
+// uses the coding action's tool id vocabulary). They are added before any v0.3
+// schema is compiled, so a reference resolves whatever order fixtures are
+// walked in.
+const V03_SHARED_SCHEMAS = ['event-type-registry.json', 'coding-action.schema.json'];
+
+function addV03SharedSchemas() {
+  for (const name of V03_SHARED_SCHEMAS) {
+    const shared = JSON.parse(fs.readFileSync(path.join(SCHEMA_DIRS['v0.3'], name), 'utf8'));
+    if (!ajv.getSchema(shared.$id)) ajv.addSchema(shared);
+  }
+}
+
 const compiledByPath = new Map();
 function getValidator(ref) {
   if (!compiledByPath.has(ref.label)) {
     const full = path.join(SCHEMA_DIRS[ref.version], ref.file);
     const schema = JSON.parse(fs.readFileSync(full, 'utf8'));
-    if (ref.version === 'v0.3') {
-      const registryPath = path.join(SCHEMA_DIRS['v0.3'], 'event-type-registry.json');
-      if (!ajv.getSchema('https://agenomic.dev/spec/v0.3/event-type-registry.json')) {
-        ajv.addSchema(JSON.parse(fs.readFileSync(registryPath, 'utf8')));
-      }
-    }
     if (ref.version === 'v0.4') {
       addV04Schemas();
       compiledByPath.set(ref.label, ajv.getSchema(schema.$id));
+    } else if (ref.version === 'v0.3') {
+      addV03SharedSchemas();
+      // A shared schema is already registered under its $id: reuse it, since
+      // compiling it again would register a duplicate $id.
+      compiledByPath.set(ref.label, ajv.getSchema(schema.$id) || ajv.compile(schema));
     } else {
       compiledByPath.set(ref.label, ajv.compile(schema));
     }

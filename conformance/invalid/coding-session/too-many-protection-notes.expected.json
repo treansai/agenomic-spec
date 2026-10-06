@@ -1,0 +1,7 @@
+{
+  "description": "`protection.notes` holds at most 32 entries.",
+  "match": {
+    "keyword": "maxItems",
+    "instancePath": "/protection/notes"
+  }
+}

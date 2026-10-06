@@ -106,11 +106,17 @@ actions. A producer MUST NOT silently lower `mode_effective` below
 with `mode_effective: observe` (and likewise for `shadow`). Lowering a
 mode is a new, explicit request by a user, recorded as such.
 
-`protection.protected` lists the tool ids that are actually gated in
-this session; `protection.not_covered` lists those that are not;
-`limitations` carries human-readable caveats. A consumer showing a
-"protected" badge MUST derive it from these fields, never from
-`mode_requested`.
+`protection.protected` lists the coding tool ids (the closed `tool_id`
+vocabulary of [Action classification](#action-classification)) whose
+calls are actually gated in this session; `protection.not_covered`
+lists those that are not. Each list holds an id at most once.
+`protection.notes`, at most 32 strings of at most 300 characters each,
+describes the mechanisms behind that coverage (for example a sandbox,
+or runtime settings that were not loaded). Caveats about what is not
+covered go to the session's `limitations`. A consumer showing a
+"protected" badge MUST derive it from `mode_effective` together with a
+non-empty `protection.protected`, never from `mode_requested` or
+`protection.notes`.
 
 ### Event envelope
 
