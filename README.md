@@ -126,7 +126,7 @@ npm run lint        # markdownlint + RFC front-matter lint
 | [`coding-session.schema.json` (v0.3)](schemas/v0.3/coding-session.schema.json) | Supervised coding-agent session (Claude Code, Codex): origin, control, governance modes (RFC 0013). |
 | [`coding-event.schema.json` (v0.3)](schemas/v0.3/coding-event.schema.json) | `agenomic.coding.event/v1` envelope: session id, source, trust, per-source ordering, tool-call correlation (RFC 0013). |
 | [`coding-capability-manifest.schema.json` (v0.3)](schemas/v0.3/coding-capability-manifest.schema.json) | Announced vs validated capabilities of a coding runtime version (RFC 0013). |
-| [`coding-action.schema.json` (v0.3)](schemas/v0.3/coding-action.schema.json) | Classified, decided coding action with observed outcome (RFC 0013). |
+| [`coding-action.schema.json` (v0.3)](schemas/v0.3/coding-action.schema.json) | Classified, decided coding action: session id, intent digest that binds approvals, mode and decision pairing, observed outcome (RFC 0013). |
 
 `schemas/v0.2/` is an **overlay** (RFC 0009): artifact kinds not redefined
 there continue to validate against `schemas/v0.1/`. A document's
