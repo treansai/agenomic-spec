@@ -32,9 +32,10 @@ documented here.
   JSON of the call and its context, with a reference vector in RFC 0013;
   a re-submitted call whose digest differs is refused with
   `input_changed` and needs a new request), decision and observed
-  outcome; `observe` and `shadow` always decide `defer`, shadow records
-  what `enforce` would have returned, `allow`, `deny` or `pending`, in
-  `would_have_been` and requests no approval). Conformance fixtures under
+  outcome; `observe` and `shadow` always decide `defer` and `enforce`
+  never does, shadow records what `enforce` would have returned,
+  `allow`, `deny` or `pending`, in `would_have_been` and requests no
+  approval). Conformance fixtures under
   `conformance/{valid,invalid}/coding-{event,session,capability-manifest,action}/`.
   `scripts/validate.js` registers the v0.3 schemas referenced across
   files (the event type registry and `coding-action`) before compiling

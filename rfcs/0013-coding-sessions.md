@@ -95,7 +95,9 @@ present `lost` as `stopped`.
   would-be `pending` is recorded as `would_have_been: "pending"`, with no
   `approval_id`.
 - `enforce` — the policy decision (`allow`, `deny`, `pending`) is
-  returned to the runtime's hook and is binding.
+  returned to the runtime's hook and is binding. An `enforce` action
+  never answers `defer`: that would hand the call back to the native
+  permission flow and bypass the policy.
 
 `mode_effective` is what actually holds: one of the three modes, `none`
 (not yet connected) or `blocked`. If a prerequisite of the requested
@@ -308,7 +310,8 @@ The action records its intent digest `input_digest` (required; see
 (`requested`, `decided`, `started`, `completed`, `failed`, `unknown`)
 and `outcome`. The schema enforces that a `pending` decision references
 an `approval_id`, that `observe` and `shadow` modes only ever answer
-`defer`, and that a `shadow` action references no approval.
+`defer` while `enforce` never does, and that a `shadow` action
+references no approval.
 
 ### Command lifecycle
 
