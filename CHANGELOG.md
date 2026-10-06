@@ -78,6 +78,16 @@ documented here.
   `Draft` until it is accepted under `GOVERNANCE.md`. No schema, fixture or
   vector changed, so `MANIFEST.json` and every vendored vector lock stay
   valid.
+- **Hermes Agent runtime artifacts.** Three v0.3 schemas for runtimes
+  controlled through the Hermes Agent adapter: `hermes-event`
+  (`agenomic.hermes.event/v1`, receiver assigned `source` and `trust`, an
+  adapter event is always `declared`), `hermes-profile`
+  (`agenomic.hermes.profile/v1`, model admission, delegation limits,
+  persistence rules; no secret values) and `hermes-action`
+  (`agenomic.hermes.action/v1`, the admitted action contract; decisions are
+  distinct from commands). Conformance fixtures cover a plugin claiming
+  `observed`, a secret in a profile and a command used as a decision. See
+  `docs/hermes.md`.
 
 - **CLI criticality vocabulary.** `agent.criticality` in `genome.yaml` now
   also accepts `low`, `medium`, `high` and `critical`, the values emitted by

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.3/hermes-event.schema.json",
+  "title": "Agenomic Hermes Agent runtime event (agenomic.hermes.event/v1)",
+  "description": "One event about a Hermes Agent instance as stored by a control plane. `source` and `trust` are assigned by the receiver, never taken from the producer: everything posted by the in-process adapter is `plugin`/`declared`; facts seen by a gateway or the supervisor are `observed`. A decision is not an execution proof and a declared result is not an external proof. Content is metadata and hashes by default; no hidden reasoning is ever carried.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["event_id", "type", "occurred_at", "source", "trust"],
+  "properties": {
+    "schema_version": { "const": "agenomic.hermes.event/v1" },
+    "event_id": { "type": "string", "pattern": "^[A-Za-z0-9_.:@-]{1,128}$" },
+    "type": { "type": "string", "pattern": "^[a-z0-9_.]{1,120}$" },
+    "seq": { "type": "integer", "minimum": 0, "description": "Monotonic per producer process; ordering across processes is by receive cursor, never assumed global." },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "received_at": { "type": "string", "format": "date-time" },
+    "source": { "enum": ["plugin", "supervisor", "model_gateway", "tool_gateway", "control_plane"] },
+    "trust": { "enum": ["declared", "observed"] },
+    "instance_id": { "type": "string", "format": "uuid" },
+    "hermes_session_id": { "type": "string", "maxLength": 200 },
+    "session_id": { "type": "string", "format": "uuid" },
+    "rmp_session_id": { "type": "string" },
+    "trace_id": { "type": "string", "maxLength": 128 },
+    "span_id": { "type": "string", "maxLength": 128 },
+    "parent_span_id": { "type": "string", "maxLength": 128 },
+    "turn_id": { "type": "string", "maxLength": 200 },
+    "action_id": { "type": "string", "maxLength": 200 },
+    "attempt_id": { "type": "integer", "minimum": 1 },
+    "tool": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "object", "required": ["name"], "properties": { "name": { "type": "string" } } }
+      ]
+    },
+    "model": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "object", "properties": { "provider": { "type": "string" }, "model": { "type": "string" } } }
+      ]
+    },
+    "decision": { "type": "string", "maxLength": 40 },
+    "reason": { "type": "string", "maxLength": 300 },
+    "status": { "type": "string", "maxLength": 40 },
+    "latency_ms": { "type": "integer", "minimum": 0 },
+    "input_hash": { "type": "string", "pattern": "^blake3:[0-9a-f]{1,64}$" },
+    "output_hash": { "type": "string", "pattern": "^blake3:[0-9a-f]{1,64}$" },
+    "usage": {
+      "type": "object",
+      "properties": {
+        "input_tokens": { "type": "integer", "minimum": 0 },
+        "output_tokens": { "type": "integer", "minimum": 0 },
+        "known": { "type": "boolean", "description": "false when the usage is unknown (interrupted stream); unknown usage is never zero." }
+      }
+    },
+    "redacted_preview": { "type": "string", "maxLength": 2000 },
+    "extra": { "type": "object" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "source": { "const": "plugin" } } },
+      "then": { "properties": { "trust": { "const": "declared" } } }
+    }
+  ]
+}

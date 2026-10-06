@@ -1,0 +1,4 @@
+{
+  "description": "An event produced by the in-process adapter is declared, never observed.",
+  "match": { "keyword": "const", "instancePath": "/trust" }
+}

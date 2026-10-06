@@ -1,0 +1,10 @@
+{
+  "event_id": "srv_6f1c0d9a7b5e4c3d2a1b0c9d8e7f6a5b",
+  "type": "model.call.completed",
+  "occurred_at": "2026-10-05T12:00:01Z",
+  "source": "model_gateway",
+  "trust": "observed",
+  "model": { "provider": "custom", "model": "demo-model" },
+  "status": "interrupted",
+  "usage": { "known": false }
+}
