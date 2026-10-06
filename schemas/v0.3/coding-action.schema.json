@@ -20,13 +20,22 @@
   ],
   "properties": {
     "id": { "type": "string", "format": "uuid" },
+    "coding_session_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "The coding session the action belongs to. (coding_session_id, native_request_id, attempt) is the tool-call correlation key that tool.* events carry as (coding_session_id, payload.native_request_id, attempt_id)."
+    },
     "native_request_id": {
       "type": "string",
       "minLength": 1,
       "description": "The runtime's own id for the call (Claude Code tool_use id, Codex itemId[:approvalId])."
     },
     "runtime_turn_id": { "type": ["string", "null"] },
-    "attempt": { "type": "integer", "minimum": 1 },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Attempt number of the native call; tool.* events carry it as the decimal string attempt_id."
+    },
     "phase": { "type": "string", "enum": ["pre_tool", "native_approval"] },
     "native_tool": {
       "type": "string",

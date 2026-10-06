@@ -127,7 +127,11 @@ Every event is an `agenomic.coding.event/v1` envelope:
   "runtime_turn_id": "turn-0003",
   "action_id": "0b8f3c2e-5d41-4a7b-9c1e-2f6a8d9e0b13",
   "attempt_id": "1",
-  "payload": { "native_tool": "Bash", "tool_id": "coding.shell.exec" }
+  "payload": {
+    "native_tool": "Bash",
+    "native_request_id": "toolu_example_01",
+    "tool_id": "coding.shell.exec"
+  }
 }
 ```
 
@@ -182,12 +186,32 @@ stored twice.
 the **request** (`tool.requested`), the **decision** (the coding
 action's `decision`, plus `approval.*` events), the **observed start**
 (`tool.started`) and the **observed result** (`tool.completed` or
-`tool.failed`). They are linked by `action_id` and `attempt_id`, and
-MUST NOT be collapsed. In particular, **an `allow` is not proof of
-execution**: the runtime may still abort, the user may cancel, or the
-hook may never return. Evidence that an action ran requires an observed
-start or result event; absent one, the action's `status` stays
-`decided` or becomes `unknown`.
+`tool.failed`). They MUST NOT be collapsed. In particular, **an `allow`
+is not proof of execution**: the runtime may still abort, the user may
+cancel, or the hook may never return.
+
+**Tool-call correlation.** Every `tool.requested`, `tool.started`,
+`tool.completed` and `tool.failed` event MUST carry:
+
+- `attempt_id`: the decimal string of the native call's attempt number
+  (`"1"`, `"2"`, ...), equal to the coding action's `attempt`;
+- `payload.native_request_id`: the runtime's id of the call, equal to
+  the coding action's `native_request_id`;
+- `action_id` on `tool.requested`, which is emitted with the decision.
+  On `tool.started`, `tool.completed` and `tool.failed`, `action_id`
+  MUST be set whenever a coding action exists for the call.
+
+The correlation key of a tool call is `(coding_session_id,
+payload.native_request_id, attempt_id)`; it matches the coding action's
+`(coding_session_id, native_request_id, attempt)`. A retry of the same
+native call is a new attempt with its own key. A `tool.started`,
+`tool.completed` or `tool.failed` event without `action_id` observes a
+call that never went through a decision (for example, hooks installed
+while the call was running, or the gateway unreachable in `observe`
+mode); it MUST NOT be counted as execution evidence for any action.
+Evidence that an action ran requires an observed start or result event
+that carries the action's `action_id` and correlation key; absent one,
+the action's `status` stays `decided` or becomes `unknown`.
 
 ### Capability manifest
 

@@ -1,0 +1,11 @@
+{
+  "description": "Every tool.* event carries `payload.native_request_id`, the runtime's id of the call and part of the correlation key.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "/payload",
+    "schemaPath": "#/allOf/0/then/properties/payload/required",
+    "params": {
+      "missingProperty": "native_request_id"
+    }
+  }
+}

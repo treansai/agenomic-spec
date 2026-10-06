@@ -1,0 +1,7 @@
+{
+  "description": "`attempt_id` is the canonical decimal string of the attempt number (\"1\", \"2\", ...), so it compares equal to the coding action's `attempt`.",
+  "match": {
+    "keyword": "pattern",
+    "instancePath": "/attempt_id"
+  }
+}

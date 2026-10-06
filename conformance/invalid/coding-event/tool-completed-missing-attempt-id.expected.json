@@ -1,0 +1,11 @@
+{
+  "description": "Every tool.* event carries `attempt_id`: without it a result cannot be told apart from the result of another attempt of the same call.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "schemaPath": "#/allOf/0/then/required",
+    "params": {
+      "missingProperty": "attempt_id"
+    }
+  }
+}

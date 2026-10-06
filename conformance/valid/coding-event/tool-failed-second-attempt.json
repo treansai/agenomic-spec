@@ -1,0 +1,19 @@
+{
+  "event_id": "01K6Y9A1B2C3D4E5F6G7H8J9K6",
+  "coding_session_id": "3f2b8c1d-6e4a-4b9f-8c7d-1a2b3c4d5e6f",
+  "schema_version": "agenomic.coding.event/v1",
+  "type": "tool.failed",
+  "source": "runtime",
+  "trust": "native",
+  "producer_epoch": "01K6Y8Z5Q3M2N4P6R8T0V2W4X6",
+  "producer_seq": 26,
+  "occurred_at": "2026-10-05T09:04:12Z",
+  "runtime_turn_id": "turn-0004",
+  "action_id": "4c5d6e7f-8a9b-4c0d-9e1f-2a3b4c5d6e7f",
+  "attempt_id": "2",
+  "payload": {
+    "native_request_id": "toolu_example_06",
+    "exit_code": 101,
+    "duration_ms": 5120
+  }
+}
