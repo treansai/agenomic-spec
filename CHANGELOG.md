@@ -63,6 +63,22 @@ documented here.
   state case and a prompt-only spec, and an invalid spec whose `alpha` is a
   JSON float.
 
+- **RFC 0012, complete text for v0.4.** The Detailed design now condenses
+  every v0.4 document: the discovery report, the import plan, prompts files
+  and prompt files with the `agenomic-yaml/1` profile, the experiment case and
+  frozen spec, and release attestation version 2. The identifier table gains
+  the import plan, experiment, dataset and runner ids, the `cand_` candidate
+  and item ids and the `arm_` arm keys; the digest table gains
+  `discovery_report_digest`, `plan_digest` and `spec_digest`. Open questions
+  record the limits of the first implementations: TypeScript loads offline
+  bundles only under a bundle digest pin, organization signing keys have no
+  revoked state (rotate, then remove the old `key_id` from every trust store),
+  and member names are not matched against the secret patterns. Security
+  considerations add key compromise, imports and experiments. The RFC stays
+  `Draft` until it is accepted under `GOVERNANCE.md`. No schema, fixture or
+  vector changed, so `MANIFEST.json` and every vendored vector lock stay
+  valid.
+
 - **CLI criticality vocabulary.** `agent.criticality` in `genome.yaml` now
   also accepts `low`, `medium`, `high` and `critical`, the values emitted by
   `agm init` and `agm enrich`. The existing `standard`, `sensitive`,

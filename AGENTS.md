@@ -77,3 +77,16 @@ comments.
   when `level` is `node`, profile and repetitions, the held-out dataset of an
   exploration, the bootstrap minimum of 20 paired cases) belong to the
   service, which validates the spec at preflight.
+- RFC 0012 stays `Draft` although its text covers every v0.4 document.
+  `GOVERNANCE.md` makes acceptance a maintainer and BDFL decision after a
+  7-day comment period, and `docs/versioning.md` freezes the substantive
+  content of an Accepted RFC, so implementation work completes the text and
+  never changes the status.
+- RFC 0012 Detailed design, the schema descriptions, `docs/prompts.md` and
+  `conformance/README.md` describe the same v0.4 documents at different
+  depths, and the committed schemas are the reference. A schema change updates
+  all four in the same commit.
+- Documentation passes leave `conformance/vectors/prompts/` alone, README
+  included: any byte change there changes `MANIFEST.json` and therefore every
+  vendored `SPEC_VECTORS.lock`. Prose about the vectors goes in RFC 0012 or
+  `docs/prompts.md`.

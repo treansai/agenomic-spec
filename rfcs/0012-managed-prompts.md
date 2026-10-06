@@ -17,7 +17,12 @@ rendered prompt, artifact set, bundle, execution binding), one canonical JSON
 form and the sha256 digests computed over it, the prompt reference grammar
 (`prm_x:7`, `prm_x@alias`, `agenomic://<workspace>/prompts/<id>/versions/<n>`),
 the strict template grammar `agenomic-fstring/v1` with its renderer version
-`"1"`, and the portable secret pattern set `agenomic-secrets/1`. The schemas
+`"1"`, and the portable secret pattern set `agenomic-secrets/1`. It also
+defines the documents that bring existing prompts under management (discovery
+report, import plan, prompts file and prompt file, with the YAML profile
+`agenomic-yaml/1`), the two documents of a prompt experiment (case and frozen
+spec), and version 2 of the RFC 0008 release attestation, which binds an agent
+version's genome and prompt manifest. The schemas
 live in `schemas/v0.4/`; cross-language parity is proven by the conformance
 vectors under `conformance/vectors/prompts/`, which every implementation
 (Rust, Python, TypeScript) runs.
@@ -65,6 +70,9 @@ execution can be reproduced, compared and audited from digests alone.
 | digest | `^sha256:[0-9a-f]{64}$` | |
 | runtime bundle hash | `^(blake3\|blake3-merkle-v1):[0-9a-f]{64}$` | |
 | binding id | `bnd_` plus 26 lowercase Crockford base32 characters | |
+| import plan, experiment, dataset and runner ids | `imp_`, `exp_`, `exds_` and `exr_` plus 26 lowercase Crockford base32 characters | |
+| discovery candidate and import item id | `cand_` plus 16 lowercase hex digits | |
+| experiment arm key | `arm_` plus 8 lowercase hex digits | |
 
 ### The Agenomic JSON Subset (AJS)
 
@@ -113,9 +121,14 @@ document whose top-level `schema` names its type:
 | `prompt_manifest_digest` | the `agenomic.prompt_manifest/v1` object |
 | `rendered_hash` | the `agenomic.rendered_prompt/v1` object |
 | `prompt_bundle_digest` | the `agenomic.prompt_artifact_set/v1` projection of a bundle |
+| `discovery_report_digest` | the `agenomic.prompt_discovery_report/v1` object |
+| `plan_digest` | the `agenomic.prompt_import_plan/v1` object without its `plan_digest` member |
+| `spec_digest` | the `agenomic.experiment_spec/v1` object without its `identity` member |
 
 Clients verify the digest of every downloaded artifact before use; a mismatch
-is never repaired or ignored, and the artifact is unusable.
+is never repaired or ignored, and the artifact is unusable. Experiment cases
+are outside the subset because they may hold floats, so case and dataset
+digests are computed by the server only and no client recomputes them.
 
 ### Prompt content (`agenomic.prompt_content/v1`)
 
@@ -453,6 +466,181 @@ import. Runtime values are the application's data: they are scanned only under
 application's behalf force on. Adding or changing a pattern requires a new set
 id.
 
+### Discovery report (`agenomic.prompt_discovery_report/v1`)
+
+A static scanner reads source files without importing or executing them and
+writes this report, hashed whole (`discovery_report_digest`):
+`{ schema, scanner, root, generated_at, limits, files, candidates }`. It is the
+only document that leaves the developer's machine during discovery; an import
+endpoint accepts it, never source code.
+
+- `scanner` names the scanner, its version, the Python grammar it parsed and
+  the secret pattern set it applied. `root.label` is free text of at most 128
+  code points and never an absolute path; `root.vcs` is `null` or a git commit.
+- `files[]` lists repository-relative POSIX paths (no leading `/`, no `..`
+  segment, no backslash) with the sha256 of the file bytes and a status:
+  `scanned`, or `skipped` with `too_large`, `syntax_error`, `not_utf8`,
+  `excluded` or `limit_reached`.
+- `candidate_id` is `cand_` plus the first 16 hex digits of
+  `sha256(NCF({ path, line, column, construct }))`, stable across rescans of an
+  unchanged file.
+- Candidate `status` is `supported` (the template was ported exactly; only this
+  status carries `content` and `content_digest`), `unsupported` (a recognized
+  construct with a refused feature), `unresolved` (a dynamic construct) or
+  `blocked_secret`.
+- `construct` names what was recognized: a LangChain prompt, message or
+  message template, the prompt of a LangGraph or LangChain agent constructor,
+  a module string constant, `langgraph.subagent_node` (a graph node backed by a
+  compiled subgraph or an agent constructor: always `unresolved`, with a
+  `node_path` and the issue `subagent_unmapped`), or `dynamic` (always
+  `unresolved`).
+- `source` locates the candidate with 1-based lines and columns counted in
+  code points; `proposal` suggests a prompt id, prompt kind, slot path, node
+  path and slot usage.
+- Issue messages never quote source text, and `secret_findings[]` carry a
+  pattern id and a location, never the matched text.
+
+### Import plan (`agenomic.prompt_import_plan/v1`)
+
+A server computes the plan from a discovery report, a prompts file or, reserved
+for a later version, a running LangChain application (`source.kind`;
+`source.digest` is the digest of that input):
+`{ schema, plan_id, workspace_id, agent_id, source, created_at, items, summary, plan_digest }`.
+
+| Action | Meaning |
+|---|---|
+| `create_prompt` | a new prompt at version 1 |
+| `create_version` | a new version; `base_version` is the latest version when the plan was computed |
+| `reuse_version` | a version with the same `content_digest` exists (`existing_version_with_same_digest`); nothing is created |
+| `map_slot_only` | the slot is mapped, no prompt is written |
+| `skip` | nothing is written |
+| `blocked` | a secret, a refused construct or invalid content; `content` is `null` |
+
+- `content` and `content_digest` are `null` together, and `prompt_kind` agrees
+  with `content.kind`.
+- An unresolved candidate is always listed with slot status `unresolved` and
+  action `skip`: an import never marks as managed a prompt it could not port,
+  and a plan never claims complete coverage.
+- `summary` counts the items per action plus `unresolved`, the items whose slot
+  status is `unresolved`. It is hashed and must equal the counts recomputed
+  from `items`.
+- `plan_digest` is the digest of the plan without its `plan_digest` member
+  (vector D025). An apply call cites it and decides each item. A server applies
+  nothing when the cited digest differs from the plan it computes, or when a
+  `base_version` or a prompts file's `expected_latest_version` is no longer the
+  latest version (`prompt_import_plan_stale`). A stored plan is applied at most
+  once.
+- A plan from a discovery report is stored: `plan_id` (an `imp_` id) and
+  `created_at` are set, and `item_id` is the `candidate_id`. A plan from a
+  prompts file is not stored, and the apply call recomputes it: `plan_id` and
+  `created_at` are `null`, because a per-call id or timestamp would change
+  every recomputed digest, and `item_id` is `cand_` plus the first 16 hex
+  digits of the sha256 of the UTF-8 bytes of the `prompt_id`.
+
+### Prompt files and the YAML profile `agenomic-yaml/1`
+
+`agenomic.prompts_file/v1` is an authoring document and is not hashed: the
+desired state of a family of prompts (`prompts`, each with `prompt_id`, prompt
+`kind`, `name` and `content`, and optionally `description`, `tags`,
+`expected_latest_version` and `change_message`) plus, optionally, the slot
+mapping of one agent (`agent_id` and `slots`).
+
+- Each `content` may omit `schema`, `template_format`, `renderer_version`,
+  `partials`, `output_contract` and `fragments`, which default to
+  `agenomic.prompt_content/v1`, `agenomic-fstring/v1`, `"1"`, `{}`, `null` and
+  `{}`. These are the only defaults.
+- A fragment entry is `{ prompt_id }` (a prompt of the same file, at the
+  version this file produces), `{ prompt_id, version }` (an existing version)
+  or `{ prompt_id, version, content_digest }` (checked). File-local fragment
+  references must not form a cycle (`fragment_cycle`).
+- `expected_latest_version` (`null` for a new prompt) gives optimistic
+  concurrency. `slots` change the agent's slot declarations only, never an
+  agent version or a channel.
+- Servers accept the JSON form only and plan it with
+  `source.kind = "prompts_file"`.
+
+`agenomic.prompt_file/v1` holds one prompt for command line tools that push,
+pull, render and digest it: `{ schema, prompt_id, kind, content }` plus the
+optional `name`, `description`, `tags`, `parent_version`, `change_message`,
+`version` and `content_digest`. `content` is the full content document, and
+`kind` is the prompt-level kind, which must agree with it. `version` and
+`content_digest` are written on pull and are read only: a tool refuses to push
+a file whose `content_digest` differs from the digest it recomputes, and
+ignores `version`, which the server allocates.
+
+YAML parsers disagree (YAML 1.1 reads `yes` as a boolean, YAML 1.2 as a
+string), so every YAML authoring file follows `agenomic-yaml/1`:
+
+| Rule | Result |
+|---|---|
+| encoding | UTF-8; a leading BOM is ignored |
+| documents | exactly one (`yaml_multiple_documents`) |
+| anchors, aliases, merge keys | refused (`yaml_alias_unsupported`) |
+| tags, `!!str` included | refused (`yaml_tag_unsupported`) |
+| duplicate mapping keys | refused (`yaml_duplicate_key`) |
+| non-string mapping keys | refused (`invalid_field_type`) |
+| plain `true`, `false` | the only booleans; `yes`, `on`, `Off`, `True` stay strings |
+| plain `null`, `~`, empty | the only nulls |
+| plain `[-+]?[0-9]+` | an integer, then subject to AJS |
+| plain float form (`1.5`, `1e3`, `.inf`, `.nan`) | refused (`float_not_allowed`) |
+| quoted scalars | always strings |
+| block scalars | YAML 1.2 chomping: the literal indicator keeps one final line feed, its strip form (`-`) none, its keep form (`+`) all |
+
+The loaded document must equal the JSON form of the same file, byte for byte
+after NCF (vectors Y001 to Y010).
+
+### Experiment documents
+
+`agenomic.experiment_case/v1` is one dataset entry:
+`{ schema, case_id, kind, input, expected, initial_state, turns, tags }`. Every
+member except `schema` is always present; dataset upload lines (JSON Lines)
+omit `schema`, and the hash input always includes it.
+
+- `kind` is `agent_input`, `node_state` (then `initial_state` is an object) or
+  `prompt_variables`, which the schema accepts and a launch refuses.
+- `turns` items are exactly `{ "user": <string> }` or
+  `{ "resume": <any JSON> }`; `tags` holds at most 32 short labels.
+- `input` and `expected` are any JSON values, floats included. Cases are
+  therefore outside AJS, and their digests are computed by the server only.
+- A case is at most 256 KiB of canonical JSON, and `case_id` is unique within a
+  dataset version.
+
+`agenomic.experiment_spec/v1` is the frozen spec of one experiment, built by
+the server at preflight and frozen at launch. It is in AJS: every number is an
+integer, the seed is a decimal string, and alpha, rates, coverages and gaps are
+unsigned decimal strings; only metric margins may be negative. Every member is
+always present and unknown members are refused at every level.
+
+| Members | Content |
+|---|---|
+| `identity` | experiment id, `org_id`, parent experiment, creator and the random `arm_keys`; excluded from `spec_digest`, so two launches of the same comparison with the same seed share a digest |
+| `agent_id`, `level`, `stage`, `profile`, `aa_test`, `classification` | the agent under test; level `agent` or `node`; stage `single`, `exploration` or `confirmation`; profile `smoke`, `standard`, `statistical` or `custom`; `aa_test` for a calibration run whose candidate equals the baseline, which never satisfies a promotion gate; and `prompt_only` or `mixed_change` |
+| `arms` | two to six arms, exactly one `baseline`; each a release with its `genome_version`, `prompt_manifest_digest`, bundle, the runtime digest the runner declares (`runtime_digest_source: "runner_declared"`) and the child releases frozen at preflight |
+| `dataset`, `heldout` | the frozen dataset version (an `exds_` id, a version and server-computed digests) and an optional held-out dataset |
+| `entry_point`, `node_scope`, `initial_state`, `repetitions` | the graph node or callable a node experiment runs and the state it includes and excludes (`null` at agent level), the snapshot digest of the initial state, and the repetitions per case |
+| `tool_mode` | `none`, `mock`, `recorded` or `live`; the inline tool configuration is bound by `tool_config_digest`, never carried |
+| `evaluators`, `metrics`, `analysis` | evaluators pinned by digest, the pre-registered primary metric and guardrails, and the paired analysis settings |
+| `budgets`, `stop_conditions`, `retries`, `seed`, `price_table`, `capture` | limits, safety stops that never look at effect estimates, retry policy, seed, declared prices and output capture |
+| `secret_refs`, `runner_selector`, `rmp_session_id` | names of secrets resolved on the runner only (never values), the eligible runners (`exr_` ids, none meaning any), and the linked Review, Monitor and Protect session |
+| `intended_changes`, `confounders` | the slot-level differences between each candidate and the baseline, and one entry per axis other than the prompt manifest on which a candidate differs or cannot be compared, acknowledged at launch |
+
+The schema checks shape and single-member bounds. Rules that relate several
+members (every arm a release of `agent_id`, a `genome_version` on every
+candidate, `entry_point` exactly at node level, the stage and candidate count)
+are validated by the server at preflight. Runners never receive the spec, and
+the arm keys are the only arm labels a runner or a judge sees.
+
+### Release attestation version 2
+
+RFC 0008 attestations keep their format and signature scheme. An issuer emits
+`schema_version: 2` for an agent version linked to a genome: version 2 adds
+the required `genome_version`, the agent version digest, and
+`prompt_manifest_digest`, both covered by the signature. Releases without a
+genome keep version 1. A validator picks the schema from `schema_version`
+(2 selects v0.4, anything else v0.1). A verifier compares `genome_version`
+with the value it expects and never recomputes it, because this specification
+does not define the genome address.
+
 ### Conformance vectors
 
 `conformance/vectors/prompts/` holds six suites (render R001 to R066,
@@ -461,8 +649,9 @@ S014, and prompts-file-yaml Y001 to Y010, which pins the `agenomic-yaml/1`
 profile of YAML authoring files for Python), pinned by a checksummed
 `MANIFEST.json` and checked by `scripts/vectors.js`, which recomputes every
 digest. Implementations vendor the
-directory with a lock file and run every vector that names them. The vector
-README defines the file format and the matching rules.
+directory with a lock file and run every vector whose `consumers` names them
+(`rust-cloud`, `rust-cli`, `python`, `typescript`). The vector README defines
+the file format and the matching rules.
 
 ## Alternatives considered
 
@@ -497,10 +686,19 @@ SDK idiomatic and dependency-free, at the cost of maintaining the vectors.
 
 ## Open questions
 
-- TypeScript lacks BLAKE3 in its standard library, so it loads bundles by
-  digest pinning until a BLAKE3 dependency is accepted.
+- TypeScript lacks BLAKE3 in its standard library, so the TypeScript
+  implementation does not verify bundle signatures: it loads an offline bundle
+  only under an expected bundle digest pin and refuses any other with
+  `bundle_untrusted_key`, until a BLAKE3 dependency is accepted.
+- Organization signing keys have no revoked state in this version. After a key
+  compromise the issuer rotates its key and every offline trust store removes
+  the old `key_id`; a bundle signed with the old key stays verifiable wherever
+  that key is still trusted, until it expires.
 - Secret-shaped variable names are a warning, not a refusal, because of false
-  positives such as `token_count`.
+  positives such as `token_count`. Member names (variable, partial and
+  fragment names, and the keys inside an output contract) are not matched
+  against the `agenomic-secrets/1` patterns, so a credential written as a name
+  is stored.
 - There is no override for a secret false positive in template text in this
   version.
 - The duplicate system message guard is on by default and may surface latent
@@ -513,15 +711,14 @@ SDK idiomatic and dependency-free, at the cost of maintaining the vectors.
   no vector pins them. The frozen experiment spec stays in the Agenomic JSON
   Subset, so any implementation recomputes `spec_digest`, but its schema checks
   shape and single-member bounds only: rules that relate several members are
-  validated by the server. The discovery, import and experiment document
-  schemas are part of v0.4 (see Compatibility).
+  validated by the server.
 - An import plan computed from a prompts file has no member for the revision
   of the agent's slot declarations, although applying it may rewrite them.
   Servers check that revision as a separate precondition of the apply call; a
   later plan version may carry it, which would change the hashed member set
   that vector D025 pins.
 - Only Python consumes the `prompts-file-yaml` vectors. Other implementations
-  accept the JSON form of a prompts file until they have a YAML parser that
+  accept the JSON form of prompts files and prompt files until they have a YAML parser that
   works at the event level, which the `agenomic-yaml/1` profile needs to refuse
   aliases, tags and duplicate keys.
 - Discovery covers Python sources (`scanner.python_grammar` is required), and
@@ -541,12 +738,20 @@ SDK idiomatic and dependency-free, at the cost of maintaining the vectors.
   scheme of RFC 0008. An embedded public key is never trusted; only keys from
   the caller's trust store or an explicit digest pin authenticate a bundle.
 - Freshness: exported bundles always carry an expiry, which bounds availability
-  but cannot revoke a bundle on a disconnected runner.
+  but cannot revoke a bundle on a disconnected runner. Signing keys have no
+  revoked state: recovering from a key compromise means rotating the key and
+  removing the old `key_id` from every offline trust store.
 - Governance: the signed `governance` member lets an offline runner refuse an
   unapproved bundle by default.
 - Secrets: template text with secret-shaped content is refused, discovery and
   error output never carry matched text, and runtime values are redacted
   wherever they are persisted or forwarded.
+- Imports: the discovery report carries no source code, no absolute path and
+  no matched secret, and an apply call is bound to the reviewed `plan_digest`,
+  so a plan that changed after review is refused.
+- Experiments: runners never receive the frozen spec and tell arms apart only
+  by random arm keys, and `secret_refs` name secrets that only the runner
+  resolves, never their values.
 - Cross-workspace isolation: a canonical URI naming another workspace is
   refused in every context and never resolved.
 - Injection through values: rendering is a single pass, so a value that looks
@@ -590,4 +795,4 @@ in their lock file.
 - [Python format string syntax](https://docs.python.org/3/library/string.html#format-string-syntax).
 - [JSON Schema 2020-12](https://json-schema.org/draft/2020-12).
 - RFC 0002, RFC 0008.
-- [`conformance/vectors/prompts/README.md`](../conformance/vectors/prompts/README.md), [`docs/prompts.md`](../docs/prompts.md).
+- [`conformance/vectors/prompts/README.md`](../conformance/vectors/prompts/README.md), [`docs/prompts.md`](../docs/prompts.md), [`docs/attestations.md`](../docs/attestations.md).
