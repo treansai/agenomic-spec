@@ -42,6 +42,12 @@ execution can be reproduced, compared and audited from digests alone.
 
 ### Common rules
 
+These rules cover the `agenomic.*` documents this RFC defines. A release
+attestation keeps the RFC 0008 format instead: it has no `schema` member and
+admits unknown members (see Release attestation version 2). An experiment case
+may omit `schema`, which its digest input always includes (see Experiment
+documents).
+
 - Every document is a JSON object whose top-level `schema` member is a string
   `agenomic.<name>/v<major>`. The schema string is the domain separator of
   every digest. A reader that does not know the exact string refuses the
@@ -53,8 +59,12 @@ execution can be reproduced, compared and audited from digests alone.
   Absence is written `null` for scalars and objects, `{}` or `[]` for maps and
   lists, exactly as the member table says.
 - Timestamps are RFC 3339 UTC with a `Z` suffix and whole seconds
-  (`2026-10-04T21:02:11Z`). They appear only in documents or members that are
-  not hashed.
+  (`2026-10-04T21:02:11Z`). No prompt artifact (content, manifest, rendered
+  prompt, artifact set) and no frozen experiment spec carries one, so their
+  digests depend on content only. The discovery report (`generated_at`) and a
+  stored import plan (`created_at`) are hashed with their timestamp, written as
+  a string, so their digests identify one scan and one computed plan. The
+  timestamps of a bundle are signed but outside `prompt_bundle_digest`.
 
 ### Identifier grammars
 
