@@ -84,6 +84,25 @@ by the cross-language vectors under `conformance/vectors/prompts/`, which
 [`vectors/prompts/README.md`](vectors/prompts/README.md) for the file format
 and the matching rules that every implementation applies.
 
+The coding-session documents of RFC 0013 (`schemas/v0.3/coding-*.schema.json`)
+are validated for shape and for the rules their schemas encode:
+
+- every `coding-event` names its session in `coding_session_id`;
+- every `tool.requested`, `tool.started`, `tool.completed` and
+  `tool.failed` event carries `attempt_id` (the decimal attempt number)
+  and `payload.native_request_id`, and `tool.requested` also carries
+  `action_id`;
+- a `shadow` `coding-action` decides `defer`, records what `enforce` would
+  have returned in `would_have_been` and references no approval;
+- a `coding-session`'s `protection.protected` and `protection.not_covered`
+  hold unique ids from the coding action `tool_id` vocabulary, and
+  `protection.notes` holds at most 32 strings of at most 300 characters.
+
+`coding-session.schema.json` references that vocabulary at
+`coding-action.schema.json#/$defs/toolId`, so a validator that loads the
+session schema must also load the coding action schema; `scripts/validate.js`
+registers it before compiling any v0.3 schema.
+
 The runner asserts `format` keywords through `ajv-formats`, so a v0.4
 timestamp must match its pattern and also be a valid `date-time`:
 `invalid/prompt-version/impossible-created-at.json` has the timestamp shape but

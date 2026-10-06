@@ -14,16 +14,27 @@ documented here.
 - **v0.3 (RFC 0013, Draft): coding sessions.** Portable artifacts for
   supervising coding agents (Claude Code, Codex) without replacing their
   loops: `schemas/v0.3/coding-event.schema.json` (closed
-  `agenomic.coding.event/v1` envelope with ULID `event_id`, `source` and
-  `trust`, per-source `(producer_epoch, producer_seq)` ordering and
-  at-least-once deduplication), `coding-session.schema.json` (origin →
-  control pairing, `mode_requested`/`mode_effective` with `blocked` and no
-  silent downgrade, protection and capture settings),
+  `agenomic.coding.event/v1` envelope with ULID `event_id`, a required
+  `coding_session_id`, `source` and `trust`, per-source
+  `(producer_epoch, producer_seq)` ordering and at-least-once
+  deduplication; every `tool.*` event carries the tool-call correlation
+  key `(coding_session_id, payload.native_request_id, attempt_id)`, and
+  `tool.requested` also carries `action_id`),
+  `coding-session.schema.json` (origin → control pairing,
+  `mode_requested`/`mode_effective` with `blocked` and no silent
+  downgrade, capture settings, and `protection` lists of unique coding
+  tool ids with optional `protection.notes`),
   `coding-capability-manifest.schema.json` (announced vs validated
   capability states) and `coding-action.schema.json` (closed `coding.*`
-  `tool_id` vocabulary, risk, flags, decision and observed outcome).
-  Conformance fixtures under
+  `tool_id` vocabulary in `$defs/toolId`, risk, flags, decision and
+  observed outcome; `observe` and `shadow` always decide `defer`, shadow
+  records what `enforce` would have returned, `allow`, `deny` or
+  `pending`, in `would_have_been` and requests no approval). Conformance
+  fixtures under
   `conformance/{valid,invalid}/coding-{event,session,capability-manifest,action}/`.
+  `scripts/validate.js` registers the v0.3 schemas referenced across
+  files (the event type registry and `coding-action`) before compiling
+  any v0.3 schema.
 
 - **v0.4 (RFC 0012): managed prompts.** New schema directory
   `schemas/v0.4/` with `prompt-common`, `prompt-content`, `prompt-version`,
