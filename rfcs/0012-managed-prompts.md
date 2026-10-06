@@ -59,12 +59,15 @@ documents).
   Absence is written `null` for scalars and objects, `{}` or `[]` for maps and
   lists, exactly as the member table says.
 - Timestamps are RFC 3339 UTC with a `Z` suffix and whole seconds
-  (`2026-10-04T21:02:11Z`). No prompt artifact (content, manifest, rendered
-  prompt, artifact set) and no frozen experiment spec carries one, so their
-  digests depend on content only. The discovery report (`generated_at`) and a
-  stored import plan (`created_at`) are hashed with their timestamp, written as
-  a string, so their digests identify one scan and one computed plan. The
-  timestamps of a bundle are signed but outside `prompt_bundle_digest`.
+  (`2026-10-04T21:02:11Z`) and name a real instant: the schemas check that
+  representation with a pattern and the calendar with `format: date-time`, so
+  `2026-02-30T00:00:00Z` is refused. No prompt artifact (content, manifest,
+  rendered prompt, artifact set) and no frozen experiment spec carries one, so
+  their digests depend on content only. The discovery report (`generated_at`)
+  and a stored import plan (`created_at`) are hashed with their timestamp,
+  written as a string, so their digests identify one scan and one computed
+  plan. The timestamps of a bundle are signed but outside
+  `prompt_bundle_digest`.
 
 ### Identifier grammars
 
@@ -244,7 +247,8 @@ A bundle is the exact prompt closure of one agent version, used offline:
 
 - `prompts` is the exact closure: every slot pin of every manifest in the
   bundle plus every fragment pin, transitively, keyed `prompt_id:version`.
-  Entries carry no author identity.
+  Entries carry no author identity. As in a prompt version, an entry's
+  `prompt_kind` agrees with `content.kind`.
 - `prompt_bundle_digest` is the digest of
   `{ "schema": "agenomic.prompt_artifact_set/v1", prompt_manifest_digest,
   manifest, children, prompts }`, the four members copied verbatim. It
@@ -654,7 +658,7 @@ does not define the genome address.
 ### Conformance vectors
 
 `conformance/vectors/prompts/` holds six suites (render R001 to R066,
-template T001 to T069, digest D001 to D028, ref F001 to F054, secrets S001 to
+template T001 to T069, digest D001 to D030, ref F001 to F054, secrets S001 to
 S014, and prompts-file-yaml Y001 to Y010, which pins the `agenomic-yaml/1`
 profile of YAML authoring files for Python), pinned by a checksummed
 `MANIFEST.json` and checked by `scripts/vectors.js`, which recomputes every
@@ -763,7 +767,9 @@ SDK idiomatic and dependency-free, at the cost of maintaining the vectors.
   by random arm keys, and `secret_refs` name secrets that only the runner
   resolves, never their values.
 - Cross-workspace isolation: a canonical URI naming another workspace is
-  refused in every context and never resolved.
+  refused in every context and never resolved, and a bundle loads only for the
+  workspace and agent that the caller names (`bundle_scope_mismatch`, vectors
+  D029 and D030).
 - Injection through values: rendering is a single pass, so a value that looks
   like a placeholder or an include is emitted verbatim.
 

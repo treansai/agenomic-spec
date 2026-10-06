@@ -3,7 +3,7 @@
   "renderer_version": "1",
   "secret_patterns": "agenomic-secrets/1",
   "files": {
-    "README.md": "sha256:463a63a2e75e0bdb8c33f3f25e3727b5161c0e1e0358899047adce8118d8bbde",
+    "README.md": "sha256:08b712fb4badb8c1676f84cc3e487b8ed77f85807335d171aefcef5690a4129b",
     "digest/D001-minimal-text-content.json": "sha256:30120dfb475a69fc0a87632b55d440a83ba3cfedb6291ac8d0c37259441c59a1",
     "digest/D002-members-reordered.json": "sha256:2490b33d28f3517a82f97cc3bacaf4b83d221c5cd4299ed2a264bdc7ce29b644",
     "digest/D003-chat-optional-placeholder.json": "sha256:40506864f63e72eb5e09a2fcb86b8d89b0f8e9bf200c0098d75fc1f3372d63b9",
@@ -32,6 +32,8 @@
     "digest/D026-legacy-artifact-set.json": "sha256:ef35f7a069dc5cc08c48bc266706568f9450b54d63bdbd1ee76a94d5d3a8e345",
     "digest/D027-bundle-load-legacy.json": "sha256:e4a03b2d18e97bdebc769d2272cc2b0fe613b1d61d67bb9eef5a2c8617d80747",
     "digest/D028-bundle-child-prompt-swapped.json": "sha256:7d6ad3c3be758bec10df1f27d6c3f70d5a49016c60470c179e5c9eaa303e1a8e",
+    "digest/D029-bundle-scope-other-workspace.json": "sha256:812c617e083ac5dddfd4c2442bbc49e82f89d9bbc21d376d4b6ea5ee616a70ce",
+    "digest/D030-bundle-scope-child-agent.json": "sha256:8755ebf872bb2a0121454df196469904f5363101da609513aef8cc777c0a5686",
     "prompts-file-yaml/Y001-literal-block-clip.json": "sha256:baa8afcc701689233fe79f21516233c7c1424010c9e1f0ae4562e885c232c992",
     "prompts-file-yaml/Y002-literal-block-strip.json": "sha256:f63225a9f3c90fcdb9ab15e440bc1dfd8672df87ab5879a2d604f2f7c8bf62a7",
     "prompts-file-yaml/Y003-literal-block-keep.json": "sha256:b9c4be9e545c7dbe52544ae8447fd2dbb4c9160c6be35fc01d0e3897e5964ab0",

@@ -1,0 +1,7 @@
+{
+  "description": "A text prompt entry pins text content, even when every digest of the bundle is recomputed; prompt_kind must agree with content.kind.",
+  "match": {
+    "keyword": "const",
+    "instancePath": "/prompts/prm_support_writer:3/content/kind"
+  }
+}

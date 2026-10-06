@@ -15,7 +15,7 @@ client applies when it converts a YAML prompts file to JSON.
 |---|---|---|---|---|
 | render | `render/` | R001 to R066 | 66 | typed rendering, fragments, placeholders, history, render errors |
 | template | `template/` | T001 to T069 | 69 | tokenizer (T001 to T039) and content validation (T040 to T069) |
-| digest | `digest/` | D001 to D028 | 28 | canonical JSON, digests of every hashed document, bundle loading by digest pin |
+| digest | `digest/` | D001 to D030 | 30 | canonical JSON, digests of every hashed document, bundle loading by digest pin and scope |
 | ref | `ref/` | F001 to F054 | 54 | prompt reference parsing, context checks and formatting |
 | secrets | `secrets/` | S001 to S014 | 14 | the `agenomic-secrets/1` patterns, scrubbing and the secret-shaped key rule |
 | prompts-file-yaml | `prompts-file-yaml/` | Y001 to Y010 | 10 | the `agenomic-yaml/1` profile and the file-local fragment cycle check of a YAML prompts file (Python only) |
@@ -193,7 +193,11 @@ digest pinning (the bundle is unsigned). Success
 lists the loaded prompt refs and the managed slots of the root manifest, both
 sorted. Failure
 `{ ok: false, error: { code: "prompt_digest_mismatch", details: { document: "artifact_set", expected, actual } } }`,
-where `expected` is the pin and `actual` the recomputed artifact set digest.
+where `expected` is the pin and `actual` the recomputed artifact set digest, or
+`{ ok: false, error: { code: "bundle_scope_mismatch" } }` when the bundle
+matches its pin but its `workspace_id` or `agent_id` differs from
+`expected_workspace_id` or `expected_agent_id`. A scope refusal asserts the
+code only.
 
 ### ref
 
@@ -243,7 +247,9 @@ prompts files only, and servers accept the JSON form only.
 `node scripts/vectors.js` validates every vector against its schema, checks
 names, ids and the manifest, recomputes every digest with `node:crypto`
 (digest documents, artifact sets, rendered documents, content digests) and
-validates the contents and documents against their v0.4 schemas. The `ref` and
+validates the contents and documents against their v0.4 schemas. A bundle load
+vector that loads expects the workspace and agent of its bundle, and a scope
+refusal matches its pin and expects another workspace or agent. The `ref` and
 `secrets` suites are checked for shape only; the implementations are their
 semantic checkers. In the `prompts-file-yaml` suite, every success `json` is
 validated against `prompts-file.schema.json`; the YAML profile itself is

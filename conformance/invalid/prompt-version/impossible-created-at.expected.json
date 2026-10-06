@@ -1,0 +1,10 @@
+{
+  "description": "A timestamp names a real UTC instant: 2026-02-30 has the timestamp shape but no such day exists, so the date-time format refuses it.",
+  "match": {
+    "keyword": "format",
+    "instancePath": "/metadata/created_at",
+    "params": {
+      "format": "date-time"
+    }
+  }
+}

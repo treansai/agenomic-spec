@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agenomic.dev/spec/v0.4/prompt-artifact-set.schema.json",
   "title": "Agenomic prompt artifact set (v0.4)",
-  "description": "The `agenomic.prompt_artifact_set/v1` projection of a prompt bundle (RFC 0012): the root manifest and its digest, every pinned child manifest and every pinned prompt version, copied verbatim from the bundle. Its sha256 digest is the `prompt_bundle_digest`, which identifies the artifact closure independently of export time, governance and signer.",
+  "description": "The `agenomic.prompt_artifact_set/v1` projection of a prompt bundle (RFC 0012): the root manifest and its digest, every pinned child manifest and every pinned prompt version, copied verbatim from the bundle. As in a prompt version, each prompt entry's `prompt_kind` agrees with `content.kind`: `chat` with chat content, `text` and `fragment` with text content. Its sha256 digest is the `prompt_bundle_digest`, which identifies the artifact closure independently of export time, governance and signer.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "prompt_manifest_digest", "manifest", "children", "prompts"],
@@ -49,6 +49,16 @@
           "prompt_kind": { "$ref": "prompt-common.schema.json#/$defs/promptKind" },
           "content_digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" },
           "content": { "$ref": "prompt-content.schema.json" }
+        },
+        "if": {
+          "required": ["prompt_kind"],
+          "properties": { "prompt_kind": { "const": "chat" } }
+        },
+        "then": {
+          "properties": { "content": { "properties": { "kind": { "const": "chat" } } } }
+        },
+        "else": {
+          "properties": { "content": { "properties": { "kind": { "const": "text" } } } }
         }
       }
     }

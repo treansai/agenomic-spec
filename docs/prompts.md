@@ -27,6 +27,13 @@ conformance vectors in
 Every hashed member is always present: absence is `null`, `{}` or `[]`, never a
 missing key, and unknown members are refused.
 
+Timestamps are RFC 3339 instants in UTC with a `Z` suffix and whole seconds,
+such as `2026-10-04T21:02:11Z`; a string of that shape that names no real date
+or time, such as `2026-02-30T00:00:00Z`, is refused. Wherever a document
+carries both a prompt-level kind and the content, including the prompt entries
+of an artifact set or bundle, the two agree: `chat` with chat content, `text`
+and `fragment` with text content.
+
 ## Referencing a prompt
 
 | You write | Meaning | Where |
@@ -113,7 +120,9 @@ its `schema` member, so equal bytes can never mean two things.
 - `prompt_bundle_digest` identifies the whole artifact closure (root manifest,
   child manifests, every prompt). Pin it when you deploy an offline bundle:
   `expected_bundle_digest` catches a swapped child prompt that a root manifest
-  digest alone would miss.
+  digest alone would miss. A load also names the workspace and agent it
+  expects, and a bundle of another workspace or agent is refused
+  (`bundle_scope_mismatch`, vectors D029 and D030).
 
 Verify before use: recompute the digest of every downloaded or bundled
 artifact and refuse it on mismatch.
