@@ -48,6 +48,16 @@ comments.
 - Vector expectations are written once and must stay stable: they are the
   parity contract that the Rust, Python and TypeScript implementations vendor.
   Change a vector only together with those implementations.
+- A `bundle_scope_mismatch` vector (D029, D030) asserts only the code:
+  RFC 0012 defines no details for it, and the implementations report none. Its
+  bundle matches its digest pin and its root manifest names the bundle's
+  agent, so only the scope check (offline load step 7) can refuse it, and only
+  because of the caller's expected workspace or agent.
+- The `timestamp` definition keeps its pattern and adds `format: date-time`.
+  The pattern fixes the representation (UTC, `Z`, whole seconds) that
+  `date-time` alone lets vary, and the format checks the calendar, which a
+  pattern cannot. JSON Schema 2020-12 treats `format` as an annotation unless
+  the validator asserts it, as AJV does with `ajv-formats`.
 - Some vector inputs need exact JSON lexemes (`3.0`, `-0`, `100.0`, a lone
   surrogate escape in R060). Edit those files by hand or with a writer that
   keeps the lexeme; a plain `JSON.stringify` round trip changes them.

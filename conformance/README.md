@@ -80,6 +80,11 @@ by the cross-language vectors under `conformance/vectors/prompts/`, which
 [`vectors/prompts/README.md`](vectors/prompts/README.md) for the file format
 and the matching rules that every implementation applies.
 
+The runner asserts `format` keywords through `ajv-formats`, so a v0.4
+timestamp must match its pattern and also be a valid `date-time`:
+`invalid/prompt-version/impossible-created-at.json` has the timestamp shape but
+names February 30.
+
 ## `.expected.json` format
 
 Every file under `invalid/` has a sibling `<NAME>.expected.json`

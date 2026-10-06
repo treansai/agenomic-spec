@@ -1,0 +1,7 @@
+{
+  "description": "A chat prompt entry pins chat content; prompt_kind must agree with content.kind, as in a prompt version.",
+  "match": {
+    "keyword": "const",
+    "instancePath": "/prompts/prm_support_planner:9/content/kind"
+  }
+}

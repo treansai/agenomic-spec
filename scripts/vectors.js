@@ -254,12 +254,21 @@ function checkBundleLoad(v) {
   }
   const actual = digest(artifactSet(bundle));
   if (actual !== bundle.prompt_bundle_digest) return 'prompt_bundle_digest is not self-consistent';
+  const inScope = bundle.workspace_id === input.expected_workspace_id && bundle.agent_id === input.expected_agent_id && bundle.manifest.agent_id === input.expected_agent_id;
   if (expected.ok) {
     if (actual !== input.expected_bundle_digest) return 'a loading vector must be pinned to the recomputed artifact set digest';
+    if (!inScope) return 'a loading vector must expect the workspace and agent of its bundle and root manifest';
     if (expected.prompt_bundle_digest !== actual) return 'expected.prompt_bundle_digest differs from the recomputed digest';
     if (expected.prompt_manifest_digest !== bundle.prompt_manifest_digest) return 'expected.prompt_manifest_digest differs from the bundle';
     if (!same(expected.prompt_refs, Object.keys(bundle.prompts).sort())) return 'expected.prompt_refs differs from the bundle prompts';
     if (!same(expected.managed_slots, Object.keys(bundle.manifest.slots).sort())) return 'expected.managed_slots differs from the root manifest slots';
+    return null;
+  }
+  if (expected.error.code === 'bundle_scope_mismatch') {
+    if (actual !== input.expected_bundle_digest) return 'a scope refusal must match its pin, so that only the scope check fails';
+    if (bundle.manifest.agent_id !== bundle.agent_id) return 'a scope refusal must use a bundle whose root manifest names its agent';
+    if (inScope) return 'a scope refusal must expect another workspace or agent than its bundle';
+    if (!same(expected.error, { code: 'bundle_scope_mismatch' })) return 'a scope refusal asserts the code only';
     return null;
   }
   if (actual === input.expected_bundle_digest) return 'a refusing vector must not match its pin';

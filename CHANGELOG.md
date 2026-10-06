@@ -78,6 +78,17 @@ documented here.
   `Draft` until it is accepted under `GOVERNANCE.md`. No schema, fixture or
   vector changed, so `MANIFEST.json` and every vendored vector lock stay
   valid.
+- **RFC 0012 bundle scope, prompt kind and timestamp checks.** Bundle load
+  vectors D029 and D030 refuse an intact bundle that matches its digest pin
+  when the caller expects another workspace or another agent
+  (`bundle_scope_mismatch`, offline load step 7), and `scripts/vectors.js`
+  checks that every loading vector expects the workspace and agent of its
+  bundle. The prompt entries of an artifact set or bundle must have a
+  `prompt_kind` that agrees with `content.kind`, and every v0.4 timestamp must
+  be a valid `date-time` as well as match its pattern; invalid fixtures cover
+  both rules. The new vectors change `MANIFEST.json`, so implementations
+  re-vendor the directory, record the new hash in `SPEC_VECTORS.lock` and
+  update their vector counts.
 - **Hermes Agent runtime artifacts.** Three v0.3 schemas for runtimes
   controlled through the Hermes Agent adapter: `hermes-event`
   (`agenomic.hermes.event/v1`, receiver assigned `source` and `trust`, an
