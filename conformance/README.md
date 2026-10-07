@@ -127,6 +127,11 @@ are validated for shape and for the rules their schemas encode:
   hold unique ids from the coding action `tool_id` vocabulary, the two
   lists are disjoint, and `protection.notes` holds at most 32 strings of
   at most 300 characters;
+- a `coding-session`'s `runtime_session_id` is never an empty string, and
+  a `launched` or `local_connected` session in a connected status
+  (`running`, `idle`, `waiting_*`, `interrupting`, `stopping`) or with a
+  non-null `connected_at` carries it as a string: it is part of the
+  registration key `(runner_id, runtime, runtime_session_id)`;
 - a `coding-session` reports a non-empty `protection.protected` only when
   its `mode_effective` is `enforce`: `observe`, `shadow`, `none` and
   `blocked` gate no call, so their `protection.protected` is empty or

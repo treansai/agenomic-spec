@@ -32,7 +32,10 @@ documented here.
   that is `null` or absent (`connected_at`, the first live connection,
   is required in a connected status and with an `observe`, `shadow` or
   `enforce` effective mode, kept across a resume, and never set on an
-  imported session), never for a `running`, `idle`, waiting,
+  imported session; a live session in a connected status or with a
+  non-null `connected_at` carries a non-empty `runtime_session_id`, its
+  registration key, which is never an empty string), never for a
+  `running`, `idle`, waiting,
   `interrupting`, `stopping` or `lost` one (a session that became
   `lost` before connecting is `blocked`; imported sessions are
   exempt), an `enforce` session only with

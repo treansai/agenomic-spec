@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agenomic.dev/spec/v0.3/coding-session.schema.json",
   "title": "Agenomic Coding Session (v0.3)",
-  "description": "A coding-agent session (Claude Code, Codex) supervised by Agenomic (RFC 0013). origin fixes the control level: launched sessions are controllable, local_connected sessions are observed (policy hooks only), imported sessions are historical and never controllable. mode_effective is the requested mode, blocked or none: it is never silently lowered below or raised above mode_requested, and when a prerequisite of the requested mode fails, the session is blocked. none (not yet connected) is limited to the requested and starting statuses and to sessions that stopped or failed without ever connecting (connected_at null or absent); a session in a connected status or holding a governance mode records connected_at; a session that became lost before connecting is blocked, not none; imported sessions are exempt. An enforce session carries capabilities.pre_tool_control validated as supported_tested or partial.",
+  "description": "A coding-agent session (Claude Code, Codex) supervised by Agenomic (RFC 0013). origin fixes the control level: launched sessions are controllable, local_connected sessions are observed (policy hooks only), imported sessions are historical and never controllable. mode_effective is the requested mode, blocked or none: it is never silently lowered below or raised above mode_requested, and when a prerequisite of the requested mode fails, the session is blocked. none (not yet connected) is limited to the requested and starting statuses and to sessions that stopped or failed without ever connecting (connected_at null or absent); a session in a connected status or holding a governance mode records connected_at; a session that became lost before connecting is blocked, not none; imported sessions are exempt. A live session in a connected status or with connected_at set carries a non-empty runtime_session_id, its registration key. An enforce session carries capabilities.pre_tool_control validated as supported_tested or partial.",
   "type": "object",
   "additionalProperties": true,
   "required": [
@@ -29,7 +29,8 @@
     "control": { "type": "string", "enum": ["controllable", "observed", "imported"] },
     "runtime_session_id": {
       "type": ["string", "null"],
-      "description": "The runtime's native session id. Unique per (runner_id, runtime)."
+      "minLength": 1,
+      "description": "The runtime's native session id, never empty. Unique per (runner_id, runtime): (runner_id, runtime, runtime_session_id) is the registration key. A launched or local_connected session carries it once it is in a connected status or has connected (connected_at set); it may be null or absent before that, and on imported sessions."
     },
     "status": {
       "type": "string",
@@ -290,6 +291,23 @@
         "required": ["mode_effective"]
       },
       "then": { "properties": { "protection": { "properties": { "protected": { "maxItems": 0 } } } } }
+    },
+    {
+      "$comment": "Registration key: a live session that is in a connected status, or that has connected (connected_at set), is registered on (runner_id, runtime, runtime_session_id), so it carries a non-empty runtime_session_id. Before connecting (requested, starting, or stopped, failed or lost without connecting) the native id may not exist yet.",
+      "if": {
+        "properties": { "origin": { "enum": ["launched", "local_connected"] } },
+        "required": ["origin"],
+        "anyOf": [
+          {
+            "properties": {
+              "status": { "enum": ["running", "idle", "waiting_approval", "waiting_input", "interrupting", "stopping"] }
+            },
+            "required": ["status"]
+          },
+          { "properties": { "connected_at": { "type": "string" } }, "required": ["connected_at"] }
+        ]
+      },
+      "then": { "required": ["runtime_session_id"], "properties": { "runtime_session_id": { "type": "string" } } }
     }
   ],
   "$defs": {

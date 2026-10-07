@@ -1,0 +1,8 @@
+{
+  "description": "A live session that has connected (connected_at set) keeps its native id after it ends; the registration key never loses runtime_session_id.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "schemaPath": "#/allOf/13/then/required"
+  }
+}

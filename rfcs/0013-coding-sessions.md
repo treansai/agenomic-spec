@@ -75,6 +75,16 @@ A coding session is one runtime session (native id
 
 The same native session MUST NOT create two Agenomic sessions:
 registration is idempotent on `(runner_id, runtime, runtime_session_id)`.
+`runtime_session_id` is never an empty string: it is `null` or absent
+while the native id is not known. A `launched` session may lack it
+before the runtime has started (`requested`, `starting`, or `stopped`,
+`failed` or `lost` without having connected); a `launched` or
+`local_connected` session that is `running`, `idle`,
+`waiting_approval`, `waiting_input`, `interrupting` or `stopping`, or
+that has connected (a non-null `connected_at`, see
+[Governance modes](#governance-modes)), MUST carry it, since it is
+registered on that key. `imported` sessions MAY omit it, for example a
+transcript imported without a runner.
 
 `status` is one of `requested`, `starting`, `running`, `idle`,
 `waiting_approval`, `waiting_input`, `interrupting`, `stopping`,
