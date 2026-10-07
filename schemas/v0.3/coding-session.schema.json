@@ -64,7 +64,74 @@
     "protection": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Which coding tool ids are actually gated in this session. A protected badge is derived from mode_effective together with a non-empty protected list, never from mode_requested or notes.",
+      "description": "Which coding tool ids are actually gated in this session. A protected badge is derived from mode_effective together with a non-empty protected list, never from mode_requested or notes. protected and not_covered are disjoint: a tool id is gated or not, never both.",
+      "$comment": "Disjointness, enumerated per tool id (JSON Schema has no set-intersection keyword). The allOf below lists every id of coding-action.schema.json#/$defs/toolId; scripts/validate.js checks it stays in sync.",
+      "allOf": [
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.fs.read" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.fs.read" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.fs.write" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.fs.write" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.fs.delete" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.fs.delete" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.shell.exec" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.shell.exec" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.shell.interactive_input" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.shell.interactive_input" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.git.read" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.git.read" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.git.commit" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.git.commit" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.git.push" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.git.push" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.git.destructive" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.git.destructive" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.dependency.install" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.dependency.install" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.network.fetch" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.network.fetch" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.mcp.call" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.mcp.call" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.agent_config.modify" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.agent_config.modify" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.subagent.spawn" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.subagent.spawn" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.web.search" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.web.search" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.unknown" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.unknown" } } } } }
+        }
+      ],
       "properties": {
         "protected": {
           "type": "array",

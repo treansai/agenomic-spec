@@ -354,6 +354,32 @@ for (const file of invalidFiles) {
   pass(file, 'rejected as expected by ' + ref.label);
 }
 
+// --- coding-session protection disjointness stays in sync ----------------
+//
+// JSON Schema cannot state that protection.protected and
+// protection.not_covered are disjoint, so coding-session.schema.json
+// enumerates one if/then per coding tool id. Fail if that enumeration and
+// the toolId vocabulary of coding-action.schema.json drift apart.
+{
+  const sessionFile = path.join(SCHEMA_DIRS['v0.3'], 'coding-session.schema.json');
+  const actionFile = path.join(SCHEMA_DIRS['v0.3'], 'coding-action.schema.json');
+  const session = JSON.parse(fs.readFileSync(sessionFile, 'utf8'));
+  const action = JSON.parse(fs.readFileSync(actionFile, 'utf8'));
+  const vocabulary = [...action.$defs.toolId.enum].sort();
+  const branches = session.properties.protection.allOf || [];
+  const covered = branches.map(b => {
+    const ifId = b.if.properties.protected.contains.const;
+    const thenId = b.then.properties.not_covered.not.contains.const;
+    return ifId === thenId ? ifId : null;
+  });
+  const enumerated = covered.filter(id => id !== null).sort();
+  if (covered.includes(null) || JSON.stringify(enumerated) !== JSON.stringify(vocabulary)) {
+    fail(rel(sessionFile), 'protection disjointness branches do not match coding-action toolId enum.\n' +
+      '      toolId: ' + JSON.stringify(vocabulary) + '\n' +
+      '      branches: ' + JSON.stringify(enumerated));
+  }
+}
+
 // --- summary ---------------------------------------------------------------
 
 if (failures > 0) {

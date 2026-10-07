@@ -147,7 +147,11 @@ prerequisite is restored or a user explicitly requests a lower mode.
 `protection.protected` lists the coding tool ids (the closed `tool_id`
 vocabulary of [Action classification](#action-classification)) whose
 calls are actually gated in this session; `protection.not_covered`
-lists those that are not. Each list holds an id at most once.
+lists those that are not. Each list holds an id at most once, and the
+two lists are disjoint: an id gated in a session is not also reported
+as not covered. (JSON Schema has no intersection keyword, so the
+session schema enumerates this per `tool_id`; the conformance validator
+checks that the enumeration matches the vocabulary.)
 `protection.notes`, at most 32 strings of at most 300 characters each,
 describes the mechanisms behind that coverage (for example a sandbox,
 or runtime settings that were not loaded). Caveats about what is not
