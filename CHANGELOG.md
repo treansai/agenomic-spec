@@ -27,7 +27,11 @@ documented here.
   downgrade and no upgrade, so an `observe` request never becomes
   `shadow` or `enforce`, `none` (not yet connected) only for a
   live session that is `requested` or `starting` or that stopped or
-  failed before connecting, never for a `running`, `idle`, waiting,
+  failed without ever connecting, as recorded by a `connected_at`
+  that is `null` or absent (`connected_at`, the first live connection,
+  is required in a connected status and with an `observe`, `shadow` or
+  `enforce` effective mode, kept across a resume, and never set on an
+  imported session), never for a `running`, `idle`, waiting,
   `interrupting`, `stopping` or `lost` one (a session that became
   `lost` before connecting is `blocked`; imported sessions are
   exempt), an `enforce` session only with

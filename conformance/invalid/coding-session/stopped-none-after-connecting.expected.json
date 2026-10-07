@@ -1,0 +1,8 @@
+{
+  "description": "A session that had connected (connected_at set) and then stopped keeps the mode it held or is blocked; none would hide that it ran under a governance mode.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/connected_at",
+    "schemaPath": "#/allOf/8/then/properties/connected_at/type"
+  }
+}

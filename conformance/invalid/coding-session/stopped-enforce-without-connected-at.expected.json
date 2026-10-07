@@ -1,0 +1,8 @@
+{
+  "description": "A governance mode is established only by connecting: an enforce session records a non-null connected_at.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/connected_at",
+    "schemaPath": "#/allOf/10/then/properties/connected_at/type"
+  }
+}

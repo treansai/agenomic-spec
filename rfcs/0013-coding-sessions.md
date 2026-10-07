@@ -144,6 +144,25 @@ a `running` or `lost` session with `mode_effective: none`. `imported`
 sessions are never connected live, so they MAY be `none` in any
 `status`.
 
+**Connection history.** Whether a session ever connected is recorded,
+not inferred from its current state: `connected_at` is the time the
+session first connected live (the runtime attached and the runner's
+first state report established `mode_effective`, the requested mode or
+`blocked`), `null` or absent while it never has. It is set once and
+kept for the life of the session, including across a resume, and is
+never set for `imported` sessions. A `launched` or `local_connected`
+session that is `running`, `idle`, `waiting_approval`,
+`waiting_input`, `interrupting` or `stopping`, or whose
+`mode_effective` is `observe`, `shadow` or `enforce`, MUST carry a
+non-null `connected_at`. A `stopped` or `failed` session MAY be `none`
+only when its `connected_at` is `null` or absent: a session that had
+connected and then ended keeps the mode it held, and one that ended
+after a resume without reconnecting (a resume resets the mode to
+`none` while `requested` or `starting`) is `blocked`, so `none` never
+hides that the session ran under a governance mode. The session schema
+rejects a `stopped` session with `mode_effective: none` and a non-null
+`connected_at`.
+
 **Action modes.** Each coding action records in `effective_mode` the
 mode that applied to that call: `observe`, `shadow`, `enforce` or
 `blocked`. Its `decision` follows from it, and the action schema

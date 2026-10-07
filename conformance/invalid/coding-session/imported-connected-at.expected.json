@@ -1,0 +1,8 @@
+{
+  "description": "Imported sessions are never connected live; connected_at is null or absent.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/connected_at",
+    "schemaPath": "#/allOf/11/then/properties/connected_at/type"
+  }
+}
