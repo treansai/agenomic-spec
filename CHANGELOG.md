@@ -21,9 +21,10 @@ documented here.
   key `(coding_session_id, payload.native_request_id, attempt_id)`, and
   `tool.requested` also carries `action_id`),
   `coding-session.schema.json` (origin → control pairing,
-  `mode_requested`/`mode_effective` with `blocked` and no silent
-  downgrade, capture settings, and `protection` lists of unique coding
-  tool ids with optional `protection.notes`),
+  `mode_requested`/`mode_effective` with `blocked`, no silent
+  downgrade and no upgrade, so an `observe` request never becomes
+  `shadow` or `enforce`, capture settings, and disjoint `protection`
+  lists of unique coding tool ids with optional `protection.notes`),
   `coding-capability-manifest.schema.json` (announced vs validated
   capability states) and `coding-action.schema.json` (a required
   `coding_session_id`, closed `coding.*` `tool_id` vocabulary in

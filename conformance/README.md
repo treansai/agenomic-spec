@@ -102,9 +102,13 @@ are validated for shape and for the rules their schemas encode:
   `deny` or `pending`) and references no approval;
 - a `blocked` `coding-action` (a call the session cannot govern in its
   requested mode) decides `deny` and references no approval;
+- a `coding-session`'s `mode_effective` is its `mode_requested`,
+  `blocked` or `none`: never lower (no silent downgrade) and never higher
+  (an `observe` request never becomes `shadow` or `enforce`);
 - a `coding-session`'s `protection.protected` and `protection.not_covered`
-  hold unique ids from the coding action `tool_id` vocabulary, and
-  `protection.notes` holds at most 32 strings of at most 300 characters.
+  hold unique ids from the coding action `tool_id` vocabulary, the two
+  lists are disjoint, and `protection.notes` holds at most 32 strings of
+  at most 300 characters.
 
 The schema checks the form of `input_digest` only: the intent object it
 hashes (RFC 0013, Approval binding) is not part of the action.
