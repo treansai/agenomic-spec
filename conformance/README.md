@@ -97,6 +97,9 @@ are validated for shape and for the rules their schemas encode:
   `null` and of the form `blake3:` plus 64 lowercase hex digits;
 - an `enforce` `coding-action` decides `allow`, `deny` or `pending`, never
   `defer`;
+- an `observe` `coding-action` decides `defer` and references no approval
+  (`approval_id` and `approval_status` are `null` or absent): the runtime's
+  native permission flow decides;
 - a `shadow` `coding-action` decides `defer`, records what `enforce` would
   have returned in a required, non-null `would_have_been` (`allow`,
   `deny` or `pending`) and references no approval;

@@ -87,7 +87,9 @@ present `lost` as `stopped`.
 `mode_requested` is `observe`, `shadow` or `enforce`:
 
 - `observe` — events are recorded; every decision is `defer` (the
-  runtime's native permission flow decides).
+  runtime's native permission flow decides). No approval is requested
+  in Agenomic: an observe action's `approval_id` and `approval_status`
+  are `null` or absent.
 - `shadow` — policy is evaluated but never binds: the action's
   `decision` is always `defer` (the native permission flow decides), and
   what `enforce` would have returned (`allow`, `deny` or `pending`) is
@@ -149,7 +151,7 @@ enforces the pairing:
 
 | Action `effective_mode` | `decision` | `would_have_been` | Approval |
 |---|---|---|---|
-| `observe` | `defer` | `null` or absent | — |
+| `observe` | `defer` | `null` or absent | none: `approval_id` and `approval_status` are `null` or absent |
 | `shadow` | `defer` | required, non-null: `allow`, `deny` or `pending` | none: `approval_id` and `approval_status` are `null` or absent |
 | `enforce` | `allow`, `deny` or `pending`, never `defer` | `null` or absent | a `pending` decision references its `approval_id` |
 | `blocked` | `deny` | `null` or absent | none: `approval_id` and `approval_status` are `null` or absent |
@@ -385,7 +387,8 @@ The action records its intent digest `input_digest` (required; see
 (`requested`, `decided`, `started`, `completed`, `failed`, `unknown`)
 and `outcome`. The schema enforces that a `pending` decision references
 an `approval_id`, that `observe` and `shadow` modes only ever answer
-`defer` while `enforce` never does, that a `shadow` action carries a
+`defer` while `enforce` never does, that an `observe` action references
+no approval, that a `shadow` action carries a
 non-null `would_have_been` and references no approval, that every
 other action carries `would_have_been` `null` or not at all, and that a
 `blocked` action decides `deny` and references no approval (see

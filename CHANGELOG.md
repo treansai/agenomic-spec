@@ -41,7 +41,8 @@ documented here.
   a re-submitted call whose digest differs is refused with
   `input_changed` and needs a new request), decision and observed
   outcome; `observe` and `shadow` always decide `defer` and `enforce`
-  never does, shadow records what `enforce` would have returned,
+  never does, an `observe` action requests no approval (the native
+  permission flow decides), shadow records what `enforce` would have returned,
   `allow`, `deny` or `pending`, in a required, non-null
   `would_have_been` and requests no approval, `observe`, `enforce` and
   `blocked` actions carry `would_have_been` `null` or not at all, and a

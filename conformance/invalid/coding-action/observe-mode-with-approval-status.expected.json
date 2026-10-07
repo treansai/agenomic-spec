@@ -1,0 +1,8 @@
+{
+  "description": "An observe action carries no approval status: no approval is requested in Agenomic when the native permission flow decides.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/approval_status",
+    "schemaPath": "#/allOf/1/then/properties/approval_status/type"
+  }
+}
