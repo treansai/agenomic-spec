@@ -257,19 +257,28 @@ known: `native` (reported by a documented runtime interface), `derived`
 from outside the runtime: process table, filesystem, git). Consumers
 MUST NOT promote `derived` or `observed` facts to `native`.
 
-**Ordering.** Producer order is defined only **within one producer
-lifetime of one source**: events that share `(source, producer_epoch)`
-are totally ordered by `producer_seq`, a non-negative integer that is
-strictly increasing within the epoch and restarts when the epoch
-changes. `producer_epoch` identifies one producer lifetime (typically
-the connector boot ULID); it is an opaque identifier, and consumers
-MUST NOT order epochs by comparing their values, even when they happen
-to be time-sortable. There is no producer order across epochs (a
+**Ordering.** A session has one read order: the **ingestion cursor**
+the receiver assigns to each event it stores. Consumers that read a
+session (APIs, timelines, exports) MUST present and page its events in
+cursor order, across all sources and epochs.
+
+`producer_seq` is a producer-side sequence, not a read order. Within one
+producer lifetime of one source, `(source, producer_epoch)`, it is a
+non-negative integer that is strictly increasing in emission order and
+restarts when the epoch changes. Because delivery is at-least-once and
+spooled events are retried, a receiver MAY ingest events of one epoch
+out of `producer_seq` order (for example seq 6 before seq 5); it is NOT
+REQUIRED to hold back or reorder events to restore `producer_seq` order,
+and the cursor order stands. Consumers MAY use `producer_seq` within one
+`(source, producer_epoch)` to recover emission order among those events
+or to detect gaps, but MUST NOT reorder a session's cursor order by it.
+`producer_epoch` identifies one producer lifetime (typically the
+connector boot ULID); it is an opaque identifier, and consumers MUST NOT
+order epochs by comparing their values, even when they happen to be
+time-sortable. `producer_seq` carries no meaning across epochs (a
 connector restart, or spooled events of an earlier epoch replayed after
-a restart) nor across sources. The ingestion cursor assigned by the
-receiver is the authoritative order everywhere else: across epochs,
-across sources and for the session as a whole. `occurred_at` is
-informative and MUST NOT be used to reorder events of one source.
+a restart) nor across sources. `occurred_at` is informative and MUST
+NOT be used to reorder events.
 
 **Delivery and deduplication.** Delivery is at-least-once. A receiver
 MUST deduplicate on `(coding_session_id, event_id)` and on
@@ -570,7 +579,7 @@ own approval. An approval is consumed once: a second consume MUST answer
   (runtime, adapter, gateway, supervisor, filesystem) with their own
   lifetimes; a single sequence would require a coordinator on the
   developer's machine. A `producer_seq` per `(source, producer_epoch)`, with the
-  receiver's ingestion cursor ordering across epochs, is simpler and
+  receiver's ingestion cursor as the session's read order, is simpler and
   survives connector restarts without a coordinator.
 - **Hash-chained events (RFC 0010).** Hash chains assume a single
   ordered writer. They can be layered later by the receiver over the

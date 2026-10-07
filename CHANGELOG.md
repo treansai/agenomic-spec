@@ -15,10 +15,11 @@ documented here.
   supervising coding agents (Claude Code, Codex) without replacing their
   loops: `schemas/v0.3/coding-event.schema.json` (closed
   `agenomic.coding.event/v1` envelope with ULID `event_id`, a required
-  `coding_session_id`, `source` and `trust`, `producer_seq` ordering
-  within `(source, producer_epoch)` only, with an opaque, unordered
-  `producer_epoch` and the receiver's ingestion cursor as the order
-  across epochs and sources, and at-least-once
+  `coding_session_id`, `source` and `trust`, the receiver's ingestion
+  cursor as the session's read order across sources and epochs,
+  `producer_seq` as a within-`(source, producer_epoch)` emission and
+  gap-detection sequence that receivers need not reorder by, an opaque,
+  unordered `producer_epoch`, and at-least-once
   deduplication; every `tool.*` event carries the tool-call correlation
   key `(coding_session_id, payload.native_request_id, attempt_id)`, and
   `tool.requested` also carries `action_id`),

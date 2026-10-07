@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agenomic.dev/spec/v0.3/coding-event.schema.json",
   "title": "Agenomic Coding Session Event (agenomic.coding.event/v1)",
-  "description": "Envelope of one event observed in a supervised coding-agent session (Claude Code, Codex). RFC 0013. Every envelope names its session in coding_session_id. Events are delivered at least once and deduplicated on (coding_session_id, event_id) and on (coding_session_id, source, producer_epoch, producer_seq). Producer order is defined only within (source, producer_epoch), by producer_seq; producer_epoch is opaque and epochs are not ordered by value, so across epochs and across sources the receiver's ingestion cursor is the authoritative order. A request, a decision, an observed start and an observed result are distinct facts carried by distinct events: an allow decision is not proof of execution. Every tool.requested, tool.started, tool.completed and tool.failed event carries the tool-call correlation key (coding_session_id, payload.native_request_id, attempt_id), which matches the coding action's (coding_session_id, native_request_id, attempt). Content fields inside payload (text, command, diff, output) appear only when the session's capture settings allow them and are redacted by the producer before export.",
+  "description": "Envelope of one event observed in a supervised coding-agent session (Claude Code, Codex). RFC 0013. Every envelope names its session in coding_session_id. Events are delivered at least once and deduplicated on (coding_session_id, event_id) and on (coding_session_id, source, producer_epoch, producer_seq). The receiver's ingestion cursor is the session's read order, across all sources and epochs. producer_seq is a producer-side sequence within (source, producer_epoch) that consumers may use to recover emission order or detect gaps within that pair; receivers need not reorder by it, and the cursor order stands. producer_epoch is opaque and epochs are not ordered by value. A request, a decision, an observed start and an observed result are distinct facts carried by distinct events: an allow decision is not proof of execution. Every tool.requested, tool.started, tool.completed and tool.failed event carries the tool-call correlation key (coding_session_id, payload.native_request_id, attempt_id), which matches the coding action's (coding_session_id, native_request_id, attempt). Content fields inside payload (text, command, diff, output) appear only when the session's capture settings allow them and are redacted by the producer before export.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -71,12 +71,12 @@
     "producer_epoch": {
       "type": "string",
       "minLength": 1,
-      "description": "Opaque identifier of one producer lifetime (typically the connector boot ULID). producer_seq restarts when the epoch changes. Consumers MUST NOT order epochs by comparing their values; across epochs the receiver's ingestion cursor is the authoritative order."
+      "description": "Opaque identifier of one producer lifetime (typically the connector boot ULID). producer_seq restarts when the epoch changes. Consumers MUST NOT order epochs by comparing their values; the receiver's ingestion cursor is the session's read order."
     },
     "producer_seq": {
       "type": "integer",
       "minimum": 0,
-      "description": "Strictly increasing sequence number of this event within (source, producer_epoch). It orders events only within that pair, never across epochs or sources."
+      "description": "Strictly increasing sequence number of this event within (source, producer_epoch). It gives emission order (and gap detection) only within that pair, never across epochs or sources; it is not the read order, which is the receiver's ingestion cursor, and receivers need not reorder events by it."
     },
     "occurred_at": { "type": "string", "format": "date-time" },
     "runtime_turn_id": { "type": "string", "minLength": 1 },
