@@ -238,14 +238,19 @@ known: `native` (reported by a documented runtime interface), `derived`
 from outside the runtime: process table, filesystem, git). Consumers
 MUST NOT promote `derived` or `observed` facts to `native`.
 
-**Ordering.** Events are totally ordered **per source** by
-`(producer_epoch, producer_seq)`. `producer_epoch` identifies one
-producer lifetime (typically the connector boot ULID); `producer_seq`
-is a non-negative integer, monotonic within the epoch, restarting when
-the epoch changes. There is no global producer order across sources;
-the ingestion cursor assigned by the receiver is the global read order.
-`occurred_at` is informative and MUST NOT be used to reorder events of
-one source.
+**Ordering.** Producer order is defined only **within one producer
+lifetime of one source**: events that share `(source, producer_epoch)`
+are totally ordered by `producer_seq`, a non-negative integer that is
+strictly increasing within the epoch and restarts when the epoch
+changes. `producer_epoch` identifies one producer lifetime (typically
+the connector boot ULID); it is an opaque identifier, and consumers
+MUST NOT order epochs by comparing their values, even when they happen
+to be time-sortable. There is no producer order across epochs (a
+connector restart, or spooled events of an earlier epoch replayed after
+a restart) nor across sources. The ingestion cursor assigned by the
+receiver is the authoritative order everywhere else: across epochs,
+across sources and for the session as a whole. `occurred_at` is
+informative and MUST NOT be used to reorder events of one source.
 
 **Delivery and deduplication.** Delivery is at-least-once. A receiver
 MUST deduplicate on `(coding_session_id, event_id)` and on
@@ -545,8 +550,9 @@ own approval. An approval is consumed once: a second consume MUST answer
   `sequence_number`. Coding sessions have several independent producers
   (runtime, adapter, gateway, supervisor, filesystem) with their own
   lifetimes; a single sequence would require a coordinator on the
-  developer's machine. A per-source `(producer_epoch, producer_seq)` is
-  simpler and survives connector restarts.
+  developer's machine. A `producer_seq` per `(source, producer_epoch)`, with the
+  receiver's ingestion cursor ordering across epochs, is simpler and
+  survives connector restarts without a coordinator.
 - **Hash-chained events (RFC 0010).** Hash chains assume a single
   ordered writer. They can be layered later by the receiver over the
   ingestion order; requiring them of every producer now would add cost
