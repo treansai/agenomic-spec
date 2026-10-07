@@ -111,8 +111,9 @@ are validated for shape and for the rules their schemas encode:
   connected) only while `requested` or `starting`, or once `stopped` or
   `failed` without having connected; `running`, `idle`, `waiting_*`,
   `interrupting`, `stopping` and `lost` sessions carry the requested
-  mode or `blocked`, whatever mode was requested. `imported` sessions
-  may be `none` in any status;
+  mode or `blocked`, whatever mode was requested (a session that became
+  `lost` before connecting, through lease expiry or runner revocation,
+  is `blocked`). `imported` sessions may be `none` in any status;
 - a `coding-session` whose `mode_effective` is `enforce` carries
   `capabilities.pre_tool_control` validated as `supported_tested` or
   `partial`; `unknown`, `unsupported`, `experimental` or an absent entry

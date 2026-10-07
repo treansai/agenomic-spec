@@ -126,13 +126,21 @@ not a way to report a live session that cannot be governed. A
 `status` is `requested` or `starting`, or once it is `stopped` or
 `failed` without ever having connected (for example, a runtime that
 exited before the connector attached). A session that is `running`,
-`idle`, `waiting_approval`, `waiting_input`, `interrupting`, `stopping`
-or `lost` was connected (`lost` presupposes a heartbeat lease), so its
-`mode_effective` is the requested mode or `blocked`; a connected session
-whose prerequisite fails is `blocked`, never `none`. The session schema
-rejects, for example, a `running` session with `mode_effective: none`.
-`imported` sessions are never connected live, so they MAY be `none` in
-any `status`.
+`idle`, `waiting_approval`, `waiting_input`, `interrupting` or
+`stopping` was connected, so its `mode_effective` is the requested mode
+or `blocked`; a connected session whose prerequisite fails is
+`blocked`, never `none`. A `lost` session is never `none` either,
+whether or not it had connected: a session can become `lost` before
+connecting (its runner's lease lapses or its runner is revoked while it
+is `requested` or `starting`), and the process may still be running
+ungoverned. A session that becomes `lost` without ever having connected
+MUST carry `mode_effective: blocked`: the requested mode would falsely
+claim governance, and `none` would hide that a process may be running.
+A connected session that becomes `lost` keeps the mode it held (the
+requested mode or `blocked`). The session schema rejects, for example,
+a `running` or `lost` session with `mode_effective: none`. `imported`
+sessions are never connected live, so they MAY be `none` in any
+`status`.
 
 **Action modes.** Each coding action records in `effective_mode` the
 mode that applied to that call: `observe`, `shadow`, `enforce` or
@@ -591,7 +599,9 @@ own approval. An approval is consumed once: a second consume MUST answer
   covers the reported call and context, not the state of the machine
   the call runs on.
 - **Key compromise / rotation impact.** Revoking a runner revokes its
-  credentials and marks its active sessions `lost`; decisions already
+  credentials and marks its active sessions `lost` (a session that had
+  not yet connected becomes `lost` with `mode_effective: blocked`, never
+  `none`, as Governance modes requires); decisions already
   recorded remain valid evidence of what was decided, not of what ran.
 - **Privacy / PII exposure.** Metadata-only defaults, per-category
   content opt-in, on-machine redaction and the hidden-reasoning

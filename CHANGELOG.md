@@ -26,7 +26,8 @@ documented here.
   `shadow` or `enforce`, `none` (not yet connected) only for a
   live session that is `requested` or `starting` or that stopped or
   failed before connecting, never for a `running`, `idle`, waiting,
-  `interrupting`, `stopping` or `lost` one (imported sessions are
+  `interrupting`, `stopping` or `lost` one (a session that became
+  `lost` before connecting is `blocked`; imported sessions are
   exempt), an `enforce` session only with
   `capabilities.pre_tool_control` validated as `supported_tested` or
   `partial`, capture settings, and disjoint `protection`
