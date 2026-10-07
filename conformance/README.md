@@ -106,7 +106,9 @@ are validated for shape and for the rules their schemas encode:
 - `would_have_been` is shadow-only: an `observe`, `enforce` or `blocked`
   `coding-action` carries it `null` or omits it;
 - a `blocked` `coding-action` (a call the session cannot govern in its
-  requested mode) decides `deny` and references no approval;
+  requested mode) decides `deny`, names the cause in a required,
+  non-empty `reason_codes` (for example `enforce_prerequisite_missing`
+  or `input_changed`) and references no approval;
 - a `coding-session`'s `mode_effective` is its `mode_requested`,
   `blocked` or `none`: never lower (no silent downgrade) and never higher
   (an `observe` request never becomes `shadow` or `enforce`);

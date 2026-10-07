@@ -1,0 +1,8 @@
+{
+  "description": "A blocked action names the cause of the block in reason_codes (for example enforce_prerequisite_missing); without it a consumer cannot tell why the call was refused.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "schemaPath": "#/allOf/4/then/required"
+  }
+}

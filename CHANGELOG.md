@@ -47,7 +47,8 @@ documented here.
   `would_have_been` and requests no approval, `observe`, `enforce` and
   `blocked` actions carry `would_have_been` `null` or not at all, and a
   `blocked` action, refused because the session cannot honour its
-  requested mode, decides `deny` and requests no approval). Conformance fixtures under
+  requested mode, decides `deny`, names the cause in a non-empty
+  `reason_codes` and requests no approval). Conformance fixtures under
   `conformance/{valid,invalid}/coding-{event,session,capability-manifest,action}/`.
   `scripts/validate.js` registers the v0.3 schemas referenced across
   files (the event type registry and `coding-action`) before compiling

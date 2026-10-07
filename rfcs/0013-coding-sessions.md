@@ -154,7 +154,7 @@ enforces the pairing:
 | `observe` | `defer` | `null` or absent | none: `approval_id` and `approval_status` are `null` or absent |
 | `shadow` | `defer` | required, non-null: `allow`, `deny` or `pending` | none: `approval_id` and `approval_status` are `null` or absent |
 | `enforce` | `allow`, `deny` or `pending`, never `defer` | `null` or absent | a `pending` decision references its `approval_id` |
-| `blocked` | `deny` | `null` or absent | none: `approval_id` and `approval_status` are `null` or absent |
+| `blocked` | `deny`, with a non-empty `reason_codes` naming the cause | `null` or absent | none: `approval_id` and `approval_status` are `null` or absent |
 
 An action's mode can differ from the session's `mode_effective`. In an
 `enforce` session, a call for which the policy layer evaluated every
@@ -168,8 +168,10 @@ its requested mode: `mode_effective` is `blocked`, or a prerequisite of
 the requested mode (a validated capability, a released policy) no
 longer holds when the call is decided. The refusal is not a policy
 outcome a reviewer could approve, so a `blocked` action decides `deny`
-and requests no approval; its `reason_codes` name the cause (for
-example `enforce_prerequisite_missing`). Calls stay blocked until the
+and requests no approval; its `reason_codes`, required and non-empty,
+name the cause (for example `enforce_prerequisite_missing`, or
+`input_changed` for a changed re-submission, see
+[Approval binding](#approval-binding)). Calls stay blocked until the
 prerequisite is restored or a user explicitly requests a lower mode.
 
 `protection.protected` lists the coding tool ids (the closed `tool_id`
@@ -391,7 +393,8 @@ an `approval_id`, that `observe` and `shadow` modes only ever answer
 no approval, that a `shadow` action carries a
 non-null `would_have_been` and references no approval, that every
 other action carries `would_have_been` `null` or not at all, and that a
-`blocked` action decides `deny` and references no approval (see
+`blocked` action decides `deny`, names its cause in a non-empty
+`reason_codes` and references no approval (see
 [Governance modes](#governance-modes)).
 
 ### Command lifecycle

@@ -1,0 +1,8 @@
+{
+  "description": "A blocked action's reason_codes is non-empty: an empty list names no cause.",
+  "match": {
+    "keyword": "minItems",
+    "instancePath": "/reason_codes",
+    "schemaPath": "#/allOf/4/then/properties/reason_codes/minItems"
+  }
+}
