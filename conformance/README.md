@@ -107,6 +107,10 @@ are validated for shape and for the rules their schemas encode:
 - a `coding-session`'s `mode_effective` is its `mode_requested`,
   `blocked` or `none`: never lower (no silent downgrade) and never higher
   (an `observe` request never becomes `shadow` or `enforce`);
+- a `coding-session` whose `mode_effective` is `enforce` carries
+  `capabilities.pre_tool_control` validated as `supported_tested` or
+  `partial`; `unknown`, `unsupported`, `experimental` or an absent entry
+  is not enough, and such an `enforce` request is `blocked`;
 - a `coding-session`'s `protection.protected` and `protection.not_covered`
   hold unique ids from the coding action `tool_id` vocabulary, the two
   lists are disjoint, and `protection.notes` holds at most 32 strings of

@@ -1,0 +1,8 @@
+{
+  "description": "An enforce session must carry capabilities with a validated pre_tool_control.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "schemaPath": "#/allOf/6/then/required"
+  }
+}

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agenomic.dev/spec/v0.3/coding-session.schema.json",
   "title": "Agenomic Coding Session (v0.3)",
-  "description": "A coding-agent session (Claude Code, Codex) supervised by Agenomic (RFC 0013). origin fixes the control level: launched sessions are controllable, local_connected sessions are observed (policy hooks only), imported sessions are historical and never controllable. mode_effective is the requested mode, blocked or none: it is never silently lowered below or raised above mode_requested, and when a prerequisite of the requested mode fails, the session is blocked.",
+  "description": "A coding-agent session (Claude Code, Codex) supervised by Agenomic (RFC 0013). origin fixes the control level: launched sessions are controllable, local_connected sessions are observed (policy hooks only), imported sessions are historical and never controllable. mode_effective is the requested mode, blocked or none: it is never silently lowered below or raised above mode_requested, and when a prerequisite of the requested mode fails, the session is blocked. An enforce session carries capabilities.pre_tool_control validated as supported_tested or partial.",
   "type": "object",
   "additionalProperties": true,
   "required": [
@@ -210,6 +210,23 @@
       "$comment": "No silent upgrade: a session that requested observe is observe, blocked, or not yet connected; it never returns binding (enforce) or recorded would-be (shadow) decisions the user did not ask for.",
       "if": { "properties": { "mode_requested": { "const": "observe" } }, "required": ["mode_requested"] },
       "then": { "properties": { "mode_effective": { "enum": ["observe", "blocked", "none"] } } }
+    },
+    {
+      "$comment": "Enforce needs validated pre-tool control: a session is enforce only when capabilities.pre_tool_control is present with validated supported_tested or partial. unknown, unsupported or experimental never counts as protected, and an enforce request that depends on it is blocked; an absent capability does not count either.",
+      "if": { "properties": { "mode_effective": { "const": "enforce" } }, "required": ["mode_effective"] },
+      "then": {
+        "required": ["capabilities"],
+        "properties": {
+          "capabilities": {
+            "required": ["pre_tool_control"],
+            "properties": {
+              "pre_tool_control": {
+                "properties": { "validated": { "enum": ["supported_tested", "partial"] } }
+              }
+            }
+          }
+        }
+      }
     }
   ],
   "$defs": {

@@ -23,7 +23,9 @@ documented here.
   `coding-session.schema.json` (origin → control pairing,
   `mode_requested`/`mode_effective` with `blocked`, no silent
   downgrade and no upgrade, so an `observe` request never becomes
-  `shadow` or `enforce`, capture settings, and disjoint `protection`
+  `shadow` or `enforce`, an `enforce` session only with
+  `capabilities.pre_tool_control` validated as `supported_tested` or
+  `partial`, capture settings, and disjoint `protection`
   lists of unique coding tool ids with optional `protection.notes`),
   `coding-capability-manifest.schema.json` (announced vs validated
   capability states) and `coding-action.schema.json` (a required

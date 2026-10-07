@@ -303,6 +303,15 @@ Only `validated` may gate behavior. Commands that need a capability
 on a capability validated as `unknown`, `unsupported` or `experimental`
 MUST be listed in `protection.not_covered`, and an `enforce` request
 that depends on it MUST yield `blocked`.
+Pre-tool control is such a dependency for every `enforce` session: its
+policy decision reaches the runtime through the pre-tool hook. A session
+whose `mode_effective` is `enforce` therefore MUST carry
+`capabilities.pre_tool_control` with `validated` `supported_tested` or
+`partial` (the tool ids a `partial` hook does not gate go to
+`protection.not_covered`); an absent entry counts as not validated. The
+session schema rejects `enforce` otherwise, so an `enforce` request
+without validated pre-tool control is `blocked`. `observe` and `shadow`
+never bind and do not carry this requirement.
 
 ### Action classification
 
