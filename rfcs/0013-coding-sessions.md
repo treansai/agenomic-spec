@@ -272,9 +272,14 @@ data lives in `payload`.
 Ordering), and `received_at` (date-time), when the receiver stored it.
 An event a receiver serves (API page, stream, export) carries both, so
 a served event is the producer's envelope plus these two fields and
-validates against the same schema. Producers MUST NOT send them; a
-receiver MUST ignore producer-supplied values and assign its own before
-storing or serving the event. Consumers MUST treat `cursor` as opaque
+validates against the same schema. Producers MUST NOT send them. A
+receiver that ingests an event carrying either field MUST either reject
+the event or discard the producer-supplied values; in both cases it
+assigns its own before storing or serving the event, so a served
+`cursor` or `received_at` is never a producer's value. (The schema
+cannot tell a producer event from a served one, so it accepts both
+fields; rejecting them at ingestion is a receiver rule, not a schema
+rule.) Consumers MUST treat `cursor` as opaque
 (they pass it back to resume paging and MUST NOT compare or parse it),
 and `received_at`, like `occurred_at`, is informative and MUST NOT be
 used to reorder events.

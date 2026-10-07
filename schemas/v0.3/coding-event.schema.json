@@ -82,12 +82,12 @@
     "cursor": {
       "type": "string",
       "minLength": 1,
-      "description": "Receiver-assigned: the opaque ingestion cursor of the stored event, present on events a receiver serves (APIs, streams, exports) and the position consumers page from. Producers MUST NOT send it; a receiver MUST ignore a producer-supplied value and assign its own. Consumers MUST treat it as opaque and MUST NOT compare or parse it."
+      "description": "Receiver-assigned: the opaque ingestion cursor of the stored event, present on events a receiver serves (APIs, streams, exports) and the position consumers page from. Producers MUST NOT send it; a receiver MUST either reject an ingested event that carries it or discard the producer-supplied value, and assigns its own. Consumers MUST treat it as opaque and MUST NOT compare or parse it."
     },
     "received_at": {
       "type": "string",
       "format": "date-time",
-      "description": "Receiver-assigned: when the receiver stored the event, present on served events. Producers MUST NOT send it; a receiver MUST ignore a producer-supplied value and set its own. Informative only, like occurred_at: it MUST NOT be used to reorder events."
+      "description": "Receiver-assigned: when the receiver stored the event, present on served events. Producers MUST NOT send it; a receiver MUST either reject an ingested event that carries it or discard the producer-supplied value, and sets its own. Informative only, like occurred_at: it MUST NOT be used to reorder events."
     },
     "runtime_turn_id": { "type": "string", "minLength": 1 },
     "action_id": {

@@ -19,7 +19,7 @@ documented here.
   cursor as the session's read order across sources and epochs,
   served on each stored event as the optional, receiver-assigned
   `cursor` (opaque, non-empty) with `received_at`, which producers never
-  send and receivers overwrite,
+  send and receivers either reject at ingestion or discard and replace,
   `producer_seq` as a within-`(source, producer_epoch)` emission and
   gap-detection sequence that receivers need not reorder by, an opaque,
   unordered `producer_epoch`, and at-least-once
