@@ -137,7 +137,14 @@ not a way to report a live session that cannot be governed. A
 `launched` or `local_connected` session MAY be `none` only while its
 `status` is `requested` or `starting`, or once it is `stopped` or
 `failed` without ever having connected (for example, a runtime that
-exited before the connector attached). A session that is `running`,
+exited before the connector attached). While it is `requested` or
+`starting` it MUST be `none`, including after a resume, which resets
+the mode to `none` although the session keeps its `connected_at`: no
+runtime is attached whose state report could establish a mode, so
+neither a governance mode nor `blocked` holds yet. The runner's state
+report that establishes `mode_effective` also moves the session to a
+connected status; a session that becomes `lost`, `stopped` or `failed`
+before that follows the rules below. A session that is `running`,
 `idle`, `waiting_approval`, `waiting_input`, `interrupting` or
 `stopping` was connected, so its `mode_effective` is the requested mode
 or `blocked`; a connected session whose prerequisite fails is

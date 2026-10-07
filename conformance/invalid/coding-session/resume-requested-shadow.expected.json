@@ -1,0 +1,8 @@
+{
+  "description": "A session whose resume is requested is not connected: its mode_effective is none, not the shadow mode it held before it ended.",
+  "match": {
+    "keyword": "const",
+    "instancePath": "/mode_effective",
+    "schemaPath": "#/allOf/14/then/properties/mode_effective/const"
+  }
+}

@@ -118,7 +118,9 @@ are validated for shape and for the rules their schemas encode:
   `interrupting`, `stopping` and `lost` sessions carry the requested
   mode or `blocked`, whatever mode was requested (a session that became
   `lost` before connecting, through lease expiry or runner revocation,
-  is `blocked`). `imported` sessions may be `none` in any status;
+  is `blocked`). A `requested` or `starting` live session is always
+  `none`, including a resumed one that keeps its `connected_at`.
+  `imported` sessions may be `none` in any status;
 - a `coding-session` whose `mode_effective` is `enforce` carries
   `capabilities.pre_tool_control` validated as `supported_tested` or
   `partial`; `unknown`, `unsupported`, `experimental` or an absent entry

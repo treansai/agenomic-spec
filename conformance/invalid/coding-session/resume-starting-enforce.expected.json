@@ -1,0 +1,8 @@
+{
+  "description": "A resumed session that is starting again has no runtime attached yet: it keeps connected_at but its mode is reset to none until the state report that reconnects it.",
+  "match": {
+    "keyword": "const",
+    "instancePath": "/mode_effective",
+    "schemaPath": "#/allOf/14/then/properties/mode_effective/const"
+  }
+}

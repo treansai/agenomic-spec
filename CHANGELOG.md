@@ -27,7 +27,8 @@ documented here.
   `mode_requested`/`mode_effective` with `blocked`, no silent
   downgrade and no upgrade, so an `observe` request never becomes
   `shadow` or `enforce`, `none` (not yet connected) only for a
-  live session that is `requested` or `starting` or that stopped or
+  live session that is `requested` or `starting` (where it is
+  required, including after a resume) or that stopped or
   failed without ever connecting, as recorded by a `connected_at`
   that is `null` or absent (`connected_at`, the first live connection,
   is required in a connected status and with an `observe`, `shadow` or
