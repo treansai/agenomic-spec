@@ -120,6 +120,20 @@ binding decisions or recorded would-be decisions. In every case
 mode, lower or higher, is a new, explicit request by a user, recorded
 as such.
 
+`none` means not yet connected, whatever mode was requested, and is
+not a way to report a live session that cannot be governed. A
+`launched` or `local_connected` session MAY be `none` only while its
+`status` is `requested` or `starting`, or once it is `stopped` or
+`failed` without ever having connected (for example, a runtime that
+exited before the connector attached). A session that is `running`,
+`idle`, `waiting_approval`, `waiting_input`, `interrupting`, `stopping`
+or `lost` was connected (`lost` presupposes a heartbeat lease), so its
+`mode_effective` is the requested mode or `blocked`; a connected session
+whose prerequisite fails is `blocked`, never `none`. The session schema
+rejects, for example, a `running` session with `mode_effective: none`.
+`imported` sessions are never connected live, so they MAY be `none` in
+any `status`.
+
 **Action modes.** Each coding action records in `effective_mode` the
 mode that applied to that call: `observe`, `shadow`, `enforce` or
 `blocked`. Its `decision` follows from it, and the action schema

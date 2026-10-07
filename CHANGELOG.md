@@ -23,7 +23,11 @@ documented here.
   `coding-session.schema.json` (origin → control pairing,
   `mode_requested`/`mode_effective` with `blocked`, no silent
   downgrade and no upgrade, so an `observe` request never becomes
-  `shadow` or `enforce`, an `enforce` session only with
+  `shadow` or `enforce`, `none` (not yet connected) only for a
+  live session that is `requested` or `starting` or that stopped or
+  failed before connecting, never for a `running`, `idle`, waiting,
+  `interrupting`, `stopping` or `lost` one (imported sessions are
+  exempt), an `enforce` session only with
   `capabilities.pre_tool_control` validated as `supported_tested` or
   `partial`, capture settings, and disjoint `protection`
   lists of unique coding tool ids with optional `protection.notes`),

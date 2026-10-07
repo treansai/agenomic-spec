@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agenomic.dev/spec/v0.3/coding-session.schema.json",
   "title": "Agenomic Coding Session (v0.3)",
-  "description": "A coding-agent session (Claude Code, Codex) supervised by Agenomic (RFC 0013). origin fixes the control level: launched sessions are controllable, local_connected sessions are observed (policy hooks only), imported sessions are historical and never controllable. mode_effective is the requested mode, blocked or none: it is never silently lowered below or raised above mode_requested, and when a prerequisite of the requested mode fails, the session is blocked. An enforce session carries capabilities.pre_tool_control validated as supported_tested or partial.",
+  "description": "A coding-agent session (Claude Code, Codex) supervised by Agenomic (RFC 0013). origin fixes the control level: launched sessions are controllable, local_connected sessions are observed (policy hooks only), imported sessions are historical and never controllable. mode_effective is the requested mode, blocked or none: it is never silently lowered below or raised above mode_requested, and when a prerequisite of the requested mode fails, the session is blocked. none (not yet connected) is limited to the requested and starting statuses and to sessions that stopped or failed without connecting; imported sessions are exempt. An enforce session carries capabilities.pre_tool_control validated as supported_tested or partial.",
   "type": "object",
   "additionalProperties": true,
   "required": [
@@ -59,7 +59,7 @@
     "mode_effective": {
       "type": "string",
       "enum": ["observe", "shadow", "enforce", "none", "blocked"],
-      "description": "none: not yet connected. blocked: the requested mode could not be established; the session refuses actions."
+      "description": "none: not yet connected (status requested or starting, or stopped/failed before connecting; any status for imported sessions). blocked: the requested mode could not be established; the session refuses actions."
     },
     "protection": {
       "type": "object",
@@ -227,6 +227,17 @@
           }
         }
       }
+    },
+    {
+      "$comment": "none means not yet connected, for every requested mode: a live (launched or local_connected) session is none only while requested or starting, or once it ended (stopped, failed) without ever connecting. A session that is running, idle, waiting, interrupting, stopping or lost was connected, so its mode_effective is the requested mode or blocked. Imported sessions are never connected live and keep none in any status.",
+      "if": {
+        "properties": {
+          "mode_effective": { "const": "none" },
+          "origin": { "enum": ["launched", "local_connected"] }
+        },
+        "required": ["mode_effective", "origin"]
+      },
+      "then": { "properties": { "status": { "enum": ["requested", "starting", "stopped", "failed"] } } }
     }
   ],
   "$defs": {

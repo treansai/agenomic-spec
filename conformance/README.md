@@ -107,6 +107,12 @@ are validated for shape and for the rules their schemas encode:
 - a `coding-session`'s `mode_effective` is its `mode_requested`,
   `blocked` or `none`: never lower (no silent downgrade) and never higher
   (an `observe` request never becomes `shadow` or `enforce`);
+- a `launched` or `local_connected` `coding-session` is `none` (not yet
+  connected) only while `requested` or `starting`, or once `stopped` or
+  `failed` without having connected; `running`, `idle`, `waiting_*`,
+  `interrupting`, `stopping` and `lost` sessions carry the requested
+  mode or `blocked`, whatever mode was requested. `imported` sessions
+  may be `none` in any status;
 - a `coding-session` whose `mode_effective` is `enforce` carries
   `capabilities.pre_tool_control` validated as `supported_tested` or
   `partial`; `unknown`, `unsupported`, `experimental` or an absent entry

@@ -1,0 +1,8 @@
+{
+  "description": "A lost session held a heartbeat lease, so it was connected: its effective mode is the requested mode or blocked, not none.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/status",
+    "schemaPath": "#/allOf/7/then/properties/status/enum"
+  }
+}
