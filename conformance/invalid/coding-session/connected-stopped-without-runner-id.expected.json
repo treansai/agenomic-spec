@@ -3,6 +3,7 @@
   "match": {
     "keyword": "required",
     "instancePath": "",
-    "schemaPath": "#/allOf/13/then/required"
+    "schemaPath": "#/allOf/13/then/required",
+    "params": { "missingProperty": "runner_id" }
   }
 }
