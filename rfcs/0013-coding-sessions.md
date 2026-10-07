@@ -101,6 +101,10 @@ present `lost` as `stopped`.
   never answers `defer`: that would hand the call back to the native
   permission flow and bypass the policy.
 
+`would_have_been` is shadow-only: an `observe`, `enforce` or `blocked`
+action carries it `null` or omits it, so a simulated outcome is never
+recorded for a call that was not evaluated in shadow.
+
 `mode_effective` is what actually holds: one of the three modes, `none`
 (not yet connected) or `blocked`. If a prerequisite of the requested
 mode fails (missing capability, unreleased policy, runtime version
@@ -121,12 +125,12 @@ mode that applied to that call: `observe`, `shadow`, `enforce` or
 `blocked`. Its `decision` follows from it, and the action schema
 enforces the pairing:
 
-| Action `effective_mode` | `decision` | Approval |
-|---|---|---|
-| `observe` | `defer` | — |
-| `shadow` | `defer`, with a non-null `would_have_been` (`allow`, `deny` or `pending`) | none: `approval_id` and `approval_status` are `null` or absent |
-| `enforce` | `allow`, `deny` or `pending`, never `defer` | a `pending` decision references its `approval_id` |
-| `blocked` | `deny` | none: `approval_id` and `approval_status` are `null` or absent |
+| Action `effective_mode` | `decision` | `would_have_been` | Approval |
+|---|---|---|---|
+| `observe` | `defer` | `null` or absent | — |
+| `shadow` | `defer` | required, non-null: `allow`, `deny` or `pending` | none: `approval_id` and `approval_status` are `null` or absent |
+| `enforce` | `allow`, `deny` or `pending`, never `defer` | `null` or absent | a `pending` decision references its `approval_id` |
+| `blocked` | `deny` | `null` or absent | none: `approval_id` and `approval_status` are `null` or absent |
 
 An action's mode can differ from the session's `mode_effective`. In an
 `enforce` session, a call for which the policy layer evaluated every
@@ -351,7 +355,8 @@ The action records its intent digest `input_digest` (required; see
 and `outcome`. The schema enforces that a `pending` decision references
 an `approval_id`, that `observe` and `shadow` modes only ever answer
 `defer` while `enforce` never does, that a `shadow` action carries a
-non-null `would_have_been` and references no approval, and that a
+non-null `would_have_been` and references no approval, that every
+other action carries `would_have_been` `null` or not at all, and that a
 `blocked` action decides `deny` and references no approval (see
 [Governance modes](#governance-modes)).
 

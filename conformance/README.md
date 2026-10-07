@@ -100,6 +100,8 @@ are validated for shape and for the rules their schemas encode:
 - a `shadow` `coding-action` decides `defer`, records what `enforce` would
   have returned in a required, non-null `would_have_been` (`allow`,
   `deny` or `pending`) and references no approval;
+- `would_have_been` is shadow-only: an `observe`, `enforce` or `blocked`
+  `coding-action` carries it `null` or omits it;
 - a `blocked` `coding-action` (a call the session cannot govern in its
   requested mode) decides `deny` and references no approval;
 - a `coding-session`'s `mode_effective` is its `mode_requested`,

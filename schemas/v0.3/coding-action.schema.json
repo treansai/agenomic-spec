@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agenomic.dev/spec/v0.3/coding-action.schema.json",
   "title": "Agenomic Coding Action (v0.3)",
-  "description": "One native tool call of a coding-agent runtime, classified into the Agenomic coding action vocabulary and decided by the governance layer (RFC 0013). decision records what Agenomic answered; status and outcome record what was later observed. An allow decision is not proof of execution. Only enforce binds: observe and shadow always answer defer, and enforce never does. A blocked action is refused with deny and no approval. input_digest binds an approval to the intent it was granted for.",
+  "description": "One native tool call of a coding-agent runtime, classified into the Agenomic coding action vocabulary and decided by the governance layer (RFC 0013). decision records what Agenomic answered; status and outcome record what was later observed. An allow decision is not proof of execution. Only enforce binds: observe and shadow always answer defer, and enforce never does; only a shadow action records would_have_been. A blocked action is refused with deny and no approval. input_digest binds an approval to the intent it was granted for.",
   "type": "object",
   "additionalProperties": true,
   "required": [
@@ -94,7 +94,7 @@
     "would_have_been": {
       "type": ["string", "null"],
       "enum": ["allow", "deny", "pending", null],
-      "description": "Shadow mode: what enforce would have returned (allow, deny or pending). Required and non-null on a shadow action, whose decision itself is defer; a would-be pending is recorded here and no approval is requested."
+      "description": "Shadow mode only: what enforce would have returned (allow, deny or pending). Required and non-null on a shadow action, whose decision itself is defer; a would-be pending is recorded here and no approval is requested. On an observe, enforce or blocked action it is null or absent."
     },
     "reason": { "type": ["string", "null"] },
     "reason_codes": { "type": "array", "items": { "type": "string", "minLength": 1 } },
@@ -155,9 +155,14 @@
       }
     },
     {
-      "$comment": "In observe mode Agenomic never blocks: the native permission flow decides.",
+      "$comment": "In observe mode Agenomic never blocks: the native permission flow decides. would_have_been is shadow-only, so it is null or absent.",
       "if": { "properties": { "effective_mode": { "const": "observe" } }, "required": ["effective_mode"] },
-      "then": { "properties": { "decision": { "const": "defer" } } }
+      "then": {
+        "properties": {
+          "decision": { "const": "defer" },
+          "would_have_been": { "type": "null" }
+        }
+      }
     },
     {
       "$comment": "Shadow never binds: the answer is defer, what enforce would have returned (allow, deny or pending, never null) goes in the required would_have_been, and no approval is requested.",
@@ -173,16 +178,22 @@
       }
     },
     {
-      "$comment": "Enforce binds: the answer is the policy decision (allow, deny or pending), never defer, which would hand the call back to the native permission flow.",
+      "$comment": "Enforce binds: the answer is the policy decision (allow, deny or pending), never defer, which would hand the call back to the native permission flow. would_have_been is shadow-only, so it is null or absent.",
       "if": { "properties": { "effective_mode": { "const": "enforce" } }, "required": ["effective_mode"] },
-      "then": { "properties": { "decision": { "enum": ["allow", "deny", "pending"] } } }
+      "then": {
+        "properties": {
+          "decision": { "enum": ["allow", "deny", "pending"] },
+          "would_have_been": { "type": "null" }
+        }
+      }
     },
     {
-      "$comment": "A blocked action is refused because the session cannot honour its requested mode: the answer is deny, and no approval is requested since no reviewer can lift the block.",
+      "$comment": "A blocked action is refused because the session cannot honour its requested mode: the answer is deny, no approval is requested since no reviewer can lift the block, and would_have_been, which is shadow-only, is null or absent.",
       "if": { "properties": { "effective_mode": { "const": "blocked" } }, "required": ["effective_mode"] },
       "then": {
         "properties": {
           "decision": { "const": "deny" },
+          "would_have_been": { "type": "null" },
           "approval_id": { "type": "null" },
           "approval_status": { "type": "null" }
         }
