@@ -413,13 +413,14 @@ encoded in UTF-8 (no BOM):
 - `null`, `true` and `false` as themselves, and integers in plain
   decimal.
 
-For values in the Agenomic JSON Subset of RFC 0012, this is the
-canonical form of RFC 0012 except for the key order (RFC 0012 compares
-UTF-16 code units; the two orders differ only for keys that mix
-characters above U+FFFF with U+E000 to U+FFFF). A number
-written with a fraction or an exponent has no portable serialization
-across languages; a verifier recomputing the digest of an input that
-holds one may disagree with the gateway, whose value is authoritative.
+This is not the canonical form of RFC 0012: RFC 0012 also normalizes
+numbers (`1.0`, `1e2` and `-0` become the integers `1`, `100` and `0`)
+and orders keys by UTF-16 code units, while this serialization keeps
+each number as the gateway's JSON encoder writes it and orders keys by
+code point. A number written with a fraction or an exponent therefore
+has no portable serialization across languages; a verifier recomputing
+the digest of an input that holds one may disagree with the gateway,
+whose value is authoritative.
 
 **Digest.** `input_digest` is `blake3:` followed by the lowercase hex
 of the 32-byte BLAKE3 hash of those bytes.
@@ -461,8 +462,10 @@ the intent object changed (a different command or input, another `cwd`,
 a different patch or set of paths, a moved base revision, another
 sandbox, permission mode or network scope), the call is a **new
 intent**: the gateway MUST NOT apply the approval to it and
-MUST answer `deny` with the reason code `input_changed` (a shadow
-session records that as `would_have_been: "deny"` and answers `defer`).
+MUST refuse it with the reason code `input_changed`: `deny` in an
+enforce session, `deny` with `effective_mode: blocked` in a blocked one,
+and, since observe and shadow never refuse, `defer` in both (a shadow
+session records `would_have_been: "deny"`).
 The changed call needs a new request, under a new `native_request_id`
 or `attempt`, which gets its own action, decision and, if required, its
 own approval. An approval is consumed once: a second consume MUST answer
@@ -510,9 +513,10 @@ own approval. An approval is consumed once: a second consume MUST answer
 - **Reusing the RFC 0012 canonical form for the intent digest.** RFC
   0012 hashes with SHA-256 and sorts keys by UTF-16 code units. The
   intent digest is computed by the gateway alone, which already hashes
-  with BLAKE3 like RFC 0010 and sorts keys by code point; the two
-  serializations agree except for keys that mix characters above U+FFFF
-  with U+E000 to U+FFFF.
+  with BLAKE3 like RFC 0010 and sorts keys by code point; it does not
+  normalize numbers the way RFC 0012 does, so the two forms differ for
+  inputs holding non-integer or exponent numbers as well as in key
+  order.
 - **A single capability state.** Merging announced and validated hides
   the difference between a vendor claim and a tested installation, which
   is exactly what a reviewer needs to see.
