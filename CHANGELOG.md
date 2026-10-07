@@ -18,7 +18,8 @@ documented here.
   `coding_session_id`, `source` and `trust`, the receiver's ingestion
   cursor as the session's read order across sources and epochs,
   served on each stored event as the optional, receiver-assigned
-  `cursor` (opaque, non-empty) with `received_at`, which producers never
+  `cursor` (opaque, non-empty) together with `received_at` (each requires
+  the other), which producers never
   send and receivers either reject at ingestion or discard and replace,
   `producer_seq` as a within-`(source, producer_epoch)` emission and
   gap-detection sequence that receivers need not reorder by, an opaque,

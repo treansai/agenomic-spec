@@ -270,7 +270,8 @@ data lives in `payload`.
 **Served events.** Two optional top-level fields are receiver-assigned:
 `cursor` (non-empty string), the event's ingestion cursor (see
 Ordering), and `received_at` (date-time), when the receiver stored it.
-An event a receiver serves (API page, stream, export) carries both, so
+An event a receiver serves (API page, stream, export) carries both, and
+the schema requires each whenever the other is present, so
 a served event is the producer's envelope plus these two fields and
 validates against the same schema. Producers MUST NOT send them. A
 receiver that ingests an event carrying either field MUST either reject

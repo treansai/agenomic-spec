@@ -16,6 +16,7 @@
     "producer_seq",
     "occurred_at"
   ],
+  "dependentRequired": { "cursor": ["received_at"], "received_at": ["cursor"] },
   "properties": {
     "event_id": {
       "type": "string",

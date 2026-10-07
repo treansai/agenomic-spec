@@ -94,8 +94,8 @@ are validated for shape and for the rules their schemas encode:
   and `payload.native_request_id`, and `tool.requested` also carries
   `action_id`;
 - a served `coding-event` may carry the receiver-assigned `cursor` (a
-  non-empty opaque string) and `received_at` (a date-time), which
-  producers never send;
+  non-empty opaque string) and `received_at` (a date-time), always
+  together and never sent by producers;
 - every `coding-action` carries its intent digest `input_digest`, never
   `null` and of the form `blake3:` plus 64 lowercase hex digits;
 - an `enforce` `coding-action` decides `allow`, `deny` or `pending`, never
