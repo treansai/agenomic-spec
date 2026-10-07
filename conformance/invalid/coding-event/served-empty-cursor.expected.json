@@ -1,0 +1,10 @@
+{
+  "description": "A served event's receiver-assigned `cursor` is a non-empty opaque string.",
+  "match": {
+    "keyword": "minLength",
+    "instancePath": "/cursor",
+    "params": {
+      "limit": 1
+    }
+  }
+}

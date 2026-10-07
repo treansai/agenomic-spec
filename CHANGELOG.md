@@ -17,6 +17,9 @@ documented here.
   `agenomic.coding.event/v1` envelope with ULID `event_id`, a required
   `coding_session_id`, `source` and `trust`, the receiver's ingestion
   cursor as the session's read order across sources and epochs,
+  served on each stored event as the optional, receiver-assigned
+  `cursor` (opaque, non-empty) with `received_at`, which producers never
+  send and receivers overwrite,
   `producer_seq` as a within-`(source, producer_epoch)` emission and
   gap-detection sequence that receivers need not reorder by, an opaque,
   unordered `producer_epoch`, and at-least-once

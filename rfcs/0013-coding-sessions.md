@@ -267,6 +267,18 @@ Every event is an `agenomic.coding.event/v1` envelope:
 The top level is closed (`additionalProperties: false`); type-specific
 data lives in `payload`.
 
+**Served events.** Two optional top-level fields are receiver-assigned:
+`cursor` (non-empty string), the event's ingestion cursor (see
+Ordering), and `received_at` (date-time), when the receiver stored it.
+An event a receiver serves (API page, stream, export) carries both, so
+a served event is the producer's envelope plus these two fields and
+validates against the same schema. Producers MUST NOT send them; a
+receiver MUST ignore producer-supplied values and assign its own before
+storing or serving the event. Consumers MUST treat `cursor` as opaque
+(they pass it back to resume paging and MUST NOT compare or parse it),
+and `received_at`, like `occurred_at`, is informative and MUST NOT be
+used to reorder events.
+
 **Session.** `coding_session_id` (uuid) is required: it names the
 Agenomic coding session (the session object's `id`) the event belongs
 to, so an event stays attributable when it is stored, batched or
@@ -289,7 +301,8 @@ MUST NOT promote `derived` or `observed` facts to `native`.
 **Ordering.** A session has one read order: the **ingestion cursor**
 the receiver assigns to each event it stores. Consumers that read a
 session (APIs, timelines, exports) MUST present and page its events in
-cursor order, across all sources and epochs.
+cursor order, across all sources and epochs, and page from the
+`cursor` of the last event they read.
 
 `producer_seq` is a producer-side sequence, not a read order. Within one
 producer lifetime of one source, `(source, producer_epoch)`, it is a
@@ -610,6 +623,12 @@ own approval. An approval is consumed once: a second consume MUST answer
   developer's machine. A `producer_seq` per `(source, producer_epoch)`, with the
   receiver's ingestion cursor as the session's read order, is simpler and
   survives connector restarts without a coordinator.
+- **A separate served-event schema.** Wrapping or extending the
+  envelope in a second schema for stored events would duplicate the
+  closed envelope (`additionalProperties: false` does not compose with
+  `allOf`) and let the two drift. Two optional receiver-assigned fields
+  in the one envelope keep a served event the producer's event plus its
+  cursor, with the producer/receiver split stated as a rule.
 - **Hash-chained events (RFC 0010).** Hash chains assume a single
   ordered writer. They can be layered later by the receiver over the
   ingestion order; requiring them of every producer now would add cost
