@@ -1,0 +1,9 @@
+{
+  "description": "A connected live session is registered on (runner_id, runtime, runtime_session_id), so a running session carries its native id.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "schemaPath": "#/allOf/13/then/required",
+    "params": { "missingProperty": "runtime_session_id" }
+  }
+}

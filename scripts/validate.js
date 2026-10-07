@@ -69,6 +69,14 @@ const ARTIFACT_TO_SCHEMA = {
   'prompt-file': { file: 'prompt-file.schema.json', versions: ['v0.4'] },
   'experiment-case': { file: 'experiment-case.schema.json', versions: ['v0.4'] },
   'experiment-spec': { file: 'experiment-spec.schema.json', versions: ['v0.4'] },
+  // Coding-session artifacts (RFC 0013): supervision of coding agents
+  // (Claude Code, Codex). The event envelope carries its own
+  // `schema_version` (`agenomic.coding.event/v1`); the schema files live in
+  // v0.3.
+  'coding-event': { file: 'coding-event.schema.json', versions: ['v0.3'] },
+  'coding-session': { file: 'coding-session.schema.json', versions: ['v0.3'] },
+  'coding-capability-manifest': { file: 'coding-capability-manifest.schema.json', versions: ['v0.3'] },
+  'coding-action': { file: 'coding-action.schema.json', versions: ['v0.3'] },
 };
 
 const ajv = new Ajv({ allErrors: true, strict: false });
@@ -129,20 +137,33 @@ function addV04Schemas() {
   }
 }
 
+// v0.3 schemas that other v0.3 schemas reference across files by $id
+// (tracking and trace events use the event type registry; the coding session
+// uses the coding action's tool id vocabulary). They are added before any v0.3
+// schema is compiled, so a reference resolves whatever order fixtures are
+// walked in.
+const V03_SHARED_SCHEMAS = ['event-type-registry.json', 'coding-action.schema.json'];
+
+function addV03SharedSchemas() {
+  for (const name of V03_SHARED_SCHEMAS) {
+    const shared = JSON.parse(fs.readFileSync(path.join(SCHEMA_DIRS['v0.3'], name), 'utf8'));
+    if (!ajv.getSchema(shared.$id)) ajv.addSchema(shared);
+  }
+}
+
 const compiledByPath = new Map();
 function getValidator(ref) {
   if (!compiledByPath.has(ref.label)) {
     const full = path.join(SCHEMA_DIRS[ref.version], ref.file);
     const schema = JSON.parse(fs.readFileSync(full, 'utf8'));
-    if (ref.version === 'v0.3') {
-      const registryPath = path.join(SCHEMA_DIRS['v0.3'], 'event-type-registry.json');
-      if (!ajv.getSchema('https://agenomic.dev/spec/v0.3/event-type-registry.json')) {
-        ajv.addSchema(JSON.parse(fs.readFileSync(registryPath, 'utf8')));
-      }
-    }
     if (ref.version === 'v0.4') {
       addV04Schemas();
       compiledByPath.set(ref.label, ajv.getSchema(schema.$id));
+    } else if (ref.version === 'v0.3') {
+      addV03SharedSchemas();
+      // A shared schema is already registered under its $id: reuse it, since
+      // compiling it again would register a duplicate $id.
+      compiledByPath.set(ref.label, ajv.getSchema(schema.$id) || ajv.compile(schema));
     } else {
       compiledByPath.set(ref.label, ajv.compile(schema));
     }
@@ -331,6 +352,32 @@ for (const file of invalidFiles) {
     continue;
   }
   pass(file, 'rejected as expected by ' + ref.label);
+}
+
+// --- coding-session protection disjointness stays in sync ----------------
+//
+// JSON Schema cannot state that protection.protected and
+// protection.not_covered are disjoint, so coding-session.schema.json
+// enumerates one if/then per coding tool id. Fail if that enumeration and
+// the toolId vocabulary of coding-action.schema.json drift apart.
+{
+  const sessionFile = path.join(SCHEMA_DIRS['v0.3'], 'coding-session.schema.json');
+  const actionFile = path.join(SCHEMA_DIRS['v0.3'], 'coding-action.schema.json');
+  const session = JSON.parse(fs.readFileSync(sessionFile, 'utf8'));
+  const action = JSON.parse(fs.readFileSync(actionFile, 'utf8'));
+  const vocabulary = [...action.$defs.toolId.enum].sort();
+  const branches = session.properties.protection.allOf || [];
+  const covered = branches.map(b => {
+    const ifId = b.if.properties.protected.contains.const;
+    const thenId = b.then.properties.not_covered.not.contains.const;
+    return ifId === thenId ? ifId : null;
+  });
+  const enumerated = covered.filter(id => id !== null).sort();
+  if (covered.includes(null) || JSON.stringify(enumerated) !== JSON.stringify(vocabulary)) {
+    fail(rel(sessionFile), 'protection disjointness branches do not match coding-action toolId enum.\n' +
+      '      toolId: ' + JSON.stringify(vocabulary) + '\n' +
+      '      branches: ' + JSON.stringify(enumerated));
+  }
 }
 
 // --- summary ---------------------------------------------------------------

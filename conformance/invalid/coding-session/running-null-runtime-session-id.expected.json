@@ -1,0 +1,8 @@
+{
+  "description": "A connected live session's runtime_session_id is a string, never null: null means the native session is not known yet.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/runtime_session_id",
+    "schemaPath": "#/allOf/13/then/properties/runtime_session_id/type"
+  }
+}

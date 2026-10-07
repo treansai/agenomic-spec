@@ -1,0 +1,7 @@
+{
+  "description": "`type` must be one of the agenomic.coding.event/v1 event types.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/type"
+  }
+}

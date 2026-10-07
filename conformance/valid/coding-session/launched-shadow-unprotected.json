@@ -1,0 +1,29 @@
+{
+  "id": "7b8c9d0e-1f2a-4b3c-8d4e-5f6a7b8c9d0e",
+  "runner_id": "9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d",
+  "runtime": "codex",
+  "runtime_version": "0.48.0",
+  "surface": "app_server",
+  "origin": "launched",
+  "control": "controllable",
+  "runtime_session_id": "thr_example_02",
+  "status": "running",
+  "mode_requested": "shadow",
+  "mode_effective": "shadow",
+  "protection": {
+    "protected": [],
+    "not_covered": [
+      "coding.shell.exec",
+      "coding.git.push",
+      "coding.mcp.call"
+    ],
+    "notes": [
+      "Shell calls are evaluated before they run and the would-be decision is recorded; the runtime's own permission flow decides."
+    ]
+  },
+  "limitations": [
+    "Shadow mode: Agenomic records what it would have decided and gates no call."
+  ],
+  "connected_at": "2026-10-05T09:00:20Z",
+  "created_at": "2026-10-05T09:00:00Z"
+}

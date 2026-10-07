@@ -1,0 +1,18 @@
+{
+  "id": "5d4c3b2a-1f0e-4d9c-8b7a-6f5e4d3c2b1a",
+  "runner_id": "9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d",
+  "actor_id": "user-example",
+  "runtime": "codex",
+  "runtime_version": "0.48.0",
+  "surface": "app_server",
+  "origin": "launched",
+  "control": "controllable",
+  "runtime_session_id": null,
+  "status": "lost",
+  "mode_requested": "enforce",
+  "mode_effective": "blocked",
+  "limitations": [
+    "The runner was revoked while the session was starting; the runtime process may still be running ungoverned."
+  ],
+  "created_at": "2026-10-05T09:00:00Z"
+}

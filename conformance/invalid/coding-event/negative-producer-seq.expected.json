@@ -1,0 +1,7 @@
+{
+  "description": "`producer_seq` is an integer >= 0.",
+  "match": {
+    "keyword": "minimum",
+    "instancePath": "/producer_seq"
+  }
+}

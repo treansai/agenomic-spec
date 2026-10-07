@@ -60,6 +60,10 @@ schema:
 | `prompt-file/`        | `schemas/v0.4/prompt-file.schema.json`      |
 | `experiment-case/`    | `schemas/v0.4/experiment-case.schema.json`  |
 | `experiment-spec/`    | `schemas/v0.4/experiment-spec.schema.json`  |
+| `coding-event/`       | `schemas/v0.3/coding-event.schema.json` (RFC 0013) |
+| `coding-session/`     | `schemas/v0.3/coding-session.schema.json` (RFC 0013) |
+| `coding-capability-manifest/` | `schemas/v0.3/coding-capability-manifest.schema.json` (RFC 0013) |
+| `coding-action/`      | `schemas/v0.3/coding-action.schema.json` (RFC 0013) |
 
 For artifact kinds published in more than one schema version, the
 fixture's own `spec_version` selects the directory: for `genome`,
@@ -79,6 +83,76 @@ by the cross-language vectors under `conformance/vectors/prompts/`, which
 `MANIFEST.json` and every digest. See
 [`vectors/prompts/README.md`](vectors/prompts/README.md) for the file format
 and the matching rules that every implementation applies.
+
+The coding-session documents of RFC 0013 (`schemas/v0.3/coding-*.schema.json`)
+are validated for shape and for the rules their schemas encode:
+
+- every `coding-event` and every `coding-action` names its session in
+  `coding_session_id`;
+- every `tool.requested`, `tool.started`, `tool.completed` and
+  `tool.failed` event carries `attempt_id` (the decimal attempt number)
+  and `payload.native_request_id`, and `tool.requested` also carries
+  `action_id`;
+- a served `coding-event` may carry the receiver-assigned `cursor` (a
+  non-empty opaque string) and `received_at` (a date-time), always
+  together and never sent by producers;
+- every `coding-action` carries its intent digest `input_digest`, never
+  `null` and of the form `blake3:` plus 64 lowercase hex digits;
+- an `enforce` `coding-action` decides `allow`, `deny` or `pending`, never
+  `defer`;
+- an `observe` `coding-action` decides `defer` and references no approval
+  (`approval_id` and `approval_status` are `null` or absent): the runtime's
+  native permission flow decides;
+- a `shadow` `coding-action` decides `defer`, records what `enforce` would
+  have returned in a required, non-null `would_have_been` (`allow`,
+  `deny` or `pending`) and references no approval;
+- `would_have_been` is shadow-only: an `observe`, `enforce` or `blocked`
+  `coding-action` carries it `null` or omits it;
+- a `blocked` `coding-action` (a call the session cannot govern in its
+  requested mode) decides `deny`, names the cause in a required,
+  non-empty `reason_codes` (for example `enforce_prerequisite_missing`
+  or `input_changed`) and references no approval;
+- a `coding-session`'s `mode_effective` is its `mode_requested`,
+  `blocked` or `none`: never lower (no silent downgrade) and never higher
+  (an `observe` request never becomes `shadow` or `enforce`);
+- a `launched` or `local_connected` `coding-session` is `none` (not yet
+  connected) only while `requested` or `starting`, or once `stopped` or
+  `failed` without having connected; `running`, `idle`, `waiting_*`,
+  `interrupting`, `stopping` and `lost` sessions carry the requested
+  mode or `blocked`, whatever mode was requested (a session that became
+  `lost` before connecting, through lease expiry or runner revocation,
+  is `blocked`). A `requested` or `starting` live session is always
+  `none`, including a resumed one that keeps its `connected_at`.
+  `imported` sessions may be `none` in any status;
+- a `coding-session` whose `mode_effective` is `enforce` carries
+  `capabilities.pre_tool_control` validated as `supported_tested` or
+  `partial`; `unknown`, `unsupported`, `experimental` or an absent entry
+  is not enough, and such an `enforce` request is `blocked`;
+- a `coding-session`'s `protection.protected` and `protection.not_covered`
+  hold unique ids from the coding action `tool_id` vocabulary, the two
+  lists are disjoint, and `protection.notes` holds at most 32 strings of
+  at most 300 characters;
+- a `coding-session`'s `runtime_session_id` is never an empty string, and
+  a `launched` or `local_connected` session in a connected status
+  (`running`, `idle`, `waiting_*`, `interrupting`, `stopping`) or with a
+  non-null `connected_at` carries it as a string, and carries
+  `runner_id` as a uuid string, never `null`: both are part of the
+  registration key `(runner_id, runtime, runtime_session_id)`;
+- a `coding-session` reports a non-empty `protection.protected` only when
+  its `mode_effective` is `enforce`: `observe`, `shadow`, `none` and
+  `blocked` gate no call, so their `protection.protected` is empty or
+  absent.
+
+The schema checks the form of `input_digest` only: the intent object it
+hashes (RFC 0013, Approval binding) is not part of the action.
+`valid/coding-action/bash-force-push-reference-digest.json` carries the
+digest of the RFC's reference vector,
+`blake3:52b6752cf5f974d3c5e9e0b4ce2b1ec2adc150a77b3e80199e5a93ec287f463c`.
+
+`coding-session.schema.json` references that vocabulary at
+`coding-action.schema.json#/$defs/toolId`, so a validator that loads the
+session schema must also load the coding action schema; `scripts/validate.js`
+registers it before compiling any v0.3 schema.
 
 The runner asserts `format` keywords through `ajv-formats`, so a v0.4
 timestamp must match its pattern and also be a valid `date-time`:

@@ -1,0 +1,7 @@
+{
+  "description": "`protection.not_covered` lists coding tool ids from the closed coding-action `tool_id` vocabulary.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/protection/not_covered/0"
+  }
+}

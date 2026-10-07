@@ -1,0 +1,7 @@
+{
+  "description": "`source` must be runtime, adapter, gateway, supervisor or filesystem.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/source"
+  }
+}

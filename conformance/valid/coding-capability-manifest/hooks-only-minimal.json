@@ -1,0 +1,17 @@
+{
+  "runtime": "claude_code",
+  "version": "2.0.14",
+  "surfaces": [
+    "cli_hooks"
+  ],
+  "capabilities": {
+    "observe": {
+      "announced": "supported_tested",
+      "validated": "supported_tested"
+    },
+    "pre_tool_control": {
+      "announced": "partial",
+      "validated": "unknown"
+    }
+  }
+}

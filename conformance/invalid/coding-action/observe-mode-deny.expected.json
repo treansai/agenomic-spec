@@ -1,0 +1,7 @@
+{
+  "description": "In observe mode Agenomic defers to the native permission flow; it never denies.",
+  "match": {
+    "keyword": "const",
+    "instancePath": "/decision"
+  }
+}

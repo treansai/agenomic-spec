@@ -1,0 +1,11 @@
+{
+  "description": "A tool.* event without a payload has no `native_request_id` and cannot be correlated.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "schemaPath": "#/allOf/0/then/required",
+    "params": {
+      "missingProperty": "payload"
+    }
+  }
+}

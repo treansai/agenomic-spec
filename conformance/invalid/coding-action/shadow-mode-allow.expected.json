@@ -1,0 +1,8 @@
+{
+  "description": "Shadow never binds: a shadow action answers defer and records what enforce would have returned in `would_have_been`.",
+  "match": {
+    "keyword": "const",
+    "instancePath": "/decision",
+    "schemaPath": "#/allOf/2/then/properties/decision/const"
+  }
+}

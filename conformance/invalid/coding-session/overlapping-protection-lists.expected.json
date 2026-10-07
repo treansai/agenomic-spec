@@ -1,0 +1,8 @@
+{
+  "description": "A tool id is either gated or not: `protection.protected` and `protection.not_covered` are disjoint.",
+  "match": {
+    "keyword": "not",
+    "instancePath": "/protection/not_covered",
+    "schemaPath": "#/properties/protection/allOf/7/then/properties/not_covered/not"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "description": "A served event carries `cursor` and `received_at` together: a `received_at` without `cursor` is incomplete receiver metadata.",
+  "match": {
+    "keyword": "dependentRequired",
+    "instancePath": "",
+    "params": {
+      "missingProperty": "cursor"
+    }
+  }
+}

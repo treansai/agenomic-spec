@@ -1,0 +1,31 @@
+{
+  "id": "9f0a1b2c-3d4e-4f5a-8b6c-7d8e9f0a1b2c",
+  "coding_session_id": "3f2b8c1d-6e4a-4b9f-8c7d-1a2b3c4d5e6f",
+  "native_request_id": "toolu_example_01",
+  "runtime_turn_id": "turn-0003",
+  "attempt": 1,
+  "phase": "pre_tool",
+  "native_tool": "Bash",
+  "tool_id": "coding.fs.delete",
+  "risk": "high",
+  "flags": [
+    "outside_workspace"
+  ],
+  "preview": "rm -r ../shared-cache",
+  "input_digest": "blake3:23f9e3a6ae674ebae87e7831a8e1f0a8b58c3d775d5c43a7553265aae06226ba",
+  "decision": "allow",
+  "effective_mode": "shadow",
+  "would_have_been": "allow",
+  "reason": "Allowed by coding-isolated-dev@1.0.0.",
+  "reason_codes": [
+    "outside_workspace"
+  ],
+  "approval_id": null,
+  "approval_status": null,
+  "record_id": "2a3b4c5d-6e7f-4a8b-9c0d-1e2f3a4b5c6d",
+  "status": "started",
+  "outcome": null,
+  "created_at": "2026-10-05T09:02:11Z",
+  "decided_at": "2026-10-05T09:02:11Z",
+  "completed_at": null
+}

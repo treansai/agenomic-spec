@@ -1,0 +1,10 @@
+{
+  "description": "A served event's receiver-assigned `received_at` is an RFC 3339 date-time.",
+  "match": {
+    "keyword": "format",
+    "instancePath": "/received_at",
+    "params": {
+      "format": "date-time"
+    }
+  }
+}

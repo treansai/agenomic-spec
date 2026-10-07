@@ -1,0 +1,11 @@
+{
+  "description": "tool.requested is emitted with the decision, so it always carries the coding action's `action_id`.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "schemaPath": "#/allOf/1/then/required",
+    "params": {
+      "missingProperty": "action_id"
+    }
+  }
+}

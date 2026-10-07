@@ -1,0 +1,363 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.3/coding-session.schema.json",
+  "title": "Agenomic Coding Session (v0.3)",
+  "description": "A coding-agent session (Claude Code, Codex) supervised by Agenomic (RFC 0013). origin fixes the control level: launched sessions are controllable, local_connected sessions are observed (policy hooks only), imported sessions are historical and never controllable. mode_effective is the requested mode, blocked or none: it is never silently lowered below or raised above mode_requested, and when a prerequisite of the requested mode fails, the session is blocked. none (not yet connected) is required in the requested and starting statuses, including after a resume, and otherwise limited to sessions that stopped or failed without ever connecting (connected_at null or absent); a session in a connected status or holding a governance mode records connected_at; a session that became lost before connecting is blocked, not none; imported sessions are exempt. A live session in a connected status or with connected_at set carries a runner_id and a non-empty runtime_session_id, which with runtime form its registration key. An enforce session carries capabilities.pre_tool_control validated as supported_tested or partial.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "id",
+    "runtime",
+    "origin",
+    "control",
+    "status",
+    "mode_requested",
+    "mode_effective",
+    "created_at"
+  ],
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "runner_id": {
+      "type": ["string", "null"],
+      "format": "uuid",
+      "description": "The runner that hosts the session. Part of the registration key (runner_id, runtime, runtime_session_id): a launched or local_connected session carries it once it is in a connected status or has connected (connected_at set); it may be null or absent before that, and on imported sessions (a transcript imported without a runner)."
+    },
+    "actor_id": { "type": ["string", "null"], "minLength": 1 },
+    "runtime": { "type": "string", "enum": ["claude_code", "codex"] },
+    "runtime_version": { "type": ["string", "null"] },
+    "surface": {
+      "type": ["string", "null"],
+      "description": "Integration surface, for example sdk, cli_hooks, app_server."
+    },
+    "origin": { "type": "string", "enum": ["launched", "local_connected", "imported"] },
+    "control": { "type": "string", "enum": ["controllable", "observed", "imported"] },
+    "runtime_session_id": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "description": "The runtime's native session id, never empty. Unique per (runner_id, runtime): (runner_id, runtime, runtime_session_id) is the registration key. A launched or local_connected session carries it once it is in a connected status or has connected (connected_at set); it may be null or absent before that, and on imported sessions."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "starting",
+        "running",
+        "idle",
+        "waiting_approval",
+        "waiting_input",
+        "interrupting",
+        "stopping",
+        "stopped",
+        "failed",
+        "lost"
+      ],
+      "description": "lost: no heartbeat within the lease; the process may still be running."
+    },
+    "workspace_id": { "type": ["string", "null"] },
+    "repo": { "type": ["string", "null"] },
+    "branch": { "type": ["string", "null"] },
+    "base_revision": { "type": ["string", "null"] },
+    "model": { "type": ["string", "null"] },
+    "policy_profile": { "type": ["string", "null"] },
+    "policy_refs": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "mode_requested": { "$ref": "#/$defs/governanceMode" },
+    "mode_effective": {
+      "type": "string",
+      "enum": ["observe", "shadow", "enforce", "none", "blocked"],
+      "description": "none: not yet connected (always while status is requested or starting, including a resumed session before it reconnects, or stopped/failed with connected_at null or absent; any status for imported sessions). blocked: the requested mode could not be established; the session refuses actions."
+    },
+    "protection": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Which coding tool ids are actually gated in this session. Only enforce gates calls: when mode_effective is observe, shadow, none or blocked, protected is empty or absent. A protected badge is derived from mode_effective together with a non-empty protected list, never from mode_requested or notes. protected and not_covered are disjoint: a tool id is gated or not, never both.",
+      "$comment": "Disjointness, enumerated per tool id (JSON Schema has no set-intersection keyword). The allOf below lists every id of coding-action.schema.json#/$defs/toolId; scripts/validate.js checks it stays in sync.",
+      "allOf": [
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.fs.read" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.fs.read" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.fs.write" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.fs.write" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.fs.delete" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.fs.delete" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.shell.exec" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.shell.exec" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.shell.interactive_input" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.shell.interactive_input" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.git.read" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.git.read" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.git.commit" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.git.commit" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.git.push" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.git.push" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.git.destructive" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.git.destructive" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.dependency.install" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.dependency.install" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.network.fetch" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.network.fetch" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.mcp.call" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.mcp.call" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.agent_config.modify" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.agent_config.modify" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.subagent.spawn" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.subagent.spawn" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.web.search" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.web.search" } } } } }
+        },
+        {
+          "if": { "properties": { "protected": { "contains": { "const": "coding.unknown" } } }, "required": ["protected"] },
+          "then": { "properties": { "not_covered": { "not": { "contains": { "const": "coding.unknown" } } } } }
+        }
+      ],
+      "properties": {
+        "protected": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "coding-action.schema.json#/$defs/toolId" },
+          "description": "Tool ids whose calls are gated by Agenomic in this session. Empty or absent unless mode_effective is enforce."
+        },
+        "not_covered": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "coding-action.schema.json#/$defs/toolId" },
+          "description": "Tool ids whose calls are not gated in this session."
+        },
+        "notes": {
+          "type": "array",
+          "maxItems": 32,
+          "items": { "type": "string", "maxLength": 300 },
+          "description": "Human-readable descriptions of the mechanisms behind the coverage (sandbox, settings not loaded, ...). Caveats about what is not covered go to limitations."
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Human-readable caveats, including what protection does not cover."
+    },
+    "capabilities": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/capabilityName" },
+      "additionalProperties": { "$ref": "#/$defs/capabilityEntry" }
+    },
+    "tool_run_id": { "type": ["string", "null"] },
+    "rmp_session_id": { "type": ["string", "null"] },
+    "trace_id": { "type": ["string", "null"] },
+    "pending_approvals": { "type": "integer", "minimum": 0 },
+    "last_heartbeat_at": { "type": ["string", "null"], "format": "date-time" },
+    "connected_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When the session first connected live: the runtime attached and the runner's first state report established mode_effective (the requested mode or blocked). null or absent while it has never connected. Set once and kept for the life of the session, including across a resume; never set for imported sessions. A launched or local_connected session that is running, idle, waiting, interrupting or stopping, or whose mode_effective is observe, shadow or enforce, carries it; one that is stopped or failed with mode_effective none does not."
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "ended_at": { "type": ["string", "null"], "format": "date-time" },
+    "capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Content capture opt-ins. Absent or false means metadata only.",
+      "properties": {
+        "conversation": { "type": "boolean", "default": false },
+        "commands": { "type": "boolean", "default": false },
+        "diffs": { "type": "boolean", "default": false },
+        "outputs": { "type": "boolean", "default": false }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "origin": { "const": "launched" } }, "required": ["origin"] },
+      "then": { "properties": { "control": { "const": "controllable" } } }
+    },
+    {
+      "if": { "properties": { "origin": { "const": "local_connected" } }, "required": ["origin"] },
+      "then": { "properties": { "control": { "const": "observed" } } }
+    },
+    {
+      "if": { "properties": { "origin": { "const": "imported" } }, "required": ["origin"] },
+      "then": { "properties": { "control": { "const": "imported" } } }
+    },
+    {
+      "$comment": "No silent downgrade: a session that requested enforce is enforce, blocked, or not yet connected.",
+      "if": { "properties": { "mode_requested": { "const": "enforce" } }, "required": ["mode_requested"] },
+      "then": { "properties": { "mode_effective": { "enum": ["enforce", "blocked", "none"] } } }
+    },
+    {
+      "$comment": "No silent downgrade: a session that requested shadow is shadow, blocked, or not yet connected.",
+      "if": { "properties": { "mode_requested": { "const": "shadow" } }, "required": ["mode_requested"] },
+      "then": { "properties": { "mode_effective": { "enum": ["shadow", "blocked", "none"] } } }
+    },
+    {
+      "$comment": "No silent upgrade: a session that requested observe is observe, blocked, or not yet connected; it never returns binding (enforce) or recorded would-be (shadow) decisions the user did not ask for.",
+      "if": { "properties": { "mode_requested": { "const": "observe" } }, "required": ["mode_requested"] },
+      "then": { "properties": { "mode_effective": { "enum": ["observe", "blocked", "none"] } } }
+    },
+    {
+      "$comment": "Enforce needs validated pre-tool control: a session is enforce only when capabilities.pre_tool_control is present with validated supported_tested or partial. unknown, unsupported or experimental never counts as protected, and an enforce request that depends on it is blocked; an absent capability does not count either.",
+      "if": { "properties": { "mode_effective": { "const": "enforce" } }, "required": ["mode_effective"] },
+      "then": {
+        "required": ["capabilities"],
+        "properties": {
+          "capabilities": {
+            "required": ["pre_tool_control"],
+            "properties": {
+              "pre_tool_control": {
+                "properties": { "validated": { "enum": ["supported_tested", "partial"] } }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "none means not yet connected, for every requested mode: a live (launched or local_connected) session is none only while requested or starting, or once it ended (stopped, failed) without ever connecting. A session that is running, idle, waiting, interrupting or stopping was connected, so its mode_effective is the requested mode or blocked. A lost session is never none: one that had connected keeps the mode it held, and one that became lost before connecting (lease lapse or runner revocation while requested or starting) is blocked, since its process may still be running ungoverned. Imported sessions are never connected live and keep none in any status.",
+      "if": {
+        "properties": {
+          "mode_effective": { "const": "none" },
+          "origin": { "enum": ["launched", "local_connected"] }
+        },
+        "required": ["mode_effective", "origin"]
+      },
+      "then": { "properties": { "status": { "enum": ["requested", "starting", "stopped", "failed"] } } }
+    },
+    {
+      "$comment": "Connection history: none in stopped or failed means the session ended without ever connecting, so connected_at is null or absent. A session that had connected and then ended keeps the mode it held, or is blocked when a resume ended before it reconnected; it is never none. requested and starting may carry connected_at (a resumed session reconnecting).",
+      "if": {
+        "properties": {
+          "mode_effective": { "const": "none" },
+          "origin": { "enum": ["launched", "local_connected"] },
+          "status": { "enum": ["stopped", "failed"] }
+        },
+        "required": ["mode_effective", "origin", "status"]
+      },
+      "then": { "properties": { "connected_at": { "type": "null" } } }
+    },
+    {
+      "$comment": "A live session in a connected status was connected, so it records when.",
+      "if": {
+        "properties": {
+          "origin": { "enum": ["launched", "local_connected"] },
+          "status": { "enum": ["running", "idle", "waiting_approval", "waiting_input", "interrupting", "stopping"] }
+        },
+        "required": ["origin", "status"]
+      },
+      "then": { "required": ["connected_at"], "properties": { "connected_at": { "type": "string" } } }
+    },
+    {
+      "$comment": "A governance mode is established only by connecting: a live session whose mode_effective is observe, shadow or enforce records when it connected. blocked does not require it (a session lost before connecting is blocked).",
+      "if": {
+        "properties": {
+          "origin": { "enum": ["launched", "local_connected"] },
+          "mode_effective": { "enum": ["observe", "shadow", "enforce"] }
+        },
+        "required": ["origin", "mode_effective"]
+      },
+      "then": { "required": ["connected_at"], "properties": { "connected_at": { "type": "string" } } }
+    },
+    {
+      "$comment": "Imported sessions are never connected live.",
+      "if": { "properties": { "origin": { "const": "imported" } }, "required": ["origin"] },
+      "then": { "properties": { "connected_at": { "type": "null" } } }
+    },
+    {
+      "$comment": "Only enforce gates calls: observe and shadow always answer defer, none governs nothing yet, and blocked refuses every call because the requested mode cannot be honoured, so none of them reports a tool id as protected. Their coverage, if reported, is listed in not_covered.",
+      "if": {
+        "properties": { "mode_effective": { "enum": ["observe", "shadow", "none", "blocked"] } },
+        "required": ["mode_effective"]
+      },
+      "then": { "properties": { "protection": { "properties": { "protected": { "maxItems": 0 } } } } }
+    },
+    {
+      "$comment": "Registration key: a live session that is in a connected status, or that has connected (connected_at set), is registered on (runner_id, runtime, runtime_session_id), so it carries a uuid runner_id and a non-empty runtime_session_id; without either the key cannot be formed. Before connecting (requested, starting, or stopped, failed or lost without connecting) the native id may not exist yet. Imported sessions are not registered live and may omit both.",
+      "if": {
+        "properties": { "origin": { "enum": ["launched", "local_connected"] } },
+        "required": ["origin"],
+        "anyOf": [
+          {
+            "properties": {
+              "status": { "enum": ["running", "idle", "waiting_approval", "waiting_input", "interrupting", "stopping"] }
+            },
+            "required": ["status"]
+          },
+          { "properties": { "connected_at": { "type": "string" } }, "required": ["connected_at"] }
+        ]
+      },
+      "then": {
+        "required": ["runner_id", "runtime_session_id"],
+        "properties": { "runner_id": { "type": "string" }, "runtime_session_id": { "type": "string" } }
+      }
+    },
+    {
+      "$comment": "Before (re)connection the effective mode is none: a live session that is requested or starting, including a resumed one that keeps its connected_at, has no runtime attached whose state report could establish a mode, so it is neither observe, shadow or enforce nor blocked. The mode is established by the state report that moves it to a connected status; a session that ends or becomes lost before that is handled by the stopped, failed and lost rules.",
+      "if": {
+        "properties": {
+          "origin": { "enum": ["launched", "local_connected"] },
+          "status": { "enum": ["requested", "starting"] }
+        },
+        "required": ["origin", "status"]
+      },
+      "then": { "properties": { "mode_effective": { "const": "none" } } }
+    }
+  ],
+  "$defs": {
+    "governanceMode": { "type": "string", "enum": ["observe", "shadow", "enforce"] },
+    "capabilityName": {
+      "type": "string",
+      "enum": [
+        "observe",
+        "converse",
+        "remote_approval",
+        "pre_tool_control",
+        "interrupt_turn",
+        "stop_process",
+        "resume",
+        "file_diffs",
+        "user_questions",
+        "subagent_tracking"
+      ]
+    },
+    "capabilityState": {
+      "type": "string",
+      "enum": ["supported_tested", "partial", "experimental", "unsupported", "unknown"]
+    },
+    "capabilityEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["announced", "validated"],
+      "properties": {
+        "announced": { "$ref": "#/$defs/capabilityState" },
+        "validated": { "$ref": "#/$defs/capabilityState" },
+        "detail": { "type": "string" }
+      }
+    }
+  }
+}

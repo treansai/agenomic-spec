@@ -1,0 +1,47 @@
+{
+  "id": "3f2b8c1d-6e4a-4b9f-8c7d-1a2b3c4d5e6f",
+  "runner_id": "9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d",
+  "actor_id": "user-example",
+  "runtime": "codex",
+  "runtime_version": "0.48.0",
+  "surface": "app_server",
+  "origin": "launched",
+  "control": "controllable",
+  "runtime_session_id": "thr_example_01",
+  "status": "running",
+  "workspace_id": "ws-example",
+  "repo": "github.com/example/widgets",
+  "branch": "agenomic/fix-123",
+  "base_revision": "4e1d2c3b4a5968778695a4b3c2d1e0f9a8b7c6d5",
+  "model": null,
+  "policy_profile": "isolated_dev",
+  "policy_refs": [
+    "coding-isolated-dev@1.0.0"
+  ],
+  "mode_requested": "enforce",
+  "mode_effective": "observe",
+  "protection": {
+    "protected": [],
+    "not_covered": [
+      "coding.shell.exec",
+      "coding.fs.write",
+      "coding.git.push",
+      "coding.mcp.call"
+    ]
+  },
+  "limitations": [
+    "MCP tool calls are observed after execution only."
+  ],
+  "pending_approvals": 0,
+  "last_heartbeat_at": "2026-10-05T09:10:00Z",
+  "connected_at": "2026-10-05T09:00:05Z",
+  "created_at": "2026-10-05T09:00:00Z",
+  "updated_at": "2026-10-05T09:10:00Z",
+  "ended_at": null,
+  "capture": {
+    "conversation": true,
+    "commands": true,
+    "diffs": true,
+    "outputs": false
+  }
+}

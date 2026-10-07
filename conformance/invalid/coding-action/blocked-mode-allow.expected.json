@@ -1,0 +1,8 @@
+{
+  "description": "A blocked action is refused: the session cannot honour its requested mode, so the answer is deny.",
+  "match": {
+    "keyword": "const",
+    "instancePath": "/decision",
+    "schemaPath": "#/allOf/4/then/properties/decision/const"
+  }
+}

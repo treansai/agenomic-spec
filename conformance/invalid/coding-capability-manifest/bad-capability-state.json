@@ -1,0 +1,10 @@
+{
+  "runtime": "codex",
+  "version": "0.48.0",
+  "capabilities": {
+    "observe": {
+      "announced": "supported",
+      "validated": "supported_tested"
+    }
+  }
+}

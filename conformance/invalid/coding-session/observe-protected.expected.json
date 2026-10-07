@@ -1,0 +1,8 @@
+{
+  "description": "An observe session gates no call: every decision is defer, so its protection.protected is empty.",
+  "match": {
+    "keyword": "maxItems",
+    "instancePath": "/protection/protected",
+    "schemaPath": "#/allOf/12/then/properties/protection/properties/protected/maxItems"
+  }
+}

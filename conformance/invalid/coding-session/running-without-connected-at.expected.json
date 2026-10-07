@@ -1,0 +1,8 @@
+{
+  "description": "A running session was connected, so it records connected_at.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "schemaPath": "#/allOf/9/then/required"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "description": "`coding_session_id` is the coding session's uuid.",
+  "match": {
+    "keyword": "format",
+    "instancePath": "/coding_session_id",
+    "params": {
+      "format": "uuid"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "description": "An observe action requests no approval in Agenomic: the runtime's native permission flow decides, so approval_id and approval_status are null or absent.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/approval_id",
+    "schemaPath": "#/allOf/1/then/properties/approval_id/type"
+  }
+}

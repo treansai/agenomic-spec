@@ -1,0 +1,7 @@
+{
+  "description": "Capability states are supported_tested, partial, experimental, unsupported or unknown.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/capabilities/converse/validated"
+  }
+}

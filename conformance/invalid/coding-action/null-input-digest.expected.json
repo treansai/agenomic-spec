@@ -1,0 +1,8 @@
+{
+  "description": "`input_digest` is never null: the gateway computes it for every classified call.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/input_digest",
+    "schemaPath": "#/properties/input_digest/type"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "description": "`tool_id` must come from the RFC 0013 coding action vocabulary (use coding.unknown).",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/tool_id"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "description": "`risk` is low, medium, high or critical.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/risk"
+  }
+}

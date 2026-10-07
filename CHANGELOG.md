@@ -11,6 +11,67 @@ documented here.
 
 ### Added
 
+- **v0.3 (RFC 0013, Draft): coding sessions.** Portable artifacts for
+  supervising coding agents (Claude Code, Codex) without replacing their
+  loops: `schemas/v0.3/coding-event.schema.json` (closed
+  `agenomic.coding.event/v1` envelope with ULID `event_id`, a required
+  `coding_session_id`, `source` and `trust`, the receiver's ingestion
+  cursor as the session's read order across sources and epochs,
+  served on each stored event as the optional, receiver-assigned
+  `cursor` (opaque, non-empty) together with `received_at` (each requires
+  the other), which producers never
+  send and receivers either reject at ingestion or discard and replace,
+  `producer_seq` as a within-`(source, producer_epoch)` emission and
+  gap-detection sequence that receivers need not reorder by, an opaque,
+  unordered `producer_epoch`, and at-least-once
+  deduplication; every `tool.*` event carries the tool-call correlation
+  key `(coding_session_id, payload.native_request_id, attempt_id)`, and
+  `tool.requested` also carries `action_id`),
+  `coding-session.schema.json` (origin → control pairing,
+  `mode_requested`/`mode_effective` with `blocked`, no silent
+  downgrade and no upgrade, so an `observe` request never becomes
+  `shadow` or `enforce`, `none` (not yet connected) only for a
+  live session that is `requested` or `starting` (where it is
+  required, including after a resume) or that stopped or
+  failed without ever connecting, as recorded by a `connected_at`
+  that is `null` or absent (`connected_at`, the first live connection,
+  is required in a connected status and with an `observe`, `shadow` or
+  `enforce` effective mode, kept across a resume, and never set on an
+  imported session; a live session in a connected status or with a
+  non-null `connected_at` carries a non-null `runner_id` and a non-empty
+  `runtime_session_id`, which with `runtime` form its registration key;
+  `runtime_session_id` is never an empty string), never for a
+  `running`, `idle`, waiting,
+  `interrupting`, `stopping` or `lost` one (a session that became
+  `lost` before connecting is `blocked`; imported sessions are
+  exempt), an `enforce` session only with
+  `capabilities.pre_tool_control` validated as `supported_tested` or
+  `partial`, capture settings, and disjoint `protection`
+  lists of unique coding tool ids with optional `protection.notes`, where
+  `protection.protected` is empty or absent unless `mode_effective` is
+  `enforce`, since `observe`, `shadow`, `none` and `blocked` gate no call),
+  `coding-capability-manifest.schema.json` (announced vs validated
+  capability states) and `coding-action.schema.json` (a required
+  `coding_session_id`, closed `coding.*` `tool_id` vocabulary in
+  `$defs/toolId`, risk, flags, a required intent digest `input_digest`
+  (`blake3:` plus 64 lowercase hex digits over the compact, key-sorted
+  JSON of the call and its context, with a reference vector in RFC 0013;
+  a re-submitted call whose digest differs is refused with
+  `input_changed` and needs a new request), decision and observed
+  outcome; `observe` and `shadow` always decide `defer` and `enforce`
+  never does, an `observe` action requests no approval (the native
+  permission flow decides), shadow records what `enforce` would have returned,
+  `allow`, `deny` or `pending`, in a required, non-null
+  `would_have_been` and requests no approval, `observe`, `enforce` and
+  `blocked` actions carry `would_have_been` `null` or not at all, and a
+  `blocked` action, refused because the session cannot honour its
+  requested mode, decides `deny`, names the cause in a non-empty
+  `reason_codes` and requests no approval). Conformance fixtures under
+  `conformance/{valid,invalid}/coding-{event,session,capability-manifest,action}/`.
+  `scripts/validate.js` registers the v0.3 schemas referenced across
+  files (the event type registry and `coding-action`) before compiling
+  any v0.3 schema.
+
 - **v0.4 (RFC 0012): managed prompts.** New schema directory
   `schemas/v0.4/` with `prompt-common`, `prompt-content`, `prompt-version`,
   `prompt-manifest`, `rendered-prompt`, `prompt-artifact-set`,

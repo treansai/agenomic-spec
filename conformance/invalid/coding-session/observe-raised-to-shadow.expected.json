@@ -1,0 +1,8 @@
+{
+  "description": "A session that requested observe must not become shadow; its effective mode is observe, blocked or none.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/mode_effective",
+    "schemaPath": "#/allOf/5/then/properties/mode_effective/enum"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "description": "A shadow action records what enforce would have returned: without `would_have_been` a shadow rollout cannot tell whether enforce would allow, deny or require approval.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "schemaPath": "#/allOf/2/then/required",
+    "params": {
+      "missingProperty": "would_have_been"
+    }
+  }
+}

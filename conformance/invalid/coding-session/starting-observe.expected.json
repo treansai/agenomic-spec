@@ -1,0 +1,8 @@
+{
+  "description": "A starting session has not yet been established by a state report: observe is set together with a connected status, never while starting.",
+  "match": {
+    "keyword": "const",
+    "instancePath": "/mode_effective",
+    "schemaPath": "#/allOf/14/then/properties/mode_effective/const"
+  }
+}

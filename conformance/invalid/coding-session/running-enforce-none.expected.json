@@ -1,0 +1,8 @@
+{
+  "description": "A running session was connected: none (not yet connected) is not a valid effective mode there; it is the requested mode or blocked.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/status",
+    "schemaPath": "#/allOf/7/then/properties/status/enum"
+  }
+}

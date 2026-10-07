@@ -1,0 +1,8 @@
+{
+  "description": "`would_have_been` is shadow-only: a blocked action carries it null or absent.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/would_have_been",
+    "schemaPath": "#/allOf/4/then/properties/would_have_been/type"
+  }
+}

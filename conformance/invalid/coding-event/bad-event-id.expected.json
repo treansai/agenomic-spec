@@ -1,0 +1,7 @@
+{
+  "description": "`event_id` must be a ULID.",
+  "match": {
+    "keyword": "pattern",
+    "instancePath": "/event_id"
+  }
+}

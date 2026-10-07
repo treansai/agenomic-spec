@@ -1,0 +1,12 @@
+{
+  "id": "3f2b8c1d-6e4a-4b9f-8c7d-1a2b3c4d5e6f",
+  "runner_id": "9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d",
+  "runtime": "codex",
+  "origin": "launched",
+  "control": "controllable",
+  "runtime_session_id": "thr_example_01",
+  "status": "running",
+  "mode_requested": "observe",
+  "mode_effective": "blocked",
+  "created_at": "2026-10-05T09:00:00Z"
+}

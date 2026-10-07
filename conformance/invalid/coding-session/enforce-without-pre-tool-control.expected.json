@@ -1,0 +1,8 @@
+{
+  "description": "An enforce session must carry capabilities.pre_tool_control; an absent capability is not validated.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "/capabilities",
+    "schemaPath": "#/allOf/6/then/properties/capabilities/required"
+  }
+}

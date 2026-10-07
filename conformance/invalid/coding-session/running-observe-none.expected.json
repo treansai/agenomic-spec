@@ -1,0 +1,8 @@
+{
+  "description": "none means not yet connected for every requested mode: a running observe session is observe or blocked.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/status",
+    "schemaPath": "#/allOf/7/then/properties/status/enum"
+  }
+}

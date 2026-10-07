@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.3/coding-event.schema.json",
+  "title": "Agenomic Coding Session Event (agenomic.coding.event/v1)",
+  "description": "Envelope of one event observed in a supervised coding-agent session (Claude Code, Codex). RFC 0013. Every envelope names its session in coding_session_id. Events are delivered at least once and deduplicated on (coding_session_id, event_id) and on (coding_session_id, source, producer_epoch, producer_seq). The receiver's ingestion cursor is the session's read order, across all sources and epochs; events a receiver serves carry it as cursor, with received_at, both receiver-assigned and never sent by producers. producer_seq is a producer-side sequence within (source, producer_epoch) that consumers may use to recover emission order or detect gaps within that pair; receivers need not reorder by it, and the cursor order stands. producer_epoch is opaque and epochs are not ordered by value. A request, a decision, an observed start and an observed result are distinct facts carried by distinct events: an allow decision is not proof of execution. Every tool.requested, tool.started, tool.completed and tool.failed event carries the tool-call correlation key (coding_session_id, payload.native_request_id, attempt_id), which matches the coding action's (coding_session_id, native_request_id, attempt). Content fields inside payload (text, command, diff, output) appear only when the session's capture settings allow them and are redacted by the producer before export.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "coding_session_id",
+    "schema_version",
+    "type",
+    "source",
+    "trust",
+    "producer_epoch",
+    "producer_seq",
+    "occurred_at"
+  ],
+  "dependentRequired": { "cursor": ["received_at"], "received_at": ["cursor"] },
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "pattern": "^[0-7][0-9A-HJKMNP-TV-Z]{25}$",
+      "description": "ULID (Crockford base32, 26 characters). Re-delivering the same event_id is a no-op."
+    },
+    "coding_session_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Id of the Agenomic coding session (coding-session.schema.json `id`) the event belongs to. Scopes deduplication and the tool-call correlation key. Producers always set it; stored and served events carry it exactly once."
+    },
+    "schema_version": { "const": "agenomic.coding.event/v1" },
+    "type": {
+      "type": "string",
+      "enum": [
+        "session.started",
+        "session.ended",
+        "turn.started",
+        "turn.completed",
+        "turn.interrupted",
+        "message.user",
+        "message.assistant",
+        "question.asked",
+        "question.answered",
+        "tool.requested",
+        "tool.started",
+        "tool.completed",
+        "tool.failed",
+        "approval.requested",
+        "approval.resolved",
+        "subagent.started",
+        "subagent.stopped",
+        "file.changed",
+        "diff.snapshot",
+        "test.result",
+        "config.changed",
+        "permission.changed",
+        "protection.state",
+        "usage",
+        "error"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "enum": ["runtime", "adapter", "gateway", "supervisor", "filesystem"],
+      "description": "Component that produced the event. runtime: the coding agent itself (native hook or SDK message); adapter: the connector adapter translating native signals; gateway: the Agenomic gateway (decisions, approvals); supervisor: the connector process supervisor (spawn, exit, heartbeat loss); filesystem: workspace observation (file and diff snapshots)."
+    },
+    "trust": {
+      "type": "string",
+      "enum": ["native", "derived", "observed"],
+      "description": "native: reported by the runtime's own documented interface; derived: computed by the adapter from native signals; observed: inferred from outside the runtime (process table, filesystem, git). Consumers MUST NOT treat derived or observed facts as native."
+    },
+    "producer_epoch": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Opaque identifier of one producer lifetime (typically the connector boot ULID). producer_seq restarts when the epoch changes. Consumers MUST NOT order epochs by comparing their values; the receiver's ingestion cursor is the session's read order."
+    },
+    "producer_seq": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Strictly increasing sequence number of this event within (source, producer_epoch). It gives emission order (and gap detection) only within that pair, never across epochs or sources; it is not the read order, which is the receiver's ingestion cursor, and receivers need not reorder events by it."
+    },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "cursor": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Receiver-assigned: the opaque ingestion cursor of the stored event, present on events a receiver serves (APIs, streams, exports) and the position consumers page from. Producers MUST NOT send it; a receiver MUST either reject an ingested event that carries it or discard the producer-supplied value, and assigns its own. Consumers MUST treat it as opaque and MUST NOT compare or parse it."
+    },
+    "received_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Receiver-assigned: when the receiver stored the event, present on served events. Producers MUST NOT send it; a receiver MUST either reject an ingested event that carries it or discard the producer-supplied value, and sets its own. Informative only, like occurred_at: it MUST NOT be used to reorder events."
+    },
+    "runtime_turn_id": { "type": "string", "minLength": 1 },
+    "action_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Links the event to an Agenomic coding action (coding-action.schema.json). Required on tool.requested. On tool.started, tool.completed and tool.failed it is set whenever a coding action exists for the call; such an event without action_id observes a call that never went through a decision and is not execution evidence for any action."
+    },
+    "attempt_id": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]*$",
+      "description": "Decimal string of the native call's attempt number (\"1\", \"2\", ...), equal to the coding action's attempt. Required on tool.* events."
+    },
+    "trace_id": { "type": "string", "minLength": 1 },
+    "parent_span_id": { "type": "string", "minLength": 1 },
+    "payload": {
+      "type": "object",
+      "description": "Type-specific, redacted payload. Metadata only unless content capture was explicitly enabled for the session. Never carries hidden model reasoning. On tool.* events it carries native_request_id, the runtime's id of the call."
+    }
+  },
+  "allOf": [
+    {
+      "$comment": "Tool-call correlation: every tool lifecycle event carries attempt_id and payload.native_request_id.",
+      "if": {
+        "properties": {
+          "type": { "enum": ["tool.requested", "tool.started", "tool.completed", "tool.failed"] }
+        },
+        "required": ["type"]
+      },
+      "then": {
+        "required": ["attempt_id", "payload"],
+        "properties": {
+          "payload": {
+            "required": ["native_request_id"],
+            "properties": {
+              "native_request_id": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "$comment": "tool.requested is emitted with the decision, so it always names its coding action.",
+      "if": { "properties": { "type": { "const": "tool.requested" } }, "required": ["type"] },
+      "then": { "required": ["action_id"] }
+    }
+  ]
+}

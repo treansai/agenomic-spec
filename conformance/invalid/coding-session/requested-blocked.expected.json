@@ -1,0 +1,8 @@
+{
+  "description": "blocked is established by connecting (or by becoming lost, stopped or failed); a requested session is none.",
+  "match": {
+    "keyword": "const",
+    "instancePath": "/mode_effective",
+    "schemaPath": "#/allOf/14/then/properties/mode_effective/const"
+  }
+}

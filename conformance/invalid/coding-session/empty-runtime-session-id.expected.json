@@ -1,0 +1,8 @@
+{
+  "description": "runtime_session_id is null or absent when the native id is not known, never an empty string, which would collide in the (runner_id, runtime, runtime_session_id) registration key.",
+  "match": {
+    "keyword": "minLength",
+    "instancePath": "/runtime_session_id",
+    "schemaPath": "#/properties/runtime_session_id/minLength"
+  }
+}

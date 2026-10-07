@@ -1,0 +1,7 @@
+{
+  "description": "Imported sessions are never controllable.",
+  "match": {
+    "keyword": "const",
+    "instancePath": "/control"
+  }
+}

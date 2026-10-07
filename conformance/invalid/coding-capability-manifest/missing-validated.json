@@ -1,0 +1,9 @@
+{
+  "runtime": "claude_code",
+  "version": "2.1.289",
+  "capabilities": {
+    "converse": {
+      "announced": "supported_tested"
+    }
+  }
+}

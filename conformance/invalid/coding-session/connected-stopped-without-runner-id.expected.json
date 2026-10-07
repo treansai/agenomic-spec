@@ -1,0 +1,9 @@
+{
+  "description": "A live session that has connected (connected_at set) keeps its runner_id after it ends; the registration key never loses the runner.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "schemaPath": "#/allOf/13/then/required",
+    "params": { "missingProperty": "runner_id" }
+  }
+}

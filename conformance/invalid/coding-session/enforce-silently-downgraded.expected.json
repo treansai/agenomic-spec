@@ -1,0 +1,8 @@
+{
+  "description": "A session that requested enforce must not be silently lowered to observe; it is blocked instead.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/mode_effective",
+    "schemaPath": "#/allOf/3/then/properties/mode_effective/enum"
+  }
+}

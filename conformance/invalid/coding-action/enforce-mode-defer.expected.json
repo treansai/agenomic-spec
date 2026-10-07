@@ -1,0 +1,8 @@
+{
+  "description": "Enforce binds: an enforce action answers allow, deny or pending, never defer, which would hand the call back to the native permission flow.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/decision",
+    "schemaPath": "#/allOf/3/then/properties/decision/enum"
+  }
+}

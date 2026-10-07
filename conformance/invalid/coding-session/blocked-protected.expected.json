@@ -1,0 +1,8 @@
+{
+  "description": "A blocked session cannot honour its requested mode: it refuses every call without establishing that mode's gating, so it reports no tool id as protected.",
+  "match": {
+    "keyword": "maxItems",
+    "instancePath": "/protection/protected",
+    "schemaPath": "#/allOf/12/then/properties/protection/properties/protected/maxItems"
+  }
+}

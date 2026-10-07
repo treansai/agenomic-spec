@@ -1,0 +1,8 @@
+{
+  "description": "A connected live session's runner_id is a uuid string, never null: without it the (runner_id, runtime, runtime_session_id) registration key cannot be formed.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/runner_id",
+    "schemaPath": "#/allOf/13/then/properties/runner_id/type"
+  }
+}

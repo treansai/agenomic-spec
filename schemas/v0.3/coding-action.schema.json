@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.3/coding-action.schema.json",
+  "title": "Agenomic Coding Action (v0.3)",
+  "description": "One native tool call of a coding-agent runtime, classified into the Agenomic coding action vocabulary and decided by the governance layer (RFC 0013). decision records what Agenomic answered; status and outcome record what was later observed. An allow decision is not proof of execution. Only enforce binds: observe and shadow always answer defer, and enforce never does; only a shadow action records would_have_been, and only an enforce action references an approval. A blocked action is refused with deny, names its cause in a non-empty reason_codes and requests no approval. input_digest binds an approval to the intent it was granted for.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "id",
+    "coding_session_id",
+    "native_request_id",
+    "attempt",
+    "phase",
+    "native_tool",
+    "tool_id",
+    "risk",
+    "input_digest",
+    "decision",
+    "effective_mode",
+    "status",
+    "created_at"
+  ],
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "coding_session_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "The coding session the action belongs to (the session object's id). Required, so an action stays attributable when it is stored or exported outside a session-scoped container. (coding_session_id, native_request_id, attempt) is the tool-call correlation key that tool.* events carry as (coding_session_id, payload.native_request_id, attempt_id)."
+    },
+    "native_request_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The runtime's own id for the call (Claude Code tool_use id, Codex itemId[:approvalId])."
+    },
+    "runtime_turn_id": { "type": ["string", "null"] },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Attempt number of the native call; tool.* events carry it as the decimal string attempt_id."
+    },
+    "phase": { "type": "string", "enum": ["pre_tool", "native_approval"] },
+    "native_tool": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Native tool name, for example Bash, Write, Edit, exec_command, apply_patch, mcp__srv__tool."
+    },
+    "tool_id": { "$ref": "#/$defs/toolId" },
+    "risk": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+    "flags": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "anyOf": [
+          {
+            "enum": [
+              "outside_workspace",
+              "secret_path",
+              "symlink",
+              "compound_shell",
+              "interpreter",
+              "network",
+              "lifecycle_scripts",
+              "force_push",
+              "agent_config"
+            ]
+          },
+          {
+            "type": "string",
+            "pattern": "^x_[a-z0-9_]+$",
+            "description": "Implementation-specific extension flag."
+          }
+        ]
+      }
+    },
+    "preview": {
+      "description": "Redacted, size-bounded preview of the native input. Never raw secrets.",
+      "type": ["string", "object", "null"]
+    },
+    "input_digest": {
+      "type": "string",
+      "pattern": "^blake3:[0-9a-f]{64}$",
+      "description": "Intent digest (RFC 0013, Approval binding): blake3: plus the lowercase hex BLAKE3 hash of the compact JSON, keys sorted by code point at every level, of {runtime, native_tool, input, cwd, workspace_root, base_revision, patch_digest, sandbox, permission_mode, network_scope, paths, symlink_escapes}, absent values null and absent lists []. Computed by the gateway. An approval is bound to it: a re-submitted call whose recomputed digest differs is refused with input_changed and needs a new request."
+    },
+    "patch_digest": {
+      "type": ["string", "null"],
+      "description": "Digest of the patch a file change applies; part of the intent object behind input_digest."
+    },
+    "decision": { "type": "string", "enum": ["allow", "deny", "pending", "defer"] },
+    "effective_mode": {
+      "type": "string",
+      "enum": ["observe", "shadow", "enforce", "blocked"],
+      "description": "The mode that applied to this call. It can differ from the session's mode_effective: an enforce session yields a shadow action when every contributing policy binding was evaluated in shadow mode, and a call the session cannot govern in its requested mode is blocked."
+    },
+    "would_have_been": {
+      "type": ["string", "null"],
+      "enum": ["allow", "deny", "pending", null],
+      "description": "Shadow mode only: what enforce would have returned (allow, deny or pending). Required and non-null on a shadow action, whose decision itself is defer; a would-be pending is recorded here and no approval is requested. On an observe, enforce or blocked action it is null or absent."
+    },
+    "reason": { "type": ["string", "null"] },
+    "reason_codes": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "approval_id": { "type": ["string", "null"], "format": "uuid" },
+    "approval_status": {
+      "type": ["string", "null"],
+      "enum": ["pending", "approved", "rejected", "expired", null]
+    },
+    "record_id": { "type": ["string", "null"], "format": "uuid" },
+    "status": {
+      "type": "string",
+      "enum": ["requested", "decided", "started", "completed", "failed", "unknown"]
+    },
+    "outcome": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "exit_code": { "type": ["integer", "null"] },
+        "duration_ms": { "type": ["integer", "null"], "minimum": 0 },
+        "summary": { "type": ["string", "null"] }
+      }
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "decided_at": { "type": ["string", "null"], "format": "date-time" },
+    "completed_at": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "$defs": {
+    "toolId": {
+      "$comment": "The closed coding tool vocabulary of RFC 0013. coding-session.schema.json references it for protection.protected and protection.not_covered.",
+      "type": "string",
+      "enum": [
+        "coding.fs.read",
+        "coding.fs.write",
+        "coding.fs.delete",
+        "coding.shell.exec",
+        "coding.shell.interactive_input",
+        "coding.git.read",
+        "coding.git.commit",
+        "coding.git.push",
+        "coding.git.destructive",
+        "coding.dependency.install",
+        "coding.network.fetch",
+        "coding.mcp.call",
+        "coding.agent_config.modify",
+        "coding.subagent.spawn",
+        "coding.web.search",
+        "coding.unknown"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "$comment": "A pending decision always references the approval that holds it.",
+      "if": { "properties": { "decision": { "const": "pending" } }, "required": ["decision"] },
+      "then": {
+        "required": ["approval_id"],
+        "properties": { "approval_id": { "type": "string" } }
+      }
+    },
+    {
+      "$comment": "In observe mode Agenomic never blocks: the native permission flow decides, so no approval is requested in Agenomic. would_have_been is shadow-only, so it is null or absent.",
+      "if": { "properties": { "effective_mode": { "const": "observe" } }, "required": ["effective_mode"] },
+      "then": {
+        "properties": {
+          "decision": { "const": "defer" },
+          "would_have_been": { "type": "null" },
+          "approval_id": { "type": "null" },
+          "approval_status": { "type": "null" }
+        }
+      }
+    },
+    {
+      "$comment": "Shadow never binds: the answer is defer, what enforce would have returned (allow, deny or pending, never null) goes in the required would_have_been, and no approval is requested.",
+      "if": { "properties": { "effective_mode": { "const": "shadow" } }, "required": ["effective_mode"] },
+      "then": {
+        "required": ["would_have_been"],
+        "properties": {
+          "decision": { "const": "defer" },
+          "would_have_been": { "enum": ["allow", "deny", "pending"] },
+          "approval_id": { "type": "null" },
+          "approval_status": { "type": "null" }
+        }
+      }
+    },
+    {
+      "$comment": "Enforce binds: the answer is the policy decision (allow, deny or pending), never defer, which would hand the call back to the native permission flow. would_have_been is shadow-only, so it is null or absent.",
+      "if": { "properties": { "effective_mode": { "const": "enforce" } }, "required": ["effective_mode"] },
+      "then": {
+        "properties": {
+          "decision": { "enum": ["allow", "deny", "pending"] },
+          "would_have_been": { "type": "null" }
+        }
+      }
+    },
+    {
+      "$comment": "A blocked action is refused because the session cannot honour its requested mode: the answer is deny, its reason_codes name the cause (for example enforce_prerequisite_missing, or input_changed for a changed re-submission), no approval is requested since no reviewer can lift the block, and would_have_been, which is shadow-only, is null or absent.",
+      "if": { "properties": { "effective_mode": { "const": "blocked" } }, "required": ["effective_mode"] },
+      "then": {
+        "required": ["reason_codes"],
+        "properties": {
+          "decision": { "const": "deny" },
+          "reason_codes": { "minItems": 1 },
+          "would_have_been": { "type": "null" },
+          "approval_id": { "type": "null" },
+          "approval_status": { "type": "null" }
+        }
+      }
+    }
+  ]
+}

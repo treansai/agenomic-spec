@@ -1,0 +1,8 @@
+{
+  "description": "An enforce session needs pre-tool control validated as supported_tested or partial; validated experimental must yield blocked.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/capabilities/pre_tool_control/validated",
+    "schemaPath": "#/allOf/6/then/properties/capabilities/properties/pre_tool_control/properties/validated/enum"
+  }
+}

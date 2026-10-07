@@ -1,0 +1,7 @@
+{
+  "description": "`protection.protected` lists each tool id once.",
+  "match": {
+    "keyword": "uniqueItems",
+    "instancePath": "/protection/protected"
+  }
+}

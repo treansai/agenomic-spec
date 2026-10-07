@@ -1,0 +1,8 @@
+{
+  "description": "`input_digest` is `blake3:` followed by 64 lowercase hex digits.",
+  "match": {
+    "keyword": "pattern",
+    "instancePath": "/input_digest",
+    "schemaPath": "#/properties/input_digest/pattern"
+  }
+}
