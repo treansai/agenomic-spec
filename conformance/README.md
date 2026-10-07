@@ -126,7 +126,11 @@ are validated for shape and for the rules their schemas encode:
 - a `coding-session`'s `protection.protected` and `protection.not_covered`
   hold unique ids from the coding action `tool_id` vocabulary, the two
   lists are disjoint, and `protection.notes` holds at most 32 strings of
-  at most 300 characters.
+  at most 300 characters;
+- a `coding-session` reports a non-empty `protection.protected` only when
+  its `mode_effective` is `enforce`: `observe`, `shadow`, `none` and
+  `blocked` gate no call, so their `protection.protected` is empty or
+  absent.
 
 The schema checks the form of `input_digest` only: the intent object it
 hashes (RFC 0013, Approval binding) is not part of the action.

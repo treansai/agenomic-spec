@@ -8,7 +8,7 @@
   "origin": "launched",
   "control": "controllable",
   "runtime_session_id": "thr_example_01",
-  "status": "running",
+  "status": "failed",
   "workspace_id": "ws-example",
   "repo": "github.com/example/widgets",
   "branch": "agenomic/fix-123",
@@ -19,22 +19,24 @@
     "coding-isolated-dev@1.0.0"
   ],
   "mode_requested": "enforce",
-  "mode_effective": "observe",
+  "mode_effective": "blocked",
   "protection": {
-    "protected": [],
+    "protected": [
+      "coding.shell.exec"
+    ],
     "not_covered": [
-      "coding.shell.exec",
-      "coding.fs.write",
-      "coding.git.push",
-      "coding.mcp.call"
+      "coding.fs.write"
+    ],
+    "notes": [
+      "Pre-tool control probe did not complete on this runtime version."
     ]
   },
   "limitations": [
-    "MCP tool calls are observed after execution only."
+    "Pre-tool control could not be validated on this runtime version; enforce refused."
   ],
   "pending_approvals": 0,
   "last_heartbeat_at": "2026-10-05T09:10:00Z",
-  "connected_at": "2026-10-05T09:00:05Z",
+  "connected_at": "2026-10-05T09:00:20Z",
   "created_at": "2026-10-05T09:00:00Z",
   "updated_at": "2026-10-05T09:10:00Z",
   "ended_at": null,

@@ -196,7 +196,15 @@ prerequisite is restored or a user explicitly requests a lower mode.
 `protection.protected` lists the coding tool ids (the closed `tool_id`
 vocabulary of [Action classification](#action-classification)) whose
 calls are actually gated in this session; `protection.not_covered`
-lists those that are not. Each list holds an id at most once, and the
+lists those that are not. Only `enforce` gates a call, so a session
+whose `mode_effective` is `observe`, `shadow`, `none` or `blocked`
+carries `protection.protected` empty or absent: `observe` and `shadow`
+always answer `defer` (a call shadow evaluates before it runs is still
+decided by the native permission flow), `none` governs nothing yet, and
+`blocked` refuses every call because the requested mode cannot be
+honoured, not because its gating holds. Such a session lists the tool
+ids it reports in `protection.not_covered`, and `protection.notes` may
+describe what shadow evaluates. Each list holds an id at most once, and the
 two lists are disjoint: an id gated in a session is not also reported
 as not covered. (JSON Schema has no intersection keyword, so the
 session schema enumerates this per `tool_id`; the conformance validator

@@ -21,12 +21,11 @@
   "mode_requested": "observe",
   "mode_effective": "none",
   "protection": {
-    "protected": [
+    "protected": [],
+    "not_covered": [
       "coding.shell.exec",
       "coding.fs.write",
-      "coding.git.push"
-    ],
-    "not_covered": [
+      "coding.git.push",
       "coding.mcp.call"
     ]
   },

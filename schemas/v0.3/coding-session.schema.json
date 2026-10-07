@@ -64,7 +64,7 @@
     "protection": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Which coding tool ids are actually gated in this session. A protected badge is derived from mode_effective together with a non-empty protected list, never from mode_requested or notes. protected and not_covered are disjoint: a tool id is gated or not, never both.",
+      "description": "Which coding tool ids are actually gated in this session. Only enforce gates calls: when mode_effective is observe, shadow, none or blocked, protected is empty or absent. A protected badge is derived from mode_effective together with a non-empty protected list, never from mode_requested or notes. protected and not_covered are disjoint: a tool id is gated or not, never both.",
       "$comment": "Disjointness, enumerated per tool id (JSON Schema has no set-intersection keyword). The allOf below lists every id of coding-action.schema.json#/$defs/toolId; scripts/validate.js checks it stays in sync.",
       "allOf": [
         {
@@ -137,7 +137,7 @@
           "type": "array",
           "uniqueItems": true,
           "items": { "$ref": "coding-action.schema.json#/$defs/toolId" },
-          "description": "Tool ids whose calls are gated by Agenomic in this session."
+          "description": "Tool ids whose calls are gated by Agenomic in this session. Empty or absent unless mode_effective is enforce."
         },
         "not_covered": {
           "type": "array",
@@ -282,6 +282,14 @@
       "$comment": "Imported sessions are never connected live.",
       "if": { "properties": { "origin": { "const": "imported" } }, "required": ["origin"] },
       "then": { "properties": { "connected_at": { "type": "null" } } }
+    },
+    {
+      "$comment": "Only enforce gates calls: observe and shadow always answer defer, none governs nothing yet, and blocked refuses every call because the requested mode cannot be honoured, so none of them reports a tool id as protected. Their coverage, if reported, is listed in not_covered.",
+      "if": {
+        "properties": { "mode_effective": { "enum": ["observe", "shadow", "none", "blocked"] } },
+        "required": ["mode_effective"]
+      },
+      "then": { "properties": { "protection": { "properties": { "protected": { "maxItems": 0 } } } } }
     }
   ],
   "$defs": {

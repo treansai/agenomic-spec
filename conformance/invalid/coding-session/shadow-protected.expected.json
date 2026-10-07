@@ -1,0 +1,8 @@
+{
+  "description": "A shadow session gates no call: it always answers defer and records would_have_been, so its protection.protected is empty and a protected badge can never derive from it.",
+  "match": {
+    "keyword": "maxItems",
+    "instancePath": "/protection/protected",
+    "schemaPath": "#/allOf/12/then/properties/protection/properties/protected/maxItems"
+  }
+}

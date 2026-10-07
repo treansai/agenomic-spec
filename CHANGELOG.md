@@ -38,7 +38,9 @@ documented here.
   exempt), an `enforce` session only with
   `capabilities.pre_tool_control` validated as `supported_tested` or
   `partial`, capture settings, and disjoint `protection`
-  lists of unique coding tool ids with optional `protection.notes`),
+  lists of unique coding tool ids with optional `protection.notes`, where
+  `protection.protected` is empty or absent unless `mode_effective` is
+  `enforce`, since `observe`, `shadow`, `none` and `blocked` gate no call),
   `coding-capability-manifest.schema.json` (announced vs validated
   capability states) and `coding-action.schema.json` (a required
   `coding_session_id`, closed `coding.*` `tool_id` vocabulary in
