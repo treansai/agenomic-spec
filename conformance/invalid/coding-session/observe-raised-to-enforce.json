@@ -1,0 +1,16 @@
+{
+  "id": "6a7b8c9d-0e1f-4a2b-9c3d-4e5f6a7b8c9d",
+  "runner_id": "9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d",
+  "runtime": "claude_code",
+  "runtime_version": "2.1.289",
+  "surface": "cli_hooks",
+  "origin": "local_connected",
+  "control": "observed",
+  "runtime_session_id": "example-native-session",
+  "status": "idle",
+  "workspace_id": "ws-example",
+  "mode_requested": "observe",
+  "mode_effective": "enforce",
+  "pending_approvals": 0,
+  "created_at": "2026-10-05T08:30:00Z"
+}

@@ -107,8 +107,14 @@ mode fails (missing capability, unreleased policy, runtime version
 without pre-tool control), the session MUST become `blocked` and refuse
 actions. A producer MUST NOT silently lower `mode_effective` below
 `mode_requested`; the session schema rejects `mode_requested: enforce`
-with `mode_effective: observe` (and likewise for `shadow`). Lowering a
-mode is a new, explicit request by a user, recorded as such.
+with `mode_effective: observe` (and likewise for `shadow`). Nor does
+`mode_effective` rise above `mode_requested`: a session that requested
+`observe` is `observe`, `blocked` or `none`, never `shadow` or
+`enforce`, so a user who chose non-binding observation never receives
+binding decisions or recorded would-be decisions. In every case
+`mode_effective` is the requested mode, `blocked` or `none`. Changing a
+mode, lower or higher, is a new, explicit request by a user, recorded
+as such.
 
 **Action modes.** Each coding action records in `effective_mode` the
 mode that applied to that call: `observe`, `shadow`, `enforce` or

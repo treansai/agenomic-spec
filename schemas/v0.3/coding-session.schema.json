@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://agenomic.dev/spec/v0.3/coding-session.schema.json",
   "title": "Agenomic Coding Session (v0.3)",
-  "description": "A coding-agent session (Claude Code, Codex) supervised by Agenomic (RFC 0013). origin fixes the control level: launched sessions are controllable, local_connected sessions are observed (policy hooks only), imported sessions are historical and never controllable. mode_effective is never silently lowered below mode_requested: when a prerequisite of the requested mode fails, the session is blocked.",
+  "description": "A coding-agent session (Claude Code, Codex) supervised by Agenomic (RFC 0013). origin fixes the control level: launched sessions are controllable, local_connected sessions are observed (policy hooks only), imported sessions are historical and never controllable. mode_effective is the requested mode, blocked or none: it is never silently lowered below or raised above mode_requested, and when a prerequisite of the requested mode fails, the session is blocked.",
   "type": "object",
   "additionalProperties": true,
   "required": [
@@ -138,6 +138,11 @@
       "$comment": "No silent downgrade: a session that requested shadow is shadow, blocked, or not yet connected.",
       "if": { "properties": { "mode_requested": { "const": "shadow" } }, "required": ["mode_requested"] },
       "then": { "properties": { "mode_effective": { "enum": ["shadow", "blocked", "none"] } } }
+    },
+    {
+      "$comment": "No silent upgrade: a session that requested observe is observe, blocked, or not yet connected; it never returns binding (enforce) or recorded would-be (shadow) decisions the user did not ask for.",
+      "if": { "properties": { "mode_requested": { "const": "observe" } }, "required": ["mode_requested"] },
+      "then": { "properties": { "mode_effective": { "enum": ["observe", "blocked", "none"] } } }
     }
   ],
   "$defs": {
