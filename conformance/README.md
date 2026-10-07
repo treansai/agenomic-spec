@@ -132,7 +132,8 @@ are validated for shape and for the rules their schemas encode:
 - a `coding-session`'s `runtime_session_id` is never an empty string, and
   a `launched` or `local_connected` session in a connected status
   (`running`, `idle`, `waiting_*`, `interrupting`, `stopping`) or with a
-  non-null `connected_at` carries it as a string: it is part of the
+  non-null `connected_at` carries it as a string, and carries
+  `runner_id` as a uuid string, never `null`: both are part of the
   registration key `(runner_id, runtime, runtime_session_id)`;
 - a `coding-session` reports a non-empty `protection.protected` only when
   its `mode_effective` is `enforce`: `observe`, `shadow`, `none` and

@@ -1,0 +1,8 @@
+{
+  "description": "A connected live session is registered on (runner_id, runtime, runtime_session_id), so a running session names the runner that hosts it.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "schemaPath": "#/allOf/13/then/required"
+  }
+}

@@ -83,8 +83,12 @@ before the runtime has started (`requested`, `starting`, or `stopped`,
 `waiting_approval`, `waiting_input`, `interrupting` or `stopping`, or
 that has connected (a non-null `connected_at`, see
 [Governance modes](#governance-modes)), MUST carry it, since it is
-registered on that key. `imported` sessions MAY omit it, for example a
-transcript imported without a runner.
+registered on that key. The same session MUST also carry `runner_id`,
+the uuid of the runner that hosts it, never `null`: without it the key
+cannot be formed and two runners reporting the same native id would
+collide. Before connecting, `runner_id` MAY be `null` or absent.
+`imported` sessions MAY omit both, for example a transcript imported
+without a runner.
 
 `status` is one of `requested`, `starting`, `running`, `idle`,
 `waiting_approval`, `waiting_input`, `interrupting`, `stopping`,
