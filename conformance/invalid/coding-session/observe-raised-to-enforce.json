@@ -12,5 +12,12 @@
   "mode_requested": "observe",
   "mode_effective": "enforce",
   "pending_approvals": 0,
-  "created_at": "2026-10-05T08:30:00Z"
+  "connected_at": "2026-10-05T09:00:05Z",
+  "created_at": "2026-10-05T08:30:00Z",
+  "capabilities": {
+    "pre_tool_control": {
+      "announced": "supported_tested",
+      "validated": "supported_tested"
+    }
+  }
 }
