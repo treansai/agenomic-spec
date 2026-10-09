@@ -1,0 +1,7 @@
+{
+  "description": "Token budgets are integers.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/chunking/max_tokens"
+  }
+}

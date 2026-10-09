@@ -1,0 +1,83 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD018",
+  "intent": "filter lists are sorted and deduplicated before hashing",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.knowledge_retrieval_params/v1",
+      "mode": "section",
+      "top_k": 12,
+      "rerank": "lexical",
+      "max_context_tokens": 1500,
+      "expand": "parent",
+      "include_context": true,
+      "filters": {
+        "collections": [
+          "faq",
+          "product_documentation"
+        ],
+        "document_ids": [
+          "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxa",
+          "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxd"
+        ],
+        "path_prefix": "policies/",
+        "tags": [
+          "billing",
+          "refunds"
+        ],
+        "classification_max": "confidential",
+        "metadata": {
+          "region": "eu",
+          "owner.team": "support"
+        }
+      }
+    },
+    "projection": {
+      "rule": "retrieval_params",
+      "from": {
+        "mode": "section",
+        "top_k": 12,
+        "rerank": "lexical",
+        "max_context_tokens": 1500,
+        "expand": "parent",
+        "filters": {
+          "collections": [
+            "product_documentation",
+            "faq",
+            "faq"
+          ],
+          "document_ids": [
+            "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxd",
+            "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxa"
+          ],
+          "path_prefix": "policies/",
+          "tags": [
+            "refunds",
+            "billing",
+            "refunds"
+          ],
+          "classification_max": "confidential",
+          "metadata": {
+            "region": "eu",
+            "owner.team": "support"
+          }
+        },
+        "include_context": true,
+        "debug": true
+      }
+    }
+  },
+  "expected": {
+    "ok": true,
+    "document_type": "agenomic.knowledge_retrieval_params/v1",
+    "canonical": "{\"expand\":\"parent\",\"filters\":{\"classification_max\":\"confidential\",\"collections\":[\"faq\",\"product_documentation\"],\"document_ids\":[\"kdoc_01hzy8m6k2v9qf7c3n5t0r4wxa\",\"kdoc_01hzy8m6k2v9qf7c3n5t0r4wxd\"],\"metadata\":{\"owner.team\":\"support\",\"region\":\"eu\"},\"path_prefix\":\"policies/\",\"tags\":[\"billing\",\"refunds\"]},\"include_context\":true,\"max_context_tokens\":1500,\"mode\":\"section\",\"rerank\":\"lexical\",\"schema\":\"agenomic.knowledge_retrieval_params/v1\",\"top_k\":12}",
+    "digest": "sha256:93a473762c355a7406370b9168ee1af1230eb661cb6622ce2168f9b9fabcff3e"
+  }
+}

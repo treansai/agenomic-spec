@@ -1,0 +1,28 @@
+{
+  "schema": "agenomic.agent_knowledge_manifest/v1",
+  "workspace_id": "0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f",
+  "agent_id": "2b1e5c3a-8d4f-4e6a-9b0c-1d2e3f4a5b6c",
+  "enabled": true,
+  "bases": {
+    "kb_customer_support": {
+      "version": 4,
+      "version_manifest_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "index_config_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "collections": [
+        "faq",
+        "product_documentation"
+      ],
+      "max_classification": "internal"
+    }
+  },
+  "retrieval": {
+    "strategy": "hybrid",
+    "top_k": 5,
+    "rerank": true,
+    "max_context_tokens": 4000,
+    "require_citations": true,
+    "insufficient_evidence": "abstain",
+    "injection_policy": "annotate",
+    "min_evidence_score_ppm": 0
+  }
+}

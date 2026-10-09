@@ -1,0 +1,29 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "lexical",
+  "id": "KL007",
+  "intent": "decimal numbers, hyphenated words and URLs split into runs",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "3.14 foo-bar https://example.com/a?b=c"
+  },
+  "expected": {
+    "ok": true,
+    "tokens": [
+      "3",
+      "14",
+      "foo",
+      "bar",
+      "https",
+      "example",
+      "com",
+      "a",
+      "b",
+      "c"
+    ]
+  }
+}

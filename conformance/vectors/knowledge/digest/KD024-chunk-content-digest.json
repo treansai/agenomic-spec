@@ -1,0 +1,19 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD024",
+  "intent": "a chunk content digest is sha256 over the UTF-8 bytes of the chunk text, not over canonical JSON",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "chunk_content_digest",
+    "text": "Tools need grants."
+  },
+  "expected": {
+    "ok": true,
+    "content_digest": "sha256:a67cb6a83eba0f959e2a6bf47611a9902f1eb59d03e4499a9df8d4f7917ab599"
+  }
+}

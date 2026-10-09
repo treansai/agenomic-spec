@@ -1,0 +1,24 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "lexical",
+  "id": "KL002",
+  "intent": "underscores and dots separate tokens",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "snake_case and dots.v2"
+  },
+  "expected": {
+    "ok": true,
+    "tokens": [
+      "snake",
+      "case",
+      "and",
+      "dots",
+      "v2"
+    ]
+  }
+}

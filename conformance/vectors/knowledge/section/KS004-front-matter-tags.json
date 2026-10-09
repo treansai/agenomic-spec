@@ -1,0 +1,158 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "section",
+  "id": "KS004",
+  "intent": "front matter title and tags, section tags matched by heading and by heading path, heading classes and an explicit anchor",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "sections",
+    "document_id": "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxc",
+    "fallback_title": "keys.md",
+    "source": {
+      "format": "markdown",
+      "text": "---\ntitle: Key Handling Guide\ntags: [security, agents]\nsections:\n  Audit: [compliance]\n  Guide/Keys: [secrets]\n---\n# Guide\n\nOverview of key handling.\n\n## Keys {#key-rotation .ops}\n\nRotate every 90 days.\n\n## Audit\n\nLog every rotation.\n"
+    },
+    "outline": {
+      "title": "Key Handling Guide",
+      "front_matter": {
+        "sections": {
+          "Audit": [
+            "compliance"
+          ],
+          "Guide/Keys": [
+            "secrets"
+          ]
+        },
+        "tags": [
+          "security",
+          "agents"
+        ],
+        "title": "Key Handling Guide"
+      },
+      "blocks": [
+        {
+          "heading": {
+            "level": 1,
+            "text": "Guide",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Overview of key handling."
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "Keys",
+            "anchor": "key-rotation",
+            "tags": [
+              "ops"
+            ]
+          }
+        },
+        {
+          "text": "Rotate every 90 days."
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "Audit",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Log every rotation."
+        }
+      ]
+    }
+  },
+  "expected": {
+    "ok": true,
+    "title": "Key Handling Guide",
+    "content_digest": "sha256:65500ce08f19a600e318cada748b4d89b6219659db5f1126c55735082cb3ed2e",
+    "token_count": 20,
+    "sections": [
+      {
+        "ordinal": 0,
+        "section_id": "sec_8e2d056f38552354",
+        "parent_section_id": null,
+        "depth": 0,
+        "heading": "Key Handling Guide",
+        "heading_path": [],
+        "anchor": "",
+        "content": "",
+        "content_digest": "sha256:ae10e9ab9b0d078558b6e3021fb4c53c840abf9b787347c7d05926b1ce5e676c",
+        "tags": [
+          "agents",
+          "security"
+        ],
+        "token_count": 0
+      },
+      {
+        "ordinal": 1,
+        "section_id": "sec_cf973ce84fb60314",
+        "parent_section_id": "sec_8e2d056f38552354",
+        "depth": 1,
+        "heading": "Guide",
+        "heading_path": [
+          "Guide"
+        ],
+        "anchor": "guide",
+        "content": "Overview of key handling.",
+        "content_digest": "sha256:b747fd146d0f6c8719d40b159a7c19d14a9a13e38c764a2e86eb807d62675b55",
+        "tags": [
+          "agents",
+          "security"
+        ],
+        "token_count": 7
+      },
+      {
+        "ordinal": 2,
+        "section_id": "sec_c7f9534b8c34c923",
+        "parent_section_id": "sec_cf973ce84fb60314",
+        "depth": 2,
+        "heading": "Keys",
+        "heading_path": [
+          "Guide",
+          "Keys"
+        ],
+        "anchor": "key-rotation",
+        "content": "Rotate every 90 days.",
+        "content_digest": "sha256:9c68823a4e07ae3d5aef048e2e20f517a100d6525de0d58d1716a6d12545270c",
+        "tags": [
+          "agents",
+          "ops",
+          "secrets",
+          "security"
+        ],
+        "token_count": 7
+      },
+      {
+        "ordinal": 3,
+        "section_id": "sec_cb9ee81efe6732b1",
+        "parent_section_id": "sec_cf973ce84fb60314",
+        "depth": 2,
+        "heading": "Audit",
+        "heading_path": [
+          "Guide",
+          "Audit"
+        ],
+        "anchor": "audit",
+        "content": "Log every rotation.",
+        "content_digest": "sha256:74b02f2bd17acd256469b880b7311b6b9f871e28affc9da35488c7ffe9338992",
+        "tags": [
+          "agents",
+          "compliance",
+          "security"
+        ],
+        "token_count": 6
+      }
+    ]
+  }
+}

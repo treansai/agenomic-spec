@@ -1,0 +1,21 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD022",
+  "intent": "the ordinal is written in decimal without padding",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "chunk_id",
+    "document_content_digest": "sha256:5391cc3a28c8536d66b48bc8bd97b993b4ea77558a7521e5f5f424d7b0788237",
+    "chunking_digest": "sha256:933c00875fa52fa342bc014c374abe9d74843f4b5d999a7343fe27f7f3d6be17",
+    "ordinal": 12
+  },
+  "expected": {
+    "ok": true,
+    "chunk_id": "chk_68927188c5de6132"
+  }
+}

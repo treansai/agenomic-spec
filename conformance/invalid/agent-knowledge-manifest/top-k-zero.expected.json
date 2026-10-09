@@ -1,0 +1,7 @@
+{
+  "description": "top_k is 1 to 50.",
+  "match": {
+    "keyword": "minimum",
+    "instancePath": "/retrieval/top_k"
+  }
+}

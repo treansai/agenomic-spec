@@ -1,0 +1,7 @@
+{
+  "description": "local-hash embeddings have 384 dimensions.",
+  "match": {
+    "keyword": "const",
+    "instancePath": "/embedding/dimensions"
+  }
+}

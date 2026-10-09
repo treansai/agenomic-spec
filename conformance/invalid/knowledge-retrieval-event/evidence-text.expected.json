@@ -1,0 +1,10 @@
+{
+  "description": "Evidence is referenced by ids and digests, never copied.",
+  "match": {
+    "keyword": "additionalProperties",
+    "instancePath": "/knowledge_refs/0",
+    "params": {
+      "additionalProperty": "text"
+    }
+  }
+}

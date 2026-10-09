@@ -1,0 +1,21 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "lexical",
+  "id": "KL013",
+  "intent": "CJK runs are tokens",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "知识库 检索"
+  },
+  "expected": {
+    "ok": true,
+    "tokens": [
+      "知识库",
+      "检索"
+    ]
+  }
+}

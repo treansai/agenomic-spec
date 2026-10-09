@@ -1,0 +1,24 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "lexical",
+  "id": "KL001",
+  "intent": "lowercase alphanumeric runs",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "Refund Policy: 14-day window!"
+  },
+  "expected": {
+    "ok": true,
+    "tokens": [
+      "refund",
+      "policy",
+      "14",
+      "day",
+      "window"
+    ]
+  }
+}

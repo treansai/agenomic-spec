@@ -1,0 +1,10 @@
+{
+  "description": "A manifest pins resolved versions; the published selector of a binding never appears in it.",
+  "match": {
+    "keyword": "additionalProperties",
+    "instancePath": "/bases/kb_customer_support",
+    "params": {
+      "additionalProperty": "selector"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "description": "Scores are integers in parts per million, never fractions.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/knowledge_refs/0/score_ppm"
+  }
+}

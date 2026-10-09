@@ -1,0 +1,40 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "bm25",
+  "id": "KM004",
+  "intent": "equal scores keep candidate order; candidates without a match are dropped",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "query": "alpha",
+    "candidates": [
+      "alpha beta",
+      "gamma",
+      "beta alpha",
+      "alpha beta"
+    ],
+    "k1": "1.2",
+    "b": "0.75",
+    "corpus": null
+  },
+  "expected": {
+    "ok": true,
+    "ranked": [
+      {
+        "candidate": 0,
+        "score": "0.336981"
+      },
+      {
+        "candidate": 2,
+        "score": "0.336981"
+      },
+      {
+        "candidate": 3,
+        "score": "0.336981"
+      }
+    ]
+  }
+}

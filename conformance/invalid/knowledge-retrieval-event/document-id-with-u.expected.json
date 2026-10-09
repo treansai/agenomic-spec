@@ -1,0 +1,7 @@
+{
+  "description": "Crockford base32 has no i, l, o or u.",
+  "match": {
+    "keyword": "pattern",
+    "instancePath": "/knowledge_refs/0/document_id"
+  }
+}

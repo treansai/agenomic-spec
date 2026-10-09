@@ -1,0 +1,21 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "lexical",
+  "id": "KL009",
+  "intent": "NFKC maps superscript and subscript digits",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "x² H₂O"
+  },
+  "expected": {
+    "ok": true,
+    "tokens": [
+      "x2",
+      "h2o"
+    ]
+  }
+}

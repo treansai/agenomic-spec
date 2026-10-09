@@ -100,3 +100,75 @@ comments.
   included: any byte change there changes `MANIFEST.json` and therefore every
   vendored `SPEC_VECTORS.lock`. Prose about the vectors goes in RFC 0012 or
   `docs/prompts.md`.
+
+## Knowledge bases
+
+Reasons behind the RFC 0014 tooling and documents.
+
+- The knowledge vectors live in `conformance/vectors/knowledge/` with their own
+  `MANIFEST.json`, never under `conformance/vectors/prompts/`: any byte change
+  there would move every vendored prompt `SPEC_VECTORS.lock`. Implementations
+  vendor the two sets, and lock them, independently.
+- The vectors reuse the `agenomic.conformance_vector/v1` envelope but are
+  validated by their own `knowledge-conformance-vector.schema.json`, so each
+  directory keeps a closed suite list and the prompt vector schema is
+  untouched. Ids carry a two-letter prefix (`KS`, `KD`, `KR`, `KT`, `KL`,
+  `KM`) so that a knowledge id is never mistaken for a prompt id.
+- `scripts/knowledge-vectors.js` is both the generator and the checker. The
+  default run recomputes every `expected` from its `input` with an independent
+  JavaScript implementation and also requires every file to be byte-identical
+  to the generator output, so the case table in the script is the single
+  source: vectors change only through `--write`, which also rewrites the
+  manifest.
+- Section vectors take an outline (title, front matter, headings and rendered
+  blocks) as their normative input and carry the Markdown source as
+  information. Markdown edge cases depend on the parser, while the section
+  algorithm must be testable in every language without one. The outlines were
+  checked against the reference parser, which produces exactly them.
+- KD030 keeps the lexeme `4.0`. `JSON.stringify` would write `4`, so the
+  generator rewrites that one line after serializing, and the checker fails
+  when the lexeme is missing.
+- BM25 scores are decimal strings with six fractional digits. JavaScript
+  `toFixed` rounds the exact binary value half up, Rust and Python round half
+  to even, so the generator refuses any score within 1e-12 of a rounding tie.
+  Per-term contributions are added in code point order of the terms, as the
+  reference does, so the binary sums agree too.
+- Tags, collections and filter lists are sorted by code point (the order of
+  UTF-8 bytes), as the reference sorts them; canonical JSON object keys still
+  sort by UTF-16 code units. The script compares with `Buffer.compare`.
+- White space is the Unicode `White_Space` property, not JavaScript `\s`,
+  which differs on U+0085 and U+FEFF; alphanumeric is `Alphabetic` or general
+  category Nd, Nl or No. Vectors KT013, KT014 and KR013 pin those differences.
+- Schema patterns spell control characters as `\u0000-\u001f` and
+  `\u007f-\u009f` instead of `\p{Cc}`: Python's `re` has no `\p{...}`, and the
+  schemas must work with the validators of every implementation.
+- Thresholds and scores are integers in parts per million (`_ppm`, 0 to
+  1000000), the unit the reference uses; a per mille unit would lose the
+  resolution of normalized fused scores.
+- `index_config_digest` hashes the index configuration without its `chunking`
+  and `embedding` members, which it binds through their digests. The stored
+  document carries `chunking` without `schema` and `embedding` with it, as the
+  reference stores them; `chunking_digest` adds the chunking schema back.
+- The retrieval event payload has a `schema` member and refuses unknown
+  members, so query or evidence text cannot be added by mistake; surfaces that
+  flatten attributes drop `schema` only.
+- The empty agent knowledge manifest is a real configuration (disabled, no
+  bases), not the stand-in for an agent without knowledge configuration,
+  unlike the empty prompt manifest of RFC 0012. That is why the trace
+  `components.knowledge_version` is never filled with an empty manifest digest.
+- The managed form of `genome.yaml` and `agent.lock.yaml` knowledge entries
+  needs no schema change: the existing digest pattern admits `sha256:` and the
+  items admit additional members. The v0.1 and v0.2 genome and lock schemas
+  are therefore untouched, and the managed-form fixtures prove it.
+- The schemas require unique tags and collections although the reference
+  reader does not refuse duplicate version manifest tags: every writer
+  deduplicates, and the schemas describe what writers produce.
+- The schema conformance fixtures reuse the documents of the digest vectors, so
+  every digest they carry is real and consistent with the vectors.
+- `scripts/validate.js` registers the four knowledge artifact kinds.
+  `knowledge-common` has no root document and gets no fixture directory, like
+  `prompt-common`.
+- RFC 0014 stays `Draft`, like RFC 0012. RFC 0014 Detailed design, the schema
+  descriptions, `docs/knowledge.md`, `docs/genome.md`, `docs/lockfile.md` and
+  `conformance/README.md` describe the same documents at different depths; a
+  change updates all of them in the same commit.

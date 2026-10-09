@@ -1,0 +1,20 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD027",
+  "intent": "NEL and NO-BREAK SPACE are white space; case is preserved",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "query_digest",
+    "query": "GiftCards EU"
+  },
+  "expected": {
+    "ok": true,
+    "normalized": "Gift Cards EU",
+    "digest": "sha256:fd941c645fe4100b606635b453d8bcbb0a56f58451438b2d031313176f373e5b"
+  }
+}

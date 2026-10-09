@@ -1,0 +1,7 @@
+{
+  "description": "A reader never guesses a compatible version.",
+  "match": {
+    "keyword": "const",
+    "instancePath": "/schema"
+  }
+}
