@@ -1,0 +1,9 @@
+{
+  "schema": "agenomic.knowledge_retrieval_event/v1",
+  "knowledge_base_id": null,
+  "knowledge_version": null,
+  "knowledge_manifest_digest": "sha256:ae6bb2e6b114c292988ffbcb43d937c21d8d0d69261eedc3becbb0a675a3d270",
+  "knowledge_query_digest": "sha256:f5c0e807a84882af9aba47bd5e979a13fc9749eaef1ea9438c42fe5368f0b0a8",
+  "knowledge_execution_key": "exe:f85a7a117a840e58fe870122f7866d01cc2562fb704e56ea812f233a35e98eaa",
+  "knowledge_refs": []
+}

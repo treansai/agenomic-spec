@@ -1,0 +1,20 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD026",
+  "intent": "a query is NFKC normalized and white space collapsed before hashing",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "query_digest",
+    "query": "  Refund\t\npolicy   ｆｏｒ  ﬁnal "
+  },
+  "expected": {
+    "ok": true,
+    "normalized": "Refund policy for final",
+    "digest": "sha256:f5c0e807a84882af9aba47bd5e979a13fc9749eaef1ea9438c42fe5368f0b0a8"
+  }
+}

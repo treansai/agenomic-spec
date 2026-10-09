@@ -1,0 +1,19 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD025",
+  "intent": "chunk text is hashed without Unicode normalization",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "chunk_content_digest",
+    "text": "Résumé: élève"
+  },
+  "expected": {
+    "ok": true,
+    "content_digest": "sha256:9a63210535dc4d6dcfd818a2a19e3ed317211c1bfb1d1161eae10ed95913c817"
+  }
+}

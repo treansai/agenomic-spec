@@ -1,0 +1,22 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "ref",
+  "id": "KR038",
+  "intent": "document ids are lowercase",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "ref": "kb://0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f/kb_x/documents/kdoc_01HZY8M6K2V9QF7C3N5T0R4WXA",
+    "workspace_id": "0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f"
+  },
+  "expected": {
+    "ok": false,
+    "error": {
+      "code": "knowledge_ref_invalid",
+      "reason": "invalid_document_id"
+    }
+  }
+}

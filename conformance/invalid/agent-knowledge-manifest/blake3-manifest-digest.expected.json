@@ -1,0 +1,7 @@
+{
+  "description": "Knowledge digests are sha256.",
+  "match": {
+    "keyword": "pattern",
+    "instancePath": "/bases/kb_customer_support/version_manifest_digest"
+  }
+}

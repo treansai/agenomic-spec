@@ -1,0 +1,7 @@
+{
+  "description": "Classifications are public, internal, confidential or restricted.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/documents/kdoc_01hzy8m6k2v9qf7c3n5t0r4wxa/classification"
+  }
+}

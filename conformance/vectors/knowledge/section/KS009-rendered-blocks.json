@@ -1,0 +1,82 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "section",
+  "id": "KS009",
+  "intent": "inline code, links, emphasis, ordered lists, fenced code and tables render into the section content joined by blank lines",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "sections",
+    "document_id": "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxh",
+    "fallback_title": "formats.md",
+    "source": {
+      "format": "markdown",
+      "text": "# Formats\n\nText with `inline code`, a [link](./other.md#setup) and *emphasis*.\n\n1. first\n2. second\n\n```python\nprint(\"hi\")\n```\n\n| Plan | Price |\n| --- | --- |\n| Basic | 10 |\n| Pro | 20 |\n"
+    },
+    "outline": {
+      "title": "Formats",
+      "front_matter": {},
+      "blocks": [
+        {
+          "heading": {
+            "level": 1,
+            "text": "Formats",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Text with `inline code`, a link and emphasis."
+        },
+        {
+          "text": "1. first\n2. second"
+        },
+        {
+          "text": "```python\nprint(\"hi\")\n```"
+        },
+        {
+          "text": "| Plan | Price |\n| --- | --- |\n| Basic | 10 |\n| Pro | 20 |"
+        }
+      ]
+    }
+  },
+  "expected": {
+    "ok": true,
+    "title": "Formats",
+    "content_digest": "sha256:2f3bacd7199dfe8a5c93dfe92c3dfcfde98cd06ae6f1c4282888b3c50a9ff0a9",
+    "token_count": 63,
+    "sections": [
+      {
+        "ordinal": 0,
+        "section_id": "sec_a64cd9329acfdce7",
+        "parent_section_id": null,
+        "depth": 0,
+        "heading": "Formats",
+        "heading_path": [],
+        "anchor": "",
+        "content": "",
+        "content_digest": "sha256:ae10e9ab9b0d078558b6e3021fb4c53c840abf9b787347c7d05926b1ce5e676c",
+        "tags": [],
+        "token_count": 0
+      },
+      {
+        "ordinal": 1,
+        "section_id": "sec_3b397b7fdf6f92c7",
+        "parent_section_id": "sec_a64cd9329acfdce7",
+        "depth": 1,
+        "heading": "Formats",
+        "heading_path": [
+          "Formats"
+        ],
+        "anchor": "formats",
+        "content": "Text with `inline code`, a link and emphasis.\n\n1. first\n2. second\n\n```python\nprint(\"hi\")\n```\n\n| Plan | Price |\n| --- | --- |\n| Basic | 10 |\n| Pro | 20 |",
+        "content_digest": "sha256:97918da6a802a4173e9d412da69f0d9ad74e4041649b92c75a97f8d2cc1898b8",
+        "tags": [],
+        "token_count": 63
+      }
+    ]
+  }
+}

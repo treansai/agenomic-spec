@@ -1,0 +1,52 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD008",
+  "intent": "an index identity with fixed token chunking, openai-compatible embeddings and english text search",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.knowledge_index_config/v1",
+      "chunking_digest": "sha256:e736199003cc27564c6211ae0c880b3f19e441d837752cbbd5bdaac48045c436",
+      "embedding_digest": "sha256:0f1b0ed98ddffb01df220b1e58f94c02000c275fc9cf871858187efff4947da3",
+      "text_search_config": "english"
+    },
+    "projection": {
+      "rule": "index_identity",
+      "from": {
+        "schema": "agenomic.knowledge_index_config/v1",
+        "chunking": {
+          "strategy": "fixed_tokens",
+          "max_tokens": 256,
+          "overlap_tokens": 32,
+          "min_tokens": 32,
+          "parent_max_tokens": 1024,
+          "child_max_tokens": 256,
+          "token_counter": "approx-v1"
+        },
+        "chunking_digest": "sha256:e736199003cc27564c6211ae0c880b3f19e441d837752cbbd5bdaac48045c436",
+        "embedding": {
+          "schema": "agenomic.knowledge_embedding_config/v1",
+          "provider": "openai-compatible",
+          "model": "bge-m3",
+          "model_version": null,
+          "dimensions": 1024,
+          "normalization": "l2"
+        },
+        "embedding_digest": "sha256:0f1b0ed98ddffb01df220b1e58f94c02000c275fc9cf871858187efff4947da3",
+        "text_search_config": "english"
+      }
+    }
+  },
+  "expected": {
+    "ok": true,
+    "document_type": "agenomic.knowledge_index_config/v1",
+    "canonical": "{\"chunking_digest\":\"sha256:e736199003cc27564c6211ae0c880b3f19e441d837752cbbd5bdaac48045c436\",\"embedding_digest\":\"sha256:0f1b0ed98ddffb01df220b1e58f94c02000c275fc9cf871858187efff4947da3\",\"schema\":\"agenomic.knowledge_index_config/v1\",\"text_search_config\":\"english\"}",
+    "digest": "sha256:c2bb54d2e6d4c9c93b135f26dae807f034ec6b8a2cc28a350f5ac998b41e16bd"
+  }
+}

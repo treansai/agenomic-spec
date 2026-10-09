@@ -1,0 +1,182 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "section",
+  "id": "KS001",
+  "intent": "a nested Markdown document: the title is the first level-1 heading, which is also the first child of the root section",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "sections",
+    "document_id": "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxa",
+    "fallback_title": "security.md",
+    "source": {
+      "format": "markdown",
+      "text": "# Agent Security\n\nIntro text.\n\n## Authentication\n\nAgents authenticate with scoped keys.\n\n## Authorization\n\nRoles decide.\n\n### Tool Permissions\n\nTools need grants.\n\n## Audit\n\nEvery call is logged.\n"
+    },
+    "outline": {
+      "title": "Agent Security",
+      "front_matter": {},
+      "blocks": [
+        {
+          "heading": {
+            "level": 1,
+            "text": "Agent Security",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Intro text."
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "Authentication",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Agents authenticate with scoped keys."
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "Authorization",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Roles decide."
+        },
+        {
+          "heading": {
+            "level": 3,
+            "text": "Tool Permissions",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Tools need grants."
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "Audit",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Every call is logged."
+        }
+      ]
+    }
+  },
+  "expected": {
+    "ok": true,
+    "title": "Agent Security",
+    "content_digest": "sha256:5391cc3a28c8536d66b48bc8bd97b993b4ea77558a7521e5f5f424d7b0788237",
+    "token_count": 32,
+    "sections": [
+      {
+        "ordinal": 0,
+        "section_id": "sec_cf6009ddaf9a166f",
+        "parent_section_id": null,
+        "depth": 0,
+        "heading": "Agent Security",
+        "heading_path": [],
+        "anchor": "",
+        "content": "",
+        "content_digest": "sha256:ae10e9ab9b0d078558b6e3021fb4c53c840abf9b787347c7d05926b1ce5e676c",
+        "tags": [],
+        "token_count": 0
+      },
+      {
+        "ordinal": 1,
+        "section_id": "sec_8d08fbbc21fd3832",
+        "parent_section_id": "sec_cf6009ddaf9a166f",
+        "depth": 1,
+        "heading": "Agent Security",
+        "heading_path": [
+          "Agent Security"
+        ],
+        "anchor": "agent-security",
+        "content": "Intro text.",
+        "content_digest": "sha256:09ce8b37cbbcff565476c36bc2dd5f5711d5d00eb39e81363546a5dae4b1c8eb",
+        "tags": [],
+        "token_count": 4
+      },
+      {
+        "ordinal": 2,
+        "section_id": "sec_d32fd5630e9b0281",
+        "parent_section_id": "sec_8d08fbbc21fd3832",
+        "depth": 2,
+        "heading": "Authentication",
+        "heading_path": [
+          "Agent Security",
+          "Authentication"
+        ],
+        "anchor": "authentication",
+        "content": "Agents authenticate with scoped keys.",
+        "content_digest": "sha256:92445aa36c349b35a7989209d6b06f29a18a463d000022af851fbb33be535607",
+        "tags": [],
+        "token_count": 10
+      },
+      {
+        "ordinal": 3,
+        "section_id": "sec_edecbad169c8cf42",
+        "parent_section_id": "sec_8d08fbbc21fd3832",
+        "depth": 2,
+        "heading": "Authorization",
+        "heading_path": [
+          "Agent Security",
+          "Authorization"
+        ],
+        "anchor": "authorization",
+        "content": "Roles decide.",
+        "content_digest": "sha256:8be6ed7f8e994a500df71c6e305d927452690789110f4d19a1c7fa4a138768da",
+        "tags": [],
+        "token_count": 5
+      },
+      {
+        "ordinal": 4,
+        "section_id": "sec_41672fa1b7ad29af",
+        "parent_section_id": "sec_edecbad169c8cf42",
+        "depth": 3,
+        "heading": "Tool Permissions",
+        "heading_path": [
+          "Agent Security",
+          "Authorization",
+          "Tool Permissions"
+        ],
+        "anchor": "tool-permissions",
+        "content": "Tools need grants.",
+        "content_digest": "sha256:e98e806676da331440ccb1f1c03edccd270d1356b6bc90efbce610ba4c7d9b6c",
+        "tags": [],
+        "token_count": 6
+      },
+      {
+        "ordinal": 5,
+        "section_id": "sec_e958882299f2bcf0",
+        "parent_section_id": "sec_8d08fbbc21fd3832",
+        "depth": 2,
+        "heading": "Audit",
+        "heading_path": [
+          "Agent Security",
+          "Audit"
+        ],
+        "anchor": "audit",
+        "content": "Every call is logged.",
+        "content_digest": "sha256:da7487da5a238305a788c9766f93a3269689619118895817d3b9d956723e9493",
+        "tags": [],
+        "token_count": 7
+      }
+    ]
+  }
+}

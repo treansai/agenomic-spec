@@ -1,0 +1,207 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "section",
+  "id": "KS003",
+  "intent": "appending a third FAQ keeps the ids of the first two FAQ sections and of their children",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "sections",
+    "document_id": "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxb",
+    "fallback_title": "guide.md",
+    "source": {
+      "format": "markdown",
+      "text": "# Guide\n\n## FAQ\n\nOne.\n\n### Linux\n\nA.\n\n## FAQ\n\nTwo.\n\n### Linux\n\nB.\n\n## FAQ\n\nThree.\n"
+    },
+    "outline": {
+      "title": "Guide",
+      "front_matter": {},
+      "blocks": [
+        {
+          "heading": {
+            "level": 1,
+            "text": "Guide",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "FAQ",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "One."
+        },
+        {
+          "heading": {
+            "level": 3,
+            "text": "Linux",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "A."
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "FAQ",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Two."
+        },
+        {
+          "heading": {
+            "level": 3,
+            "text": "Linux",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "B."
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "FAQ",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Three."
+        }
+      ]
+    }
+  },
+  "expected": {
+    "ok": true,
+    "title": "Guide",
+    "content_digest": "sha256:ecd814c05de85bd6ea113e2ec1ba4371f941939fe8c32e7a8cffaee001a48797",
+    "token_count": 11,
+    "sections": [
+      {
+        "ordinal": 0,
+        "section_id": "sec_0390c8b621416257",
+        "parent_section_id": null,
+        "depth": 0,
+        "heading": "Guide",
+        "heading_path": [],
+        "anchor": "",
+        "content": "",
+        "content_digest": "sha256:ae10e9ab9b0d078558b6e3021fb4c53c840abf9b787347c7d05926b1ce5e676c",
+        "tags": [],
+        "token_count": 0
+      },
+      {
+        "ordinal": 1,
+        "section_id": "sec_7cd49327742fcce3",
+        "parent_section_id": "sec_0390c8b621416257",
+        "depth": 1,
+        "heading": "Guide",
+        "heading_path": [
+          "Guide"
+        ],
+        "anchor": "guide",
+        "content": "",
+        "content_digest": "sha256:e16f74b7e00821991f8fb94f8abb31fbf616827f248937896322f7d769a0a789",
+        "tags": [],
+        "token_count": 0
+      },
+      {
+        "ordinal": 2,
+        "section_id": "sec_266b49265244839c",
+        "parent_section_id": "sec_7cd49327742fcce3",
+        "depth": 2,
+        "heading": "FAQ",
+        "heading_path": [
+          "Guide",
+          "FAQ"
+        ],
+        "anchor": "faq",
+        "content": "One.",
+        "content_digest": "sha256:85530a4577803254944b22ce33bc4e6bcb4f217d836dd0dabd21a36c111dabf8",
+        "tags": [],
+        "token_count": 2
+      },
+      {
+        "ordinal": 3,
+        "section_id": "sec_d322286b153d2bae",
+        "parent_section_id": "sec_266b49265244839c",
+        "depth": 3,
+        "heading": "Linux",
+        "heading_path": [
+          "Guide",
+          "FAQ",
+          "Linux"
+        ],
+        "anchor": "linux",
+        "content": "A.",
+        "content_digest": "sha256:c3a32600ab8a34d6b129002afe772fa329337c5a26a2a988b930a9d415dedd34",
+        "tags": [],
+        "token_count": 2
+      },
+      {
+        "ordinal": 4,
+        "section_id": "sec_d62230205778a21a",
+        "parent_section_id": "sec_7cd49327742fcce3",
+        "depth": 2,
+        "heading": "FAQ",
+        "heading_path": [
+          "Guide",
+          "FAQ"
+        ],
+        "anchor": "faq-1",
+        "content": "Two.",
+        "content_digest": "sha256:29e75f0f871c1f70a421f338643f225f59c48e904f5092ba293317b6a8b3057a",
+        "tags": [],
+        "token_count": 2
+      },
+      {
+        "ordinal": 5,
+        "section_id": "sec_7171df41bb3349a0",
+        "parent_section_id": "sec_d62230205778a21a",
+        "depth": 3,
+        "heading": "Linux",
+        "heading_path": [
+          "Guide",
+          "FAQ",
+          "Linux"
+        ],
+        "anchor": "linux-1",
+        "content": "B.",
+        "content_digest": "sha256:35b7b78e06fb83592d83e5d9ed3cd7a9c9e3d9dd63b10bb8bfde2d887eec5468",
+        "tags": [],
+        "token_count": 2
+      },
+      {
+        "ordinal": 6,
+        "section_id": "sec_805a402b215e0196",
+        "parent_section_id": "sec_7cd49327742fcce3",
+        "depth": 2,
+        "heading": "FAQ",
+        "heading_path": [
+          "Guide",
+          "FAQ"
+        ],
+        "anchor": "faq-2",
+        "content": "Three.",
+        "content_digest": "sha256:afd3996e5cb568b28b747d6d7d7e74dedffb8c6a6d220a2024e68dac47be1c82",
+        "tags": [],
+        "token_count": 3
+      }
+    ]
+  }
+}

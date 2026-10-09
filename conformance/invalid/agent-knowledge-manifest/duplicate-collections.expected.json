@@ -1,0 +1,7 @@
+{
+  "description": "Collections are listed once.",
+  "match": {
+    "keyword": "uniqueItems",
+    "instancePath": "/bases/kb_customer_support/collections"
+  }
+}

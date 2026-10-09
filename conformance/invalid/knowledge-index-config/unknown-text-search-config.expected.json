@@ -1,0 +1,7 @@
+{
+  "description": "Text search configurations come from a closed list.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/text_search_config"
+  }
+}

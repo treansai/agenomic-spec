@@ -107,7 +107,11 @@ npm run lint        # markdownlint + RFC front-matter lint
 | 0007 | Rollback Safety                                   | Accepted |
 | 0008 | Release Attestations                              | Accepted |
 | 0009 | Workflows and Multi-Agent Systems                 | Draft    |
+| 0010 | Canonical Run Trace                               | Draft    |
+| 0011 | Behavioral Contracts and the Policy DSL           | Draft    |
+| 0012 | Managed Prompts                                   | Draft    |
 | 0013 | Coding Sessions                                   | Draft    |
+| 0014 | Knowledge Bases                                   | Draft    |
 
 ## Schemas
 
@@ -127,6 +131,12 @@ npm run lint        # markdownlint + RFC front-matter lint
 | [`coding-event.schema.json` (v0.3)](schemas/v0.3/coding-event.schema.json) | `agenomic.coding.event/v1` envelope: session id, source, trust, ordering within (source, producer_epoch), receiver-assigned `cursor` and `received_at` on served events, tool-call correlation (RFC 0013). |
 | [`coding-capability-manifest.schema.json` (v0.3)](schemas/v0.3/coding-capability-manifest.schema.json) | Announced vs validated capabilities of a coding runtime version (RFC 0013). |
 | [`coding-action.schema.json` (v0.3)](schemas/v0.3/coding-action.schema.json) | Classified, decided coding action: session id, intent digest that binds approvals, mode and decision pairing, observed outcome (RFC 0013). |
+| [`knowledge-common.schema.json` (v0.4)](schemas/v0.4/knowledge-common.schema.json) | Knowledge identifiers, the `kb://` reference, classifications, the section, document content and retrieval parameter digest inputs (RFC 0014). |
+| [`knowledge-version-manifest.schema.json` (v0.4)](schemas/v0.4/knowledge-version-manifest.schema.json) | One immutable knowledge base version: every document revision by content digest, and the index configuration digest (RFC 0014). |
+| [`agent-knowledge-manifest.schema.json` (v0.4)](schemas/v0.4/agent-knowledge-manifest.schema.json) | The knowledge identity of an agent: pinned versions, collections, classification ceilings and retrieval settings; its digest enters the genome (RFC 0014). |
+| [`knowledge-index-config.schema.json` (v0.4)](schemas/v0.4/knowledge-index-config.schema.json) | Chunking configuration, embedding space and text search configuration of a version (RFC 0014). |
+| [`knowledge-retrieval-event.schema.json` (v0.4)](schemas/v0.4/knowledge-retrieval-event.schema.json) | The `knowledge.retrieve` event payload: references and digests, never text (RFC 0014). |
+| [`knowledge-conformance-vector.schema.json` (v0.4)](schemas/v0.4/knowledge-conformance-vector.schema.json) | The knowledge conformance vectors under `conformance/vectors/knowledge/` (RFC 0014). |
 
 `schemas/v0.2/` is an **overlay** (RFC 0009): artifact kinds not redefined
 there continue to validate against `schemas/v0.1/`. A document's

@@ -1,0 +1,21 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "lexical",
+  "id": "KL008",
+  "intent": "lowercase never folds ß",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "Straße STRASSE"
+  },
+  "expected": {
+    "ok": true,
+    "tokens": [
+      "straße",
+      "strasse"
+    ]
+  }
+}

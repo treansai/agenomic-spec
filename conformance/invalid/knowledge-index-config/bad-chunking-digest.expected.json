@@ -1,0 +1,7 @@
+{
+  "description": "Digests use lowercase hex digits only.",
+  "match": {
+    "keyword": "pattern",
+    "instancePath": "/chunking_digest"
+  }
+}

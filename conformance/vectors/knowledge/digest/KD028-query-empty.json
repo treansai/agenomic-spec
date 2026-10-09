@@ -1,0 +1,22 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD028",
+  "intent": "a query of white space only is refused",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "query_digest",
+    "query": " \n\t "
+  },
+  "expected": {
+    "ok": false,
+    "error": {
+      "code": "knowledge_query_invalid",
+      "reason": "empty"
+    }
+  }
+}

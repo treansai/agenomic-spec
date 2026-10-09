@@ -1,0 +1,37 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "bm25",
+  "id": "KM003",
+  "intent": "corpus statistics larger than the candidate set change idf and length normalization",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "query": "refund",
+    "candidates": [
+      "refund policy",
+      "refund refund window"
+    ],
+    "k1": "1.2",
+    "b": "0.75",
+    "corpus": {
+      "documents": 100,
+      "average_length": "10.0"
+    }
+  },
+  "expected": {
+    "ok": true,
+    "ranked": [
+      {
+        "candidate": 1,
+        "score": "6.332627"
+      },
+      {
+        "candidate": 0,
+        "score": "5.498260"
+      }
+    ]
+  }
+}

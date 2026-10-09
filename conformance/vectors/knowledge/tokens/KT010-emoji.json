@@ -1,0 +1,18 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "tokens",
+  "id": "KT010",
+  "intent": "an emoji is neither alphanumeric nor white space",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "👍 ok"
+  },
+  "expected": {
+    "ok": true,
+    "token_count": 2
+  }
+}

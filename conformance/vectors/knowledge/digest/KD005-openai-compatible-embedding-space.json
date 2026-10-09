@@ -1,0 +1,40 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD005",
+  "intent": "an openai-compatible embedding space: the connection id and the endpoint never enter the digest",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.knowledge_embedding_config/v1",
+      "provider": "openai-compatible",
+      "model": "bge-m3",
+      "model_version": null,
+      "dimensions": 1024,
+      "normalization": "l2"
+    },
+    "projection": {
+      "rule": "embedding_space",
+      "from": {
+        "provider": "openai-compatible",
+        "model": "bge-m3",
+        "model_version": null,
+        "dimensions": 1024,
+        "normalization": "l2",
+        "connection_id": "9d8c7b6a-5f4e-4d3c-8b2a-1f0e9d8c7b6a",
+        "base_url": "https://embeddings.example.com/v1"
+      }
+    }
+  },
+  "expected": {
+    "ok": true,
+    "document_type": "agenomic.knowledge_embedding_config/v1",
+    "canonical": "{\"dimensions\":1024,\"model\":\"bge-m3\",\"model_version\":null,\"normalization\":\"l2\",\"provider\":\"openai-compatible\",\"schema\":\"agenomic.knowledge_embedding_config/v1\"}",
+    "digest": "sha256:0f1b0ed98ddffb01df220b1e58f94c02000c275fc9cf871858187efff4947da3"
+  }
+}

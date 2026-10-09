@@ -1,0 +1,18 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "lexical",
+  "id": "KL005",
+  "intent": "no token",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "  ... !!"
+  },
+  "expected": {
+    "ok": true,
+    "tokens": []
+  }
+}

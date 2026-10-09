@@ -1,0 +1,27 @@
+# The lock of a bundle whose genome pins managed knowledge base versions
+# (RFC 0014): index_id is the versioned kb:// reference and snapshot_hash
+# the version manifest digest, equal to the genome entry of the same name.
+# The v0.1 schema accepts this form unchanged.
+lock_version: agenomic-lock/v0.1
+agent_id: agent://example/support-bot
+model:
+  provider: example-llm
+  model_id: example-llm-mini
+  provider_fingerprint: fp_min_0
+  temperature: 0.0
+  top_p: 1.0
+tools: []
+knowledge:
+  - name: kb_customer_support
+    index_id: kb://0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f/kb_customer_support@v4
+    snapshot_hash: sha256:ddb9172866e9cddeeca6798c5d8b9575d057c8372975163c95a10efdfda88187
+  - name: kb_runbooks
+    index_id: kb://0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f/kb_runbooks@v1
+    snapshot_hash: sha256:2819c946ef7c706417b85e2f736ea41344b2f03fd7d048396efcbbdbf8207e0a
+memory:
+  schema_version: 0.0.0
+  stores_user_specific_data: false
+  retention_days: 0
+  gdpr_exportable: false
+  deletion_supported: true
+policies: []

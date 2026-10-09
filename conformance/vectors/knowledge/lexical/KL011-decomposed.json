@@ -1,0 +1,22 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "lexical",
+  "id": "KL011",
+  "intent": "NFKC composes decomposed accents",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "école naı̈ve"
+  },
+  "expected": {
+    "ok": true,
+    "tokens": [
+      "école",
+      "naı",
+      "ve"
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "lexical",
+  "id": "KL004",
+  "intent": "fullwidth letters and circled digits normalize",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "ｒｅｆｕｎｄ ①"
+  },
+  "expected": {
+    "ok": true,
+    "tokens": [
+      "refund",
+      "1"
+    ]
+  }
+}

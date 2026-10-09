@@ -1,0 +1,23 @@
+{
+  "schema": "agenomic.knowledge_index_config/v1",
+  "chunking": {
+    "strategy": "fixed_tokens",
+    "max_tokens": 256,
+    "overlap_tokens": 32,
+    "min_tokens": 32,
+    "parent_max_tokens": 1024,
+    "child_max_tokens": 256,
+    "token_counter": "approx-v1"
+  },
+  "chunking_digest": "sha256:e736199003cc27564c6211ae0c880b3f19e441d837752cbbd5bdaac48045c436",
+  "embedding": {
+    "schema": "agenomic.knowledge_embedding_config/v1",
+    "provider": "openai-compatible",
+    "model": "bge-m3",
+    "model_version": null,
+    "dimensions": 1024,
+    "normalization": "l2"
+  },
+  "embedding_digest": "sha256:0f1b0ed98ddffb01df220b1e58f94c02000c275fc9cf871858187efff4947da3",
+  "text_search_config": "english"
+}

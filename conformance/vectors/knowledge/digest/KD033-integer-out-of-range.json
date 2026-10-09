@@ -1,0 +1,32 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD033",
+  "intent": "integers beyond 2^53 - 1 are outside the subset",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.knowledge_version_manifest/v1",
+      "workspace_id": "0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f",
+      "kb_id": "kb_runbooks",
+      "version": 9007199254740992,
+      "parent_version": null,
+      "index_config_digest": "sha256:c2bb54d2e6d4c9c93b135f26dae807f034ec6b8a2cc28a350f5ac998b41e16bd",
+      "documents": {}
+    }
+  },
+  "expected": {
+    "ok": false,
+    "error": {
+      "item": {
+        "code": "integer_out_of_range",
+        "value_path": "/version"
+      }
+    }
+  }
+}

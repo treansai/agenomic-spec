@@ -1,0 +1,18 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "tokens",
+  "id": "KT014",
+  "intent": "U+FEFF is not white space and counts as one token",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "a﻿b"
+  },
+  "expected": {
+    "ok": true,
+    "token_count": 3
+  }
+}

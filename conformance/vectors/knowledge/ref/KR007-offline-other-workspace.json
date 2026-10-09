@@ -1,0 +1,25 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "ref",
+  "id": "KR007",
+  "intent": "without a current workspace the workspace check is deferred",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "ref": "kb://5a5a5a5a-1111-4222-8333-444455556666/kb_x@v2",
+    "workspace_id": null
+  },
+  "expected": {
+    "ok": true,
+    "form": "base",
+    "workspace_id": "5a5a5a5a-1111-4222-8333-444455556666",
+    "kb_id": "kb_x",
+    "version": 2,
+    "document_id": null,
+    "revision": null,
+    "canonical": "kb://5a5a5a5a-1111-4222-8333-444455556666/kb_x@v2"
+  }
+}

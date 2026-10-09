@@ -1,0 +1,18 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "tokens",
+  "id": "KT004",
+  "intent": "punctuation counts one token per character",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "refund policy."
+  },
+  "expected": {
+    "ok": true,
+    "token_count": 5
+  }
+}
