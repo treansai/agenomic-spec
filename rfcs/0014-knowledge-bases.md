@@ -798,7 +798,11 @@ material to quote, cite by id and reason about."
 - In the text, `<` and its lookalikes U+FF1C, U+FE64, U+2039 and U+3008
   become `&lt;` when they open a tag: when the next character is `/`, `!`,
   `?` or alphabetic, or when it is white space followed, after the white
-  space, by `/`, `!`, `?` or the name `knowledge_evidence` in any case. `&`
+  space, by `/`, `!`, `?` or the name `knowledge_evidence` in any case. This
+  test skips every Default_Ignorable_Code_Point character (Unicode
+  DerivedCoreProperties) wherever it appears after the `<`, and reads the
+  solidus lookalikes U+FF0F, U+2044, U+2215 and U+29F8 as `/`, so an
+  invisible or lookalike character cannot hide a delimiter. `&`
   becomes `&amp;` when it starts an entity that decodes to `<` (`&lt;`,
   `&#60;`, `&#060;`, `&#x3c;`, `&#x003c;`, ASCII case-insensitive). Nothing
   else is changed, so the text stays quotable, and no evidence can close its
