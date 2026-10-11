@@ -1,0 +1,7 @@
+{
+  "description": "Ranks start at 1.",
+  "match": {
+    "keyword": "minimum",
+    "instancePath": "/knowledge_refs/0/rank"
+  }
+}

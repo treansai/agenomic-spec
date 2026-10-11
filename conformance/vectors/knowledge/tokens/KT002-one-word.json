@@ -1,0 +1,18 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "tokens",
+  "id": "KT002",
+  "intent": "a six letter word is two pieces of at most four characters",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "refund"
+  },
+  "expected": {
+    "ok": true,
+    "token_count": 2
+  }
+}

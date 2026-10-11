@@ -1,0 +1,7 @@
+{
+  "description": "An execution key exists only for agent-scoped retrieval, which carries the agent knowledge manifest digest.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/knowledge_execution_key"
+  }
+}

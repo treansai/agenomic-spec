@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.4/knowledge-retrieval-event.schema.json",
+  "title": "Agenomic knowledge retrieval event payload (v0.4)",
+  "description": "The payload of a `knowledge.retrieve` event, `agenomic.knowledge_retrieval_event/v1` (RFC 0014). It carries references and digests only, never retrieved text and never the query text: the query is identified by `knowledge_query_digest`. A surface that flattens event attributes (a live tracing span) copies every member except `schema` under the same name. `knowledge_base_id` and `knowledge_version` are set when the retrieval targets exactly one knowledge base version, and are null for an agent-scoped retrieval across several bases. `knowledge_manifest_digest` and `knowledge_execution_key` are null outside agent-scoped retrieval, and the key is also null for an agent-scoped retrieval that names no execution. `knowledge_refs` lists the returned evidence in rank order, ranks starting at 1.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "knowledge_base_id",
+    "knowledge_version",
+    "knowledge_manifest_digest",
+    "knowledge_query_digest",
+    "knowledge_execution_key",
+    "knowledge_refs"
+  ],
+  "properties": {
+    "schema": { "const": "agenomic.knowledge_retrieval_event/v1" },
+    "knowledge_base_id": {
+      "anyOf": [{ "$ref": "knowledge-common.schema.json#/$defs/kbId" }, { "type": "null" }]
+    },
+    "knowledge_version": {
+      "anyOf": [{ "$ref": "knowledge-common.schema.json#/$defs/versionNumber" }, { "type": "null" }]
+    },
+    "knowledge_manifest_digest": {
+      "anyOf": [{ "$ref": "knowledge-common.schema.json#/$defs/sha256Digest" }, { "type": "null" }]
+    },
+    "knowledge_query_digest": { "$ref": "knowledge-common.schema.json#/$defs/sha256Digest" },
+    "knowledge_execution_key": {
+      "anyOf": [{ "$ref": "knowledge-common.schema.json#/$defs/executionKey" }, { "type": "null" }]
+    },
+    "knowledge_refs": {
+      "type": "array",
+      "maxItems": 50,
+      "items": { "$ref": "#/$defs/ref" }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "knowledge_base_id": { "type": "null" } } },
+      "then": { "properties": { "knowledge_version": { "type": "null" } } }
+    },
+    {
+      "if": { "properties": { "knowledge_manifest_digest": { "type": "null" } } },
+      "then": { "properties": { "knowledge_execution_key": { "type": "null" } } }
+    }
+  ],
+  "$defs": {
+    "ref": {
+      "description": "One returned piece of evidence. `content_digest` is the chunk content digest (sha256 of the chunk text bytes) when `chunk_id` is set, and the section content digest when a whole section was returned (`chunk_id` null). `score_ppm` is the fused score scaled to parts per million of the best attainable score: it is rank derived, never a calibrated probability.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kb_id", "version", "version_manifest_digest", "document_id", "section_id", "chunk_id", "content_digest", "rank", "score_ppm"],
+      "properties": {
+        "kb_id": { "$ref": "knowledge-common.schema.json#/$defs/kbId" },
+        "version": { "$ref": "knowledge-common.schema.json#/$defs/versionNumber" },
+        "version_manifest_digest": { "$ref": "knowledge-common.schema.json#/$defs/sha256Digest" },
+        "document_id": { "$ref": "knowledge-common.schema.json#/$defs/documentId" },
+        "section_id": { "$ref": "knowledge-common.schema.json#/$defs/sectionId" },
+        "chunk_id": {
+          "anyOf": [{ "$ref": "knowledge-common.schema.json#/$defs/chunkId" }, { "type": "null" }]
+        },
+        "content_digest": { "$ref": "knowledge-common.schema.json#/$defs/sha256Digest" },
+        "rank": { "type": "integer", "minimum": 1, "maximum": 50 },
+        "score_ppm": { "$ref": "knowledge-common.schema.json#/$defs/partsPerMillion" }
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "tokens",
+  "id": "KT016",
+  "intent": "superscript two is a number (No) and joins the run",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "x²"
+  },
+  "expected": {
+    "ok": true,
+    "token_count": 1
+  }
+}

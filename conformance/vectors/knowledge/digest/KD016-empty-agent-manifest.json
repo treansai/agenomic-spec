@@ -1,0 +1,37 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD016",
+  "intent": "the empty agent knowledge manifest: disabled, no bases, default retrieval",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.agent_knowledge_manifest/v1",
+      "workspace_id": "0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f",
+      "agent_id": "2b1e5c3a-8d4f-4e6a-9b0c-1d2e3f4a5b6c",
+      "enabled": false,
+      "bases": {},
+      "retrieval": {
+        "strategy": "hybrid",
+        "top_k": 5,
+        "rerank": true,
+        "max_context_tokens": 4000,
+        "require_citations": true,
+        "insufficient_evidence": "abstain",
+        "injection_policy": "annotate",
+        "min_evidence_score_ppm": 0
+      }
+    }
+  },
+  "expected": {
+    "ok": true,
+    "document_type": "agenomic.agent_knowledge_manifest/v1",
+    "canonical": "{\"agent_id\":\"2b1e5c3a-8d4f-4e6a-9b0c-1d2e3f4a5b6c\",\"bases\":{},\"enabled\":false,\"retrieval\":{\"injection_policy\":\"annotate\",\"insufficient_evidence\":\"abstain\",\"max_context_tokens\":4000,\"min_evidence_score_ppm\":0,\"require_citations\":true,\"rerank\":true,\"strategy\":\"hybrid\",\"top_k\":5},\"schema\":\"agenomic.agent_knowledge_manifest/v1\",\"workspace_id\":\"0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f\"}",
+    "digest": "sha256:ce52ca0fea9dbf0ec9f781d67c097225f88a855f34e26250dfc8c3699b6f48ac"
+  }
+}

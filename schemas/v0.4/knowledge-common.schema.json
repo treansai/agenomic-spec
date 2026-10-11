@@ -1,0 +1,272 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.4/knowledge-common.schema.json",
+  "title": "Agenomic knowledge bases: shared definitions (v0.4)",
+  "description": "Identifier grammars, enumerations and the small hashed documents shared by the knowledge base documents (RFC 0014). Every hashed document is in the Agenomic JSON Subset of RFC 0012: integers only, thresholds and scores in parts per million. JSON Schema cannot express digests, sort orders or cross-member rules; RFC 0014 and the conformance vectors under conformance/vectors/knowledge/ cover those.",
+  "$defs": {
+    "kbId": {
+      "description": "A knowledge base id chosen by its creator, unique per workspace.",
+      "type": "string",
+      "maxLength": 64,
+      "pattern": "^kb_[a-z0-9]+(?:[_-][a-z0-9]+)*$"
+    },
+    "collectionId": {
+      "description": "A collection slug, unique per knowledge base.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+    },
+    "documentId": {
+      "type": "string",
+      "pattern": "^kdoc_[0-9a-hjkmnp-tv-z]{26}$"
+    },
+    "sourceId": {
+      "type": "string",
+      "pattern": "^ksrc_[0-9a-hjkmnp-tv-z]{26}$"
+    },
+    "syncRunId": {
+      "type": "string",
+      "pattern": "^ksyn_[0-9a-hjkmnp-tv-z]{26}$"
+    },
+    "jobId": {
+      "type": "string",
+      "pattern": "^kjob_[0-9a-hjkmnp-tv-z]{26}$"
+    },
+    "bindingId": {
+      "description": "An agent knowledge binding id. Prompt execution bindings use `bnd_`; agent knowledge bindings use `kbnd_`.",
+      "type": "string",
+      "pattern": "^kbnd_[0-9a-hjkmnp-tv-z]{26}$"
+    },
+    "retrievalEventId": {
+      "type": "string",
+      "pattern": "^kret_[0-9a-hjkmnp-tv-z]{26}$"
+    },
+    "evaluationId": {
+      "type": "string",
+      "pattern": "^kev_[0-9a-hjkmnp-tv-z]{26}$"
+    },
+    "knowledgeWireId": {
+      "description": "Any server-made knowledge id: a prefix, an underscore and a lowercase ULID (26 Crockford base32 characters).",
+      "type": "string",
+      "pattern": "^(kdoc|ksrc|ksyn|kjob|kbnd|kret|kev)_[0-9a-hjkmnp-tv-z]{26}$"
+    },
+    "sectionId": {
+      "description": "`sec_` plus the first 16 hex digits of a sha256, derived from the document id, the normalized heading path and the occurrence (RFC 0014, Sections).",
+      "type": "string",
+      "pattern": "^sec_[0-9a-f]{16}$"
+    },
+    "chunkId": {
+      "description": "`chk_` plus the first 16 hex digits of a sha256, derived from the document content digest, the chunking digest and the chunk ordinal (RFC 0014, Chunks).",
+      "type": "string",
+      "pattern": "^chk_[0-9a-f]{16}$"
+    },
+    "versionNumber": { "$ref": "prompt-common.schema.json#/$defs/versionNumber" },
+    "uuidLower": { "$ref": "prompt-common.schema.json#/$defs/uuidLower" },
+    "sha256Digest": { "$ref": "prompt-common.schema.json#/$defs/sha256Digest" },
+    "knowledgeRef": {
+      "description": "A knowledge reference `kb://<workspace>/<kb_id>[@v<n>][/documents/<document_id>[@v<m>]]`, at most 512 bytes of UTF-8. The pattern checks the grammar; a version above 2147483647 and a kb id above 64 characters are refused by the parser, not by the pattern.",
+      "type": "string",
+      "maxLength": 512,
+      "pattern": "^kb://[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/kb_[a-z0-9]+(?:[_-][a-z0-9]+)*(?:@v[1-9][0-9]{0,9}|/documents/kdoc_[0-9a-hjkmnp-tv-z]{26}(?:@v[1-9][0-9]{0,9})?)?$"
+    },
+    "versionedBaseRef": {
+      "description": "A knowledge reference that pins one knowledge base version, `kb://<workspace>/<kb_id>@v<n>`: the managed form of a genome `knowledge[].source_uri` and an agent lock `knowledge[].index_id`.",
+      "type": "string",
+      "maxLength": 512,
+      "pattern": "^kb://[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/kb_[a-z0-9]+(?:[_-][a-z0-9]+)*@v[1-9][0-9]{0,9}$"
+    },
+    "classification": {
+      "description": "Document classification, ordered public < internal < confidential < restricted. The default is internal.",
+      "enum": ["public", "internal", "confidential", "restricted"]
+    },
+    "documentPath": {
+      "description": "A normalized relative path inside a knowledge base: no leading slash, no backslash, no empty, `.` or `..` segment, no control character, at most 512 code points.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^(?!\\.{1,2}(?:/|$))[^/\\\\\\u0000-\\u001f\\u007f-\\u009f]+(?:/(?!\\.{1,2}(?:/|$))[^/\\\\\\u0000-\\u001f\\u007f-\\u009f]+)*$"
+    },
+    "pathPrefix": {
+      "description": "A document path, optionally followed by one `/`, that selects a folder of a knowledge base.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 513,
+      "pattern": "^(?!\\.{1,2}(?:/|$))[^/\\\\\\u0000-\\u001f\\u007f-\\u009f]+(?:/(?!\\.{1,2}(?:/|$))[^/\\\\\\u0000-\\u001f\\u007f-\\u009f]+)*/?$"
+    },
+    "tag": {
+      "description": "A tag: 1 to 64 code points, no comma, no control character, no leading or trailing white space.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[^\\s,\\u0000-\\u001f\\u007f-\\u009f](?:[^,\\u0000-\\u001f\\u007f-\\u009f]*[^\\s,\\u0000-\\u001f\\u007f-\\u009f])?$"
+    },
+    "tagList": {
+      "description": "At most 32 tags, sorted by Unicode code point, without duplicates.",
+      "type": "array",
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/tag" }
+    },
+    "partsPerMillion": {
+      "description": "A ratio written as an integer number of parts per million, 0 to 1000000. Hashed documents never carry fractions.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "executionKey": {
+      "description": "The key that freezes the agent knowledge manifest of one execution: `bnd:` plus a prompt execution binding id, or `exe:` plus the lowercase hex sha256 of the UTF-8 bytes of an execution id.",
+      "type": "string",
+      "pattern": "^(?:bnd:bnd_[0-9a-hjkmnp-tv-z]{26}|exe:[0-9a-f]{64})$"
+    },
+    "retrievalMode": { "enum": ["keyword", "semantic", "hybrid", "section", "exact"] },
+    "rerankMode": { "enum": ["none", "lexical", "http"] },
+    "expandMode": { "enum": ["none", "parent", "section"] },
+    "injectionPolicy": { "enum": ["annotate", "exclude_high", "block"] },
+    "insufficientEvidence": { "enum": ["abstain", "answer"] },
+    "labelKey": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.-]{0,63}$"
+    },
+    "agentRetrieval": {
+      "description": "The retrieval block of an agent knowledge manifest. Every member is always present.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strategy",
+        "top_k",
+        "rerank",
+        "max_context_tokens",
+        "require_citations",
+        "insufficient_evidence",
+        "injection_policy",
+        "min_evidence_score_ppm"
+      ],
+      "properties": {
+        "strategy": { "$ref": "#/$defs/retrievalMode" },
+        "top_k": { "type": "integer", "minimum": 1, "maximum": 50 },
+        "rerank": { "type": "boolean" },
+        "max_context_tokens": { "type": "integer", "minimum": 64, "maximum": 32000 },
+        "require_citations": { "type": "boolean" },
+        "insufficient_evidence": { "$ref": "#/$defs/insufficientEvidence" },
+        "injection_policy": { "$ref": "#/$defs/injectionPolicy" },
+        "min_evidence_score_ppm": { "$ref": "#/$defs/partsPerMillion" }
+      }
+    },
+    "searchFilters": {
+      "description": "Retrieval filters as a caller sends them. Lists may be unsorted and repeat items; the retrieval parameters document sorts and deduplicates them.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["collections", "document_ids", "path_prefix", "tags", "classification_max", "metadata"],
+      "properties": {
+        "collections": { "type": "array", "maxItems": 32, "items": { "$ref": "#/$defs/collectionId" } },
+        "document_ids": { "type": "array", "maxItems": 100, "items": { "$ref": "#/$defs/documentId" } },
+        "path_prefix": {
+          "anyOf": [{ "$ref": "#/$defs/pathPrefix" }, { "type": "null" }]
+        },
+        "tags": {
+          "type": "array",
+          "maxItems": 32,
+          "items": { "type": "string", "minLength": 1, "maxLength": 64, "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]*$" }
+        },
+        "classification_max": {
+          "anyOf": [{ "$ref": "#/$defs/classification" }, { "type": "null" }]
+        },
+        "metadata": {
+          "type": "object",
+          "maxProperties": 16,
+          "propertyNames": { "$ref": "#/$defs/labelKey" },
+          "additionalProperties": { "type": "string", "maxLength": 200, "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]*$" }
+        }
+      }
+    },
+    "searchParams": {
+      "description": "The parameters of one search as resolved by the server. `debug` changes the response only and never enters `retrieval_params_digest`.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "top_k", "rerank", "max_context_tokens", "expand", "filters", "include_context", "debug"],
+      "properties": {
+        "mode": { "$ref": "#/$defs/retrievalMode" },
+        "top_k": { "type": "integer", "minimum": 1, "maximum": 50 },
+        "rerank": { "$ref": "#/$defs/rerankMode" },
+        "max_context_tokens": {
+          "anyOf": [{ "type": "integer", "minimum": 64, "maximum": 32000 }, { "type": "null" }]
+        },
+        "expand": { "$ref": "#/$defs/expandMode" },
+        "filters": { "$ref": "#/$defs/searchFilters" },
+        "include_context": { "type": "boolean" },
+        "debug": { "type": "boolean" }
+      }
+    },
+    "retrievalParams": {
+      "description": "`agenomic.knowledge_retrieval_params/v1`, the input of `retrieval_params_digest`: the search parameters without `debug`, with every filter list sorted by Unicode code point and deduplicated.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "mode", "top_k", "rerank", "max_context_tokens", "expand", "include_context", "filters"],
+      "properties": {
+        "schema": { "const": "agenomic.knowledge_retrieval_params/v1" },
+        "mode": { "$ref": "#/$defs/retrievalMode" },
+        "top_k": { "type": "integer", "minimum": 1, "maximum": 50 },
+        "rerank": { "$ref": "#/$defs/rerankMode" },
+        "max_context_tokens": {
+          "anyOf": [{ "type": "integer", "minimum": 64, "maximum": 32000 }, { "type": "null" }]
+        },
+        "expand": { "$ref": "#/$defs/expandMode" },
+        "include_context": { "type": "boolean" },
+        "filters": {
+          "allOf": [
+            { "$ref": "#/$defs/searchFilters" },
+            {
+              "properties": {
+                "collections": { "uniqueItems": true },
+                "document_ids": { "uniqueItems": true },
+                "tags": { "uniqueItems": true }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "sectionContent": {
+      "description": "`agenomic.knowledge_section/v1`, the input of a section `content_digest`: the heading path (raw headings, root excluded) and the section's own text.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "heading_path", "content"],
+      "properties": {
+        "schema": { "const": "agenomic.knowledge_section/v1" },
+        "heading_path": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "content": { "type": "string" }
+      }
+    },
+    "documentContent": {
+      "description": "`agenomic.knowledge_document_content/v1`, the input of a document `content_digest`: the title and every section in document order, root first.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "title", "sections"],
+      "properties": {
+        "schema": { "const": "agenomic.knowledge_document_content/v1" },
+        "title": { "type": "string", "minLength": 1 },
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["section_id", "parent", "heading_path", "content_digest", "tags"],
+            "properties": {
+              "section_id": { "$ref": "#/$defs/sectionId" },
+              "parent": {
+                "anyOf": [{ "$ref": "#/$defs/sectionId" }, { "type": "null" }]
+              },
+              "heading_path": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+              "content_digest": { "$ref": "#/$defs/sha256Digest" },
+              "tags": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": { "type": "string", "minLength": 1 }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

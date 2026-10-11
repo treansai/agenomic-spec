@@ -71,6 +71,22 @@ runtimes pause for human approval and record the decision in ATEP.
 `index_id` lets the runtime map the snapshot back to a live store
 when it serves traffic.
 
+For a managed knowledge base version
+([RFC 0014](../rfcs/0014-knowledge-bases.md)), `index_id` is the versioned
+`kb://` reference and `snapshot_hash` the version manifest digest, both equal
+to the genome entry of the same `name`:
+
+```yaml
+- name: kb_customer_support
+  index_id: kb://0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f/kb_customer_support@v4
+  snapshot_hash: sha256:ddb9172866e9cddeeca6798c5d8b9575d057c8372975163c95a10efdfda88187
+```
+
+The v0.1 lock schema accepts this form unchanged
+(`conformance/valid/agent-lock/managed-knowledge.yaml`). A runtime that serves
+the entry reads exactly that version and verifies its manifest digest; it
+never follows the published pointer of the knowledge base.
+
 ## `memory`
 
 ```yaml

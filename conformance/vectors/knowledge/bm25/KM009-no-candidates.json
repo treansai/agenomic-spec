@@ -1,0 +1,22 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "bm25",
+  "id": "KM009",
+  "intent": "no candidate",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "query": "refund",
+    "candidates": [],
+    "k1": "1.2",
+    "b": "0.75",
+    "corpus": null
+  },
+  "expected": {
+    "ok": true,
+    "ranked": []
+  }
+}

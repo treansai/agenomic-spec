@@ -1,0 +1,151 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "section",
+  "id": "KS007",
+  "intent": "headings that differ only by case and white space normalize to the same key; non-ASCII letters are kept in keys and anchors",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "sections",
+    "document_id": "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxf",
+    "fallback_title": "notes.md",
+    "source": {
+      "format": "markdown",
+      "text": "# Résumé Guide\n\n## Élève  Notes\n\nPremière note.\n\n## élève notes\n\nSeconde note.\n\n## Straße\n\nStraßenverkehr.\n"
+    },
+    "outline": {
+      "title": "Résumé Guide",
+      "front_matter": {},
+      "blocks": [
+        {
+          "heading": {
+            "level": 1,
+            "text": "Résumé Guide",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "Élève Notes",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Première note."
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "élève notes",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Seconde note."
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "Straße",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Straßenverkehr."
+        }
+      ]
+    }
+  },
+  "expected": {
+    "ok": true,
+    "title": "Résumé Guide",
+    "content_digest": "sha256:ca25087b957b50346b1d31446ed8b073a2f530407433015d7928659a366b0fe9",
+    "token_count": 13,
+    "sections": [
+      {
+        "ordinal": 0,
+        "section_id": "sec_23a3291f9e1f7e8c",
+        "parent_section_id": null,
+        "depth": 0,
+        "heading": "Résumé Guide",
+        "heading_path": [],
+        "anchor": "",
+        "content": "",
+        "content_digest": "sha256:ae10e9ab9b0d078558b6e3021fb4c53c840abf9b787347c7d05926b1ce5e676c",
+        "tags": [],
+        "token_count": 0
+      },
+      {
+        "ordinal": 1,
+        "section_id": "sec_790cbbfc93e80c4b",
+        "parent_section_id": "sec_23a3291f9e1f7e8c",
+        "depth": 1,
+        "heading": "Résumé Guide",
+        "heading_path": [
+          "Résumé Guide"
+        ],
+        "anchor": "résumé-guide",
+        "content": "",
+        "content_digest": "sha256:32d2366aa3da5975714e9c15bfb1436327b00385ffeee2dcc84dae870d15b248",
+        "tags": [],
+        "token_count": 0
+      },
+      {
+        "ordinal": 2,
+        "section_id": "sec_8fcdaa7cda08f647",
+        "parent_section_id": "sec_790cbbfc93e80c4b",
+        "depth": 2,
+        "heading": "Élève Notes",
+        "heading_path": [
+          "Résumé Guide",
+          "Élève Notes"
+        ],
+        "anchor": "élève-notes",
+        "content": "Première note.",
+        "content_digest": "sha256:eb0b1757200909df390c1964d31bff4ee90e57ec54d2f00bf4cd2807b09c19f6",
+        "tags": [],
+        "token_count": 4
+      },
+      {
+        "ordinal": 3,
+        "section_id": "sec_06fb522fe95bf36d",
+        "parent_section_id": "sec_790cbbfc93e80c4b",
+        "depth": 2,
+        "heading": "élève notes",
+        "heading_path": [
+          "Résumé Guide",
+          "élève notes"
+        ],
+        "anchor": "élève-notes-1",
+        "content": "Seconde note.",
+        "content_digest": "sha256:0558bcab1a860d04781c74b5b029c68d477f0c39d4421243569f8c2cd20c8936",
+        "tags": [],
+        "token_count": 4
+      },
+      {
+        "ordinal": 4,
+        "section_id": "sec_f408fcea5cb9791e",
+        "parent_section_id": "sec_790cbbfc93e80c4b",
+        "depth": 2,
+        "heading": "Straße",
+        "heading_path": [
+          "Résumé Guide",
+          "Straße"
+        ],
+        "anchor": "straße",
+        "content": "Straßenverkehr.",
+        "content_digest": "sha256:ba138c0557e1f5a0fa51d36c8bf737620030595c478b54279259329f5882103a",
+        "tags": [],
+        "token_count": 5
+      }
+    ]
+  }
+}

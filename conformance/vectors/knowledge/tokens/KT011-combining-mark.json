@@ -1,0 +1,18 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "tokens",
+  "id": "KT011",
+  "intent": "a combining acute accent is not alphabetic and counts as punctuation",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "é"
+  },
+  "expected": {
+    "ok": true,
+    "token_count": 2
+  }
+}

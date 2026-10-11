@@ -1,0 +1,21 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "lexical",
+  "id": "KL003",
+  "intent": "NFKC expands ligatures and lowercase keeps accents",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "ÉLÈVE ﬁnal"
+  },
+  "expected": {
+    "ok": true,
+    "tokens": [
+      "élève",
+      "final"
+    ]
+  }
+}

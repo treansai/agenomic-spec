@@ -1,0 +1,7 @@
+{
+  "description": "Versions are integers; a fractional number is refused.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/version"
+  }
+}

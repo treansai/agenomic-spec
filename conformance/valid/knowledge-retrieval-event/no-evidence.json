@@ -1,0 +1,9 @@
+{
+  "schema": "agenomic.knowledge_retrieval_event/v1",
+  "knowledge_base_id": "kb_customer_support",
+  "knowledge_version": 4,
+  "knowledge_manifest_digest": null,
+  "knowledge_query_digest": "sha256:f5c0e807a84882af9aba47bd5e979a13fc9749eaef1ea9438c42fe5368f0b0a8",
+  "knowledge_execution_key": null,
+  "knowledge_refs": []
+}

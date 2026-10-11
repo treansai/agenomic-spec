@@ -1,0 +1,50 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD010",
+  "intent": "the version manifest of the design example with placeholder digests; documents are keyed by document id",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.knowledge_version_manifest/v1",
+      "workspace_id": "0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f",
+      "kb_id": "kb_customer_support",
+      "version": 4,
+      "parent_version": 3,
+      "index_config_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "documents": {
+        "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxb": {
+          "path": "guides/verification.md",
+          "revision": 1,
+          "content_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "blob_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "collection": null,
+          "classification": "confidential",
+          "tags": []
+        },
+        "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxa": {
+          "path": "policies/refund.md",
+          "revision": 7,
+          "content_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "blob_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "collection": "faq",
+          "classification": "internal",
+          "tags": [
+            "refunds"
+          ]
+        }
+      }
+    }
+  },
+  "expected": {
+    "ok": true,
+    "document_type": "agenomic.knowledge_version_manifest/v1",
+    "canonical": "{\"documents\":{\"kdoc_01hzy8m6k2v9qf7c3n5t0r4wxa\":{\"blob_digest\":\"sha256:3333333333333333333333333333333333333333333333333333333333333333\",\"classification\":\"internal\",\"collection\":\"faq\",\"content_digest\":\"sha256:2222222222222222222222222222222222222222222222222222222222222222\",\"path\":\"policies/refund.md\",\"revision\":7,\"tags\":[\"refunds\"]},\"kdoc_01hzy8m6k2v9qf7c3n5t0r4wxb\":{\"blob_digest\":\"sha256:5555555555555555555555555555555555555555555555555555555555555555\",\"classification\":\"confidential\",\"collection\":null,\"content_digest\":\"sha256:4444444444444444444444444444444444444444444444444444444444444444\",\"path\":\"guides/verification.md\",\"revision\":1,\"tags\":[]}},\"index_config_digest\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"kb_id\":\"kb_customer_support\",\"parent_version\":3,\"schema\":\"agenomic.knowledge_version_manifest/v1\",\"version\":4,\"workspace_id\":\"0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f\"}",
+    "digest": "sha256:0096dcb8ff219d07fc8831ad3c25c40a284a1f0b67d3217ded1b48613fec220b"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "description": "Retrieval strategies are keyword, semantic, hybrid, section or exact.",
+  "match": {
+    "keyword": "enum",
+    "instancePath": "/retrieval/strategy"
+  }
+}

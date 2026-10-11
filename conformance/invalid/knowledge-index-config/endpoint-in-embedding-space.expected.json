@@ -1,0 +1,10 @@
+{
+  "description": "The embedding space never carries an endpoint or a credential.",
+  "match": {
+    "keyword": "additionalProperties",
+    "instancePath": "/embedding",
+    "params": {
+      "additionalProperty": "base_url"
+    }
+  }
+}

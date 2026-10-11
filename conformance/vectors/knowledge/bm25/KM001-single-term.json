@@ -1,0 +1,38 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "bm25",
+  "id": "KM001",
+  "intent": "one query term over three candidates with explicit corpus statistics",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "query": "Refund",
+    "candidates": [
+      "refund policy",
+      "refund refund window",
+      "shipping"
+    ],
+    "k1": "1.2",
+    "b": "0.75",
+    "corpus": {
+      "documents": 3,
+      "average_length": "2.0"
+    }
+  },
+  "expected": {
+    "ok": true,
+    "ranked": [
+      {
+        "candidate": 1,
+        "score": "0.566580"
+      },
+      {
+        "candidate": 0,
+        "score": "0.470004"
+      }
+    ]
+  }
+}

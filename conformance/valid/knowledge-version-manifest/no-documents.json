@@ -1,0 +1,9 @@
+{
+  "schema": "agenomic.knowledge_version_manifest/v1",
+  "workspace_id": "0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f",
+  "kb_id": "kb_runbooks",
+  "version": 1,
+  "parent_version": null,
+  "index_config_digest": "sha256:c2bb54d2e6d4c9c93b135f26dae807f034ec6b8a2cc28a350f5ac998b41e16bd",
+  "documents": {}
+}

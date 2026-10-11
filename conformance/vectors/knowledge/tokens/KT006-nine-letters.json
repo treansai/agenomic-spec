@@ -1,0 +1,18 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "tokens",
+  "id": "KT006",
+  "intent": "nine letters are three pieces",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "rembourse"
+  },
+  "expected": {
+    "ok": true,
+    "token_count": 3
+  }
+}

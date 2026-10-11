@@ -87,6 +87,36 @@ knowledge:
 The hash pins a frozen view of the index. The bundle does NOT include
 the index contents.
 
+### Managed knowledge bases
+
+A managed knowledge base version ([RFC 0014](../rfcs/0014-knowledge-bases.md))
+uses the same entry, with no schema change:
+
+```yaml
+knowledge:
+  - name: kb_customer_support
+    snapshot_hash: sha256:ddb9172866e9cddeeca6798c5d8b9575d057c8372975163c95a10efdfda88187
+    source_uri: kb://0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f/kb_customer_support@v4
+```
+
+- The entry is managed because `source_uri` starts with `kb://`. It MUST then
+  be a versioned reference, `kb://<workspace>/<kb_id>@v<n>`: an unversioned
+  reference pins nothing.
+- `snapshot_hash` MUST be the digest of that version's
+  `agenomic.knowledge_version_manifest/v1` document, and `name` SHOULD be the
+  kb id.
+- A loader that resolves the entry recomputes the version manifest digest and
+  refuses a mismatch; a loader that does not know managed knowledge bases
+  treats it as an opaque snapshot.
+
+Both the v0.1 and the v0.2 genome schemas accept this form
+(`conformance/valid/genome/managed-knowledge.yaml` and
+`managed-knowledge-v0.2.yaml`). The entries list the versions a bundle
+depends on; collections, classification ceilings and retrieval settings live
+in the agent knowledge manifest, whose digest is the optional
+`knowledge_manifest_digest` component of the agent's genome address. See
+[Knowledge bases](knowledge.md).
+
 ## `policies`
 
 ```yaml

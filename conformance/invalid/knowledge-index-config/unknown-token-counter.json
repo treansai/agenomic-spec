@@ -1,0 +1,23 @@
+{
+  "schema": "agenomic.knowledge_index_config/v1",
+  "chunking": {
+    "strategy": "heading_aware",
+    "max_tokens": 512,
+    "overlap_tokens": 64,
+    "min_tokens": 32,
+    "parent_max_tokens": 1024,
+    "child_max_tokens": 256,
+    "token_counter": "approx-v2"
+  },
+  "chunking_digest": "sha256:933c00875fa52fa342bc014c374abe9d74843f4b5d999a7343fe27f7f3d6be17",
+  "embedding": {
+    "schema": "agenomic.knowledge_embedding_config/v1",
+    "provider": "local-hash",
+    "model": "agenomic-local-hash",
+    "model_version": "1",
+    "dimensions": 384,
+    "normalization": "l2"
+  },
+  "embedding_digest": "sha256:468aad6b779d61341d4df4bf52b450758396793b0851e7416dda43481658196f",
+  "text_search_config": "simple"
+}

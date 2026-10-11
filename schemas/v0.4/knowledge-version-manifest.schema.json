@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.4/knowledge-version-manifest.schema.json",
+  "title": "Agenomic knowledge version manifest (v0.4)",
+  "description": "The manifest of one immutable knowledge base version, `agenomic.knowledge_version_manifest/v1` (RFC 0014). It is hashed whole; its digest is the `version_manifest_digest`. It lists every member document revision with its content digest, its original bytes digest and its metadata frozen at version creation, and the index configuration the version is searched with. Two rules are not expressible here and are checked by readers: `parent_version`, when present, is lower than `version`, and no two documents share a `path`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "workspace_id", "kb_id", "version", "parent_version", "index_config_digest", "documents"],
+  "properties": {
+    "schema": { "const": "agenomic.knowledge_version_manifest/v1" },
+    "workspace_id": { "$ref": "knowledge-common.schema.json#/$defs/uuidLower" },
+    "kb_id": { "$ref": "knowledge-common.schema.json#/$defs/kbId" },
+    "version": { "$ref": "knowledge-common.schema.json#/$defs/versionNumber" },
+    "parent_version": {
+      "anyOf": [
+        { "$ref": "knowledge-common.schema.json#/$defs/versionNumber" },
+        { "type": "null" }
+      ]
+    },
+    "index_config_digest": { "$ref": "knowledge-common.schema.json#/$defs/sha256Digest" },
+    "documents": {
+      "type": "object",
+      "maxProperties": 100000,
+      "propertyNames": { "$ref": "knowledge-common.schema.json#/$defs/documentId" },
+      "additionalProperties": { "$ref": "#/$defs/document" }
+    }
+  },
+  "$defs": {
+    "document": {
+      "description": "One member document revision. `content_digest` is the digest of its `agenomic.knowledge_document_content/v1` document, `blob_digest` the sha256 of its original bytes. `collection` is null for a document outside every collection.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "revision", "content_digest", "blob_digest", "collection", "classification", "tags"],
+      "properties": {
+        "path": { "$ref": "knowledge-common.schema.json#/$defs/documentPath" },
+        "revision": { "$ref": "knowledge-common.schema.json#/$defs/versionNumber" },
+        "content_digest": { "$ref": "knowledge-common.schema.json#/$defs/sha256Digest" },
+        "blob_digest": { "$ref": "knowledge-common.schema.json#/$defs/sha256Digest" },
+        "collection": {
+          "anyOf": [
+            { "$ref": "knowledge-common.schema.json#/$defs/collectionId" },
+            { "type": "null" }
+          ]
+        },
+        "classification": { "$ref": "knowledge-common.schema.json#/$defs/classification" },
+        "tags": { "$ref": "knowledge-common.schema.json#/$defs/tagList" }
+      }
+    }
+  }
+}

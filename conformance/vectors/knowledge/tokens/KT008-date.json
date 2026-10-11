@@ -1,0 +1,18 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "tokens",
+  "id": "KT008",
+  "intent": "digits are word characters and hyphens are punctuation",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "2026-10-09"
+  },
+  "expected": {
+    "ok": true,
+    "token_count": 5
+  }
+}

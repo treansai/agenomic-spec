@@ -1,0 +1,21 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD023",
+  "intent": "the same ordinal under another chunking configuration is another chunk",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "chunk_id",
+    "document_content_digest": "sha256:5391cc3a28c8536d66b48bc8bd97b993b4ea77558a7521e5f5f424d7b0788237",
+    "chunking_digest": "sha256:e736199003cc27564c6211ae0c880b3f19e441d837752cbbd5bdaac48045c436",
+    "ordinal": 0
+  },
+  "expected": {
+    "ok": true,
+    "chunk_id": "chk_eaf4f05e51614551"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD002",
+  "intent": "a fixed token chunking variant: any member change moves the chunking digest",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.knowledge_chunking_config/v1",
+      "strategy": "fixed_tokens",
+      "max_tokens": 256,
+      "overlap_tokens": 32,
+      "min_tokens": 32,
+      "parent_max_tokens": 1024,
+      "child_max_tokens": 256,
+      "token_counter": "approx-v1"
+    }
+  },
+  "expected": {
+    "ok": true,
+    "document_type": "agenomic.knowledge_chunking_config/v1",
+    "canonical": "{\"child_max_tokens\":256,\"max_tokens\":256,\"min_tokens\":32,\"overlap_tokens\":32,\"parent_max_tokens\":1024,\"schema\":\"agenomic.knowledge_chunking_config/v1\",\"strategy\":\"fixed_tokens\",\"token_counter\":\"approx-v1\"}",
+    "digest": "sha256:e736199003cc27564c6211ae0c880b3f19e441d837752cbbd5bdaac48045c436"
+  }
+}

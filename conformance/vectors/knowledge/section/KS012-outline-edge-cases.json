@@ -1,0 +1,244 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "section",
+  "id": "KS012",
+  "intent": "outline only: a blank heading becomes Untitled, a heading of control characters collides with the root key, integer tags, mixed-case section tag keys and repeated explicit anchors",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "sections",
+    "document_id": "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxm",
+    "fallback_title": "edge.md",
+    "outline": {
+      "title": "  Edge   Cases  ",
+      "front_matter": {
+        "tags": [
+          7,
+          "seven",
+          " padded  tag "
+        ],
+        "sections": {
+          " Mixed   CASE ": [
+            "matched"
+          ]
+        }
+      },
+      "blocks": [
+        {
+          "heading": {
+            "level": 1,
+            "text": "   ",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Blank heading body."
+        },
+        {
+          "heading": {
+            "level": 1,
+            "text": "\u0007",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Bell heading body."
+        },
+        {
+          "heading": {
+            "level": 1,
+            "text": "mixed case",
+            "anchor": "dup",
+            "tags": []
+          }
+        },
+        {
+          "text": "First."
+        },
+        {
+          "heading": {
+            "level": 1,
+            "text": "Other",
+            "anchor": " dup ",
+            "tags": []
+          }
+        },
+        {
+          "text": "Second."
+        },
+        {
+          "heading": {
+            "level": 1,
+            "text": "dup",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Third."
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "Tagged",
+            "anchor": null,
+            "tags": [
+              " spaced  class ",
+              ""
+            ]
+          }
+        },
+        {
+          "text": "   "
+        }
+      ]
+    }
+  },
+  "expected": {
+    "ok": true,
+    "title": "Edge Cases",
+    "content_digest": "sha256:851ec0499c4e51c06950f538043412f6834d3cd8aba0ac62d6c93b882e83e1f9",
+    "token_count": 20,
+    "sections": [
+      {
+        "ordinal": 0,
+        "section_id": "sec_7ad3b1b72c707d72",
+        "parent_section_id": null,
+        "depth": 0,
+        "heading": "Edge Cases",
+        "heading_path": [],
+        "anchor": "",
+        "content": "",
+        "content_digest": "sha256:ae10e9ab9b0d078558b6e3021fb4c53c840abf9b787347c7d05926b1ce5e676c",
+        "tags": [
+          "7",
+          "padded tag",
+          "seven"
+        ],
+        "token_count": 0
+      },
+      {
+        "ordinal": 1,
+        "section_id": "sec_51c62d523cc7284a",
+        "parent_section_id": "sec_7ad3b1b72c707d72",
+        "depth": 1,
+        "heading": "Untitled",
+        "heading_path": [
+          "Untitled"
+        ],
+        "anchor": "untitled",
+        "content": "Blank heading body.",
+        "content_digest": "sha256:699aed488ece2a9766fa9d3b06d9c17ea880fdaac37c693f38a31fbe7f665a16",
+        "tags": [
+          "7",
+          "padded tag",
+          "seven"
+        ],
+        "token_count": 6
+      },
+      {
+        "ordinal": 2,
+        "section_id": "sec_95adc68eca06c906",
+        "parent_section_id": "sec_7ad3b1b72c707d72",
+        "depth": 1,
+        "heading": "\u0007",
+        "heading_path": [
+          "\u0007"
+        ],
+        "anchor": "section",
+        "content": "Bell heading body.",
+        "content_digest": "sha256:09b563118fc3562323d0254f442a0cfb3f72c885446ec012c5e12a0830a70301",
+        "tags": [
+          "7",
+          "padded tag",
+          "seven"
+        ],
+        "token_count": 5
+      },
+      {
+        "ordinal": 3,
+        "section_id": "sec_94756482a2add6fc",
+        "parent_section_id": "sec_7ad3b1b72c707d72",
+        "depth": 1,
+        "heading": "mixed case",
+        "heading_path": [
+          "mixed case"
+        ],
+        "anchor": "dup",
+        "content": "First.",
+        "content_digest": "sha256:fe3c7ae9d45661e7c2a19329cefca8b65dc3c04099508ec7e93c5ac176d77b5e",
+        "tags": [
+          "7",
+          "matched",
+          "padded tag",
+          "seven"
+        ],
+        "token_count": 3
+      },
+      {
+        "ordinal": 4,
+        "section_id": "sec_95ed36cd82066fcb",
+        "parent_section_id": "sec_7ad3b1b72c707d72",
+        "depth": 1,
+        "heading": "Other",
+        "heading_path": [
+          "Other"
+        ],
+        "anchor": "dup",
+        "content": "Second.",
+        "content_digest": "sha256:28345da808faeb16faf080f78f383ea26a8286841369c7728838aae060b13169",
+        "tags": [
+          "7",
+          "padded tag",
+          "seven"
+        ],
+        "token_count": 3
+      },
+      {
+        "ordinal": 5,
+        "section_id": "sec_ca3b8b25dcdfa940",
+        "parent_section_id": "sec_7ad3b1b72c707d72",
+        "depth": 1,
+        "heading": "dup",
+        "heading_path": [
+          "dup"
+        ],
+        "anchor": "dup-1",
+        "content": "Third.",
+        "content_digest": "sha256:55594b124bd1e8c8345df3f052ad173ff8ee60f90cb8628b9f938a0dbfac6b94",
+        "tags": [
+          "7",
+          "padded tag",
+          "seven"
+        ],
+        "token_count": 3
+      },
+      {
+        "ordinal": 6,
+        "section_id": "sec_b1aa5887ddcf5ccf",
+        "parent_section_id": "sec_ca3b8b25dcdfa940",
+        "depth": 2,
+        "heading": "Tagged",
+        "heading_path": [
+          "dup",
+          "Tagged"
+        ],
+        "anchor": "tagged",
+        "content": "",
+        "content_digest": "sha256:e4e748f24df67c1873f707dca68b4ae663692bc4545c066aba44b39537617a29",
+        "tags": [
+          "7",
+          "padded tag",
+          "seven",
+          "spaced class"
+        ],
+        "token_count": 0
+      }
+    ]
+  }
+}

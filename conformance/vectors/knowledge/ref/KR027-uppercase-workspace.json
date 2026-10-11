@@ -1,0 +1,22 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "ref",
+  "id": "KR027",
+  "intent": "the workspace uuid is lowercase",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "ref": "kb://0B6C2F1E-7A44-4C8E-9F1D-2A3B4C5D6E7F/kb_x",
+    "workspace_id": "0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f"
+  },
+  "expected": {
+    "ok": false,
+    "error": {
+      "code": "knowledge_ref_invalid",
+      "reason": "invalid_workspace"
+    }
+  }
+}

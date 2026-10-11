@@ -1,0 +1,30 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD001",
+  "intent": "the default chunking configuration: heading aware, 512 tokens, 64 overlap, approx-v1 counter",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.knowledge_chunking_config/v1",
+      "strategy": "heading_aware",
+      "max_tokens": 512,
+      "overlap_tokens": 64,
+      "min_tokens": 32,
+      "parent_max_tokens": 1024,
+      "child_max_tokens": 256,
+      "token_counter": "approx-v1"
+    }
+  },
+  "expected": {
+    "ok": true,
+    "document_type": "agenomic.knowledge_chunking_config/v1",
+    "canonical": "{\"child_max_tokens\":256,\"max_tokens\":512,\"min_tokens\":32,\"overlap_tokens\":64,\"parent_max_tokens\":1024,\"schema\":\"agenomic.knowledge_chunking_config/v1\",\"strategy\":\"heading_aware\",\"token_counter\":\"approx-v1\"}",
+    "digest": "sha256:933c00875fa52fa342bc014c374abe9d74843f4b5d999a7343fe27f7f3d6be17"
+  }
+}

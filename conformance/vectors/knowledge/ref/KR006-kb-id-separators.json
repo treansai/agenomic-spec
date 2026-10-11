@@ -1,0 +1,25 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "ref",
+  "id": "KR006",
+  "intent": "kb ids may use underscores and hyphens between segments",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "ref": "kb://0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f/kb_a-b_c9@v1",
+    "workspace_id": "0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f"
+  },
+  "expected": {
+    "ok": true,
+    "form": "base",
+    "workspace_id": "0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f",
+    "kb_id": "kb_a-b_c9",
+    "version": 1,
+    "document_id": null,
+    "revision": null,
+    "canonical": "kb://0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f/kb_a-b_c9@v1"
+  }
+}

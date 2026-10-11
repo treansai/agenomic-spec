@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.4/knowledge-index-config.schema.json",
+  "title": "Agenomic knowledge index configuration (v0.4)",
+  "description": "The index configuration of a knowledge base version, `agenomic.knowledge_index_config/v1` (RFC 0014): how documents are chunked, which embedding space vectors live in and which text search configuration applies. `chunking_digest` is the digest of the chunking members under the `agenomic.knowledge_chunking_config/v1` schema, `embedding_digest` the digest of the `embedding` member, and `index_config_digest` the digest of this document without its `chunking` and `embedding` members (`$defs/indexIdentity`). The embedding space carries no credential, connection or endpoint, so moving a provider endpoint never changes a digest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "chunking", "chunking_digest", "embedding", "embedding_digest", "text_search_config"],
+  "properties": {
+    "schema": { "const": "agenomic.knowledge_index_config/v1" },
+    "chunking": { "$ref": "#/$defs/chunkingMembers" },
+    "chunking_digest": { "$ref": "knowledge-common.schema.json#/$defs/sha256Digest" },
+    "embedding": { "$ref": "#/$defs/embeddingSpace" },
+    "embedding_digest": { "$ref": "knowledge-common.schema.json#/$defs/sha256Digest" },
+    "text_search_config": { "$ref": "#/$defs/textSearchConfig" }
+  },
+  "$defs": {
+    "chunkingStrategy": {
+      "enum": ["heading_aware", "fixed_tokens", "recursive", "parent_child", "code_aware", "table_aware", "semantic"]
+    },
+    "textSearchConfig": {
+      "enum": ["simple", "english", "french", "german", "spanish", "italian", "portuguese", "dutch"]
+    },
+    "chunkingMembers": {
+      "description": "Chunking parameters. Token counts use the `approx-v1` counter, named in `token_counter` so that it is part of the digest. Cross-member rules checked by writers: `max_tokens` is 64 to 8192, `2 * overlap_tokens < max_tokens`, `min_tokens < max_tokens` and `child_max_tokens < parent_max_tokens`.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy", "max_tokens", "overlap_tokens", "min_tokens", "parent_max_tokens", "child_max_tokens", "token_counter"],
+      "properties": {
+        "strategy": { "$ref": "#/$defs/chunkingStrategy" },
+        "max_tokens": { "type": "integer", "minimum": 64, "maximum": 8192 },
+        "overlap_tokens": { "type": "integer", "minimum": 0, "maximum": 4095 },
+        "min_tokens": { "type": "integer", "minimum": 0, "maximum": 8191 },
+        "parent_max_tokens": { "type": "integer", "minimum": 1, "maximum": 4294967295 },
+        "child_max_tokens": { "type": "integer", "minimum": 0, "maximum": 4294967294 },
+        "token_counter": { "const": "approx-v1" }
+      }
+    },
+    "chunkingConfig": {
+      "description": "`agenomic.knowledge_chunking_config/v1`, the input of `chunking_digest`: the chunking members plus `schema`.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "strategy", "max_tokens", "overlap_tokens", "min_tokens", "parent_max_tokens", "child_max_tokens", "token_counter"],
+      "properties": {
+        "schema": { "const": "agenomic.knowledge_chunking_config/v1" },
+        "strategy": { "$ref": "#/$defs/chunkingStrategy" },
+        "max_tokens": { "type": "integer", "minimum": 64, "maximum": 8192 },
+        "overlap_tokens": { "type": "integer", "minimum": 0, "maximum": 4095 },
+        "min_tokens": { "type": "integer", "minimum": 0, "maximum": 8191 },
+        "parent_max_tokens": { "type": "integer", "minimum": 1, "maximum": 4294967295 },
+        "child_max_tokens": { "type": "integer", "minimum": 0, "maximum": 4294967294 },
+        "token_counter": { "const": "approx-v1" }
+      }
+    },
+    "embeddingProvider": { "enum": ["local-hash", "openai-compatible"] },
+    "normalization": { "enum": ["l2", "none"] },
+    "embeddingSpace": {
+      "description": "`agenomic.knowledge_embedding_config/v1`, the embedding space and the input of `embedding_digest`. Vectors of two spaces are never compared. `local-hash` is always model `agenomic-local-hash`, model version `1`, 384 dimensions, `l2`.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "provider", "model", "model_version", "dimensions", "normalization"],
+      "properties": {
+        "schema": { "const": "agenomic.knowledge_embedding_config/v1" },
+        "provider": { "$ref": "#/$defs/embeddingProvider" },
+        "model": { "$ref": "#/$defs/plainText200" },
+        "model_version": {
+          "anyOf": [{ "$ref": "#/$defs/plainText64" }, { "type": "null" }]
+        },
+        "dimensions": { "type": "integer", "minimum": 8, "maximum": 4096 },
+        "normalization": { "$ref": "#/$defs/normalization" }
+      },
+      "if": { "properties": { "provider": { "const": "local-hash" } } },
+      "then": {
+        "properties": {
+          "model": { "const": "agenomic-local-hash" },
+          "model_version": { "const": "1" },
+          "dimensions": { "const": 384 },
+          "normalization": { "const": "l2" }
+        }
+      }
+    },
+    "embeddingSettings": {
+      "description": "The embedding settings of a knowledge base as written by its owner. `connection_id` names a stored provider connection and `base_url` an endpoint; neither is part of the embedding space. An `openai-compatible` provider needs one of them; `local-hash` takes neither.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "model", "model_version", "dimensions", "normalization", "connection_id", "base_url"],
+      "properties": {
+        "provider": { "$ref": "#/$defs/embeddingProvider" },
+        "model": { "$ref": "#/$defs/plainText200" },
+        "model_version": {
+          "anyOf": [{ "$ref": "#/$defs/plainText64" }, { "type": "null" }]
+        },
+        "dimensions": { "type": "integer", "minimum": 8, "maximum": 4096 },
+        "normalization": { "$ref": "#/$defs/normalization" },
+        "connection_id": {
+          "anyOf": [{ "$ref": "knowledge-common.schema.json#/$defs/uuidLower" }, { "type": "null" }]
+        },
+        "base_url": {
+          "anyOf": [
+            { "type": "string", "maxLength": 2048, "pattern": "^https?://[^/?#@\\s]+(?:/[^?#\\s]*)?$" },
+            { "type": "null" }
+          ]
+        }
+      },
+      "if": { "properties": { "provider": { "const": "local-hash" } } },
+      "then": {
+        "properties": {
+          "model": { "const": "agenomic-local-hash" },
+          "model_version": { "const": "1" },
+          "dimensions": { "const": 384 },
+          "normalization": { "const": "l2" },
+          "connection_id": { "type": "null" },
+          "base_url": { "type": "null" }
+        }
+      },
+      "else": {
+        "not": {
+          "properties": { "connection_id": { "type": "null" }, "base_url": { "type": "null" } }
+        }
+      }
+    },
+    "indexIdentity": {
+      "description": "The input of `index_config_digest`: the index configuration document without its `chunking` and `embedding` members, which it binds through their digests.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema", "chunking_digest", "embedding_digest", "text_search_config"],
+      "properties": {
+        "schema": { "const": "agenomic.knowledge_index_config/v1" },
+        "chunking_digest": { "$ref": "knowledge-common.schema.json#/$defs/sha256Digest" },
+        "embedding_digest": { "$ref": "knowledge-common.schema.json#/$defs/sha256Digest" },
+        "text_search_config": { "$ref": "#/$defs/textSearchConfig" }
+      }
+    },
+    "plainText200": {
+      "description": "1 to 200 code points, no control character, no leading or trailing white space.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[^\\s\\u0000-\\u001f\\u007f-\\u009f](?:[^\\u0000-\\u001f\\u007f-\\u009f]*[^\\s\\u0000-\\u001f\\u007f-\\u009f])?$"
+    },
+    "plainText64": {
+      "description": "1 to 64 code points, no control character, no leading or trailing white space.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[^\\s\\u0000-\\u001f\\u007f-\\u009f](?:[^\\u0000-\\u001f\\u007f-\\u009f]*[^\\s\\u0000-\\u001f\\u007f-\\u009f])?$"
+    }
+  }
+}

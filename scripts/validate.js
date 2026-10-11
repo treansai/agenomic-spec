@@ -69,6 +69,14 @@ const ARTIFACT_TO_SCHEMA = {
   'prompt-file': { file: 'prompt-file.schema.json', versions: ['v0.4'] },
   'experiment-case': { file: 'experiment-case.schema.json', versions: ['v0.4'] },
   'experiment-spec': { file: 'experiment-spec.schema.json', versions: ['v0.4'] },
+  // Knowledge base documents (RFC 0014). Their semantics (section ids,
+  // digests, the kb:// grammar, the token counter) are pinned by the vectors
+  // under conformance/vectors/knowledge/, which scripts/knowledge-vectors.js
+  // checks.
+  'knowledge-version-manifest': { file: 'knowledge-version-manifest.schema.json', versions: ['v0.4'] },
+  'agent-knowledge-manifest': { file: 'agent-knowledge-manifest.schema.json', versions: ['v0.4'] },
+  'knowledge-index-config': { file: 'knowledge-index-config.schema.json', versions: ['v0.4'] },
+  'knowledge-retrieval-event': { file: 'knowledge-retrieval-event.schema.json', versions: ['v0.4'] },
   // Coding-session artifacts (RFC 0013): supervision of coding agents
   // (Claude Code, Codex). The event envelope carries its own
   // `schema_version` (`agenomic.coding.event/v1`); the schema files live in

@@ -1,0 +1,7 @@
+{
+  "description": "Documents are keyed by kdoc_ ids of 26 lowercase Crockford characters.",
+  "match": {
+    "keyword": "propertyNames",
+    "instancePath": "/documents"
+  }
+}

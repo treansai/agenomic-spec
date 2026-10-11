@@ -1,0 +1,42 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "bm25",
+  "id": "KM007",
+  "intent": "a zero average length falls back to the candidates and a small corpus count to the candidate count",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "query": "refund",
+    "candidates": [
+      "refund",
+      "refund",
+      "refund"
+    ],
+    "k1": "1.2",
+    "b": "0.75",
+    "corpus": {
+      "documents": 1,
+      "average_length": "0"
+    }
+  },
+  "expected": {
+    "ok": true,
+    "ranked": [
+      {
+        "candidate": 0,
+        "score": "0.133531"
+      },
+      {
+        "candidate": 1,
+        "score": "0.133531"
+      },
+      {
+        "candidate": 2,
+        "score": "0.133531"
+      }
+    ]
+  }
+}

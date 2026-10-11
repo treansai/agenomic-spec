@@ -1,0 +1,114 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "section",
+  "id": "KS005",
+  "intent": "text before the first heading belongs to the root section, comma separated front matter tags, and the fallback title when no level-1 heading exists",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "sections",
+    "document_id": "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxd",
+    "fallback_title": "refund-policy.md",
+    "source": {
+      "format": "markdown",
+      "text": "---\ntags: billing, refunds\nowner: finance\n---\nPreamble paragraph before any heading.\n\n## Refunds\n\nCustomers receive refunds within 14 days.\n\n## Exceptions\n\n- Digital goods\n- Gift cards\n  - Promotional cards\n"
+    },
+    "outline": {
+      "title": null,
+      "front_matter": {
+        "owner": "finance",
+        "tags": "billing, refunds"
+      },
+      "blocks": [
+        {
+          "text": "Preamble paragraph before any heading."
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "Refunds",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Customers receive refunds within 14 days."
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "Exceptions",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "- Digital goods\n- Gift cards\n  - Promotional cards"
+        }
+      ]
+    }
+  },
+  "expected": {
+    "ok": true,
+    "title": "refund-policy.md",
+    "content_digest": "sha256:daf65ccc2a5c00f106872d4368319b2a0f4cc01ab23b5a63e15412f626d31b23",
+    "token_count": 38,
+    "sections": [
+      {
+        "ordinal": 0,
+        "section_id": "sec_23557a76f02636c2",
+        "parent_section_id": null,
+        "depth": 0,
+        "heading": "refund-policy.md",
+        "heading_path": [],
+        "anchor": "",
+        "content": "Preamble paragraph before any heading.",
+        "content_digest": "sha256:03e799cdd1b2512795f6b83c032e9dabf1284d54af398548f9dd0d72bf4ecc9d",
+        "tags": [
+          "billing",
+          "refunds"
+        ],
+        "token_count": 11
+      },
+      {
+        "ordinal": 1,
+        "section_id": "sec_5d4aff6a21c54199",
+        "parent_section_id": "sec_23557a76f02636c2",
+        "depth": 1,
+        "heading": "Refunds",
+        "heading_path": [
+          "Refunds"
+        ],
+        "anchor": "refunds",
+        "content": "Customers receive refunds within 14 days.",
+        "content_digest": "sha256:46240c7ef9160cf15e54d7809b17026ad60a7cb0c530c439fb263188f270afc9",
+        "tags": [
+          "billing",
+          "refunds"
+        ],
+        "token_count": 12
+      },
+      {
+        "ordinal": 2,
+        "section_id": "sec_a04a34d1277e92f5",
+        "parent_section_id": "sec_23557a76f02636c2",
+        "depth": 1,
+        "heading": "Exceptions",
+        "heading_path": [
+          "Exceptions"
+        ],
+        "anchor": "exceptions",
+        "content": "- Digital goods\n- Gift cards\n  - Promotional cards",
+        "content_digest": "sha256:901c8dbfdd5c8ca4b8d33bffc700f0a365a0be03208912f472d558e30a0ff783",
+        "tags": [
+          "billing",
+          "refunds"
+        ],
+        "token_count": 15
+      }
+    ]
+  }
+}

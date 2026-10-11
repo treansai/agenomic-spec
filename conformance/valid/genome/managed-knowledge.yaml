@@ -1,0 +1,23 @@
+# A v0.1 genome that pins a managed knowledge base version (RFC 0014).
+# snapshot_hash is the version manifest digest of kb_customer_support
+# version 4 (vector KD012) and source_uri the versioned kb:// reference.
+# The v0.1 schema accepts this form unchanged.
+spec_version: agenomic/v0.1
+agent:
+  id: agent://example/support-bot
+  name: Support Bot
+  domain: support
+  criticality: standard
+runtime:
+  model_provider: example-llm
+  model_id: example-llm-mini
+tools: []
+skills: []
+knowledge:
+  - name: kb_customer_support
+    snapshot_hash: sha256:ddb9172866e9cddeeca6798c5d8b9575d057c8372975163c95a10efdfda88187
+    source_uri: kb://0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f/kb_customer_support@v4
+policies: []
+memory:
+  design_memory: memory/memory.schema.yaml
+  runtime_memory_schema_version: 0.0.0

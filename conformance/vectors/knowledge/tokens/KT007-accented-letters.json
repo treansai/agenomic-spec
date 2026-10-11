@@ -1,0 +1,18 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "tokens",
+  "id": "KT007",
+  "intent": "non-ASCII letters are word characters",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "élève"
+  },
+  "expected": {
+    "ok": true,
+    "token_count": 2
+  }
+}

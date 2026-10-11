@@ -1,0 +1,25 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "bm25",
+  "id": "KM006",
+  "intent": "a query without tokens ranks nothing",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "query": "... !!",
+    "candidates": [
+      "alpha beta",
+      "gamma"
+    ],
+    "k1": "1.2",
+    "b": "0.75",
+    "corpus": null
+  },
+  "expected": {
+    "ok": true,
+    "ranked": []
+  }
+}

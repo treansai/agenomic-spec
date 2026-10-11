@@ -1,0 +1,29 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD019",
+  "intent": "the section digest input of the Tool Permissions section of KS001",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.knowledge_section/v1",
+      "heading_path": [
+        "Agent Security",
+        "Authorization",
+        "Tool Permissions"
+      ],
+      "content": "Tools need grants."
+    }
+  },
+  "expected": {
+    "ok": true,
+    "document_type": "agenomic.knowledge_section/v1",
+    "canonical": "{\"content\":\"Tools need grants.\",\"heading_path\":[\"Agent Security\",\"Authorization\",\"Tool Permissions\"],\"schema\":\"agenomic.knowledge_section/v1\"}",
+    "digest": "sha256:e98e806676da331440ccb1f1c03edccd270d1356b6bc90efbce610ba4c7d9b6c"
+  }
+}

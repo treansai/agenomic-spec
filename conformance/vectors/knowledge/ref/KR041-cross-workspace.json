@@ -1,0 +1,21 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "ref",
+  "id": "KR041",
+  "intent": "a reference to another workspace is refused after parsing",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "ref": "kb://5a5a5a5a-1111-4222-8333-444455556666/kb_x@v2",
+    "workspace_id": "0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f"
+  },
+  "expected": {
+    "ok": false,
+    "error": {
+      "code": "knowledge_ref_cross_workspace"
+    }
+  }
+}

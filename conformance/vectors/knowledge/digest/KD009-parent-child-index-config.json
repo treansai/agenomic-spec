@@ -1,0 +1,52 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD009",
+  "intent": "an index identity with parent and child chunking, a versioned embedding model and french text search",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.knowledge_index_config/v1",
+      "chunking_digest": "sha256:aeea74329a8cc061ddaefbf62f6f1cde5c8224eab4828cd10c72dbd91d30fd57",
+      "embedding_digest": "sha256:a6c9d70681e0339531ccaf6c89f9e51f9727bbfbf030d010dfe5d63e312d7b72",
+      "text_search_config": "french"
+    },
+    "projection": {
+      "rule": "index_identity",
+      "from": {
+        "schema": "agenomic.knowledge_index_config/v1",
+        "chunking": {
+          "strategy": "parent_child",
+          "max_tokens": 512,
+          "overlap_tokens": 64,
+          "min_tokens": 16,
+          "parent_max_tokens": 2048,
+          "child_max_tokens": 384,
+          "token_counter": "approx-v1"
+        },
+        "chunking_digest": "sha256:aeea74329a8cc061ddaefbf62f6f1cde5c8224eab4828cd10c72dbd91d30fd57",
+        "embedding": {
+          "schema": "agenomic.knowledge_embedding_config/v1",
+          "provider": "openai-compatible",
+          "model": "text-embedding-3-small",
+          "model_version": "2024-06",
+          "dimensions": 1536,
+          "normalization": "none"
+        },
+        "embedding_digest": "sha256:a6c9d70681e0339531ccaf6c89f9e51f9727bbfbf030d010dfe5d63e312d7b72",
+        "text_search_config": "french"
+      }
+    }
+  },
+  "expected": {
+    "ok": true,
+    "document_type": "agenomic.knowledge_index_config/v1",
+    "canonical": "{\"chunking_digest\":\"sha256:aeea74329a8cc061ddaefbf62f6f1cde5c8224eab4828cd10c72dbd91d30fd57\",\"embedding_digest\":\"sha256:a6c9d70681e0339531ccaf6c89f9e51f9727bbfbf030d010dfe5d63e312d7b72\",\"schema\":\"agenomic.knowledge_index_config/v1\",\"text_search_config\":\"french\"}",
+    "digest": "sha256:c4e096a9a4402198d7851be85019553c2454c2cb99ba911f15749630fd6559aa"
+  }
+}

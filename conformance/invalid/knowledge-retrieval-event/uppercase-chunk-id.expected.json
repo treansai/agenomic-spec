@@ -1,0 +1,7 @@
+{
+  "description": "Chunk ids are chk_ plus 16 lowercase hex digits.",
+  "match": {
+    "keyword": "pattern",
+    "instancePath": "/knowledge_refs/0/chunk_id"
+  }
+}

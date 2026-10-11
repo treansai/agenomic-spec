@@ -1,0 +1,22 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD029",
+  "intent": "a control character that is not white space is refused",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "query_digest",
+    "query": "a\u0007b"
+  },
+  "expected": {
+    "ok": false,
+    "error": {
+      "code": "knowledge_query_invalid",
+      "reason": "control_character"
+    }
+  }
+}

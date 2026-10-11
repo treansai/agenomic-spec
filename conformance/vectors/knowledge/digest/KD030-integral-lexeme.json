@@ -1,0 +1,63 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD030",
+  "intent": "an integral number written 4.0 is the integer 4 in the Agenomic JSON Subset, so this document hashes like KD012",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.knowledge_version_manifest/v1",
+      "workspace_id": "0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f",
+      "kb_id": "kb_customer_support",
+      "version": 4.0,
+      "parent_version": 3,
+      "index_config_digest": "sha256:2823980736a4f48c65abb3edd93d8a13741f9f7dc160f3b8ee5c090afcd1c4e6",
+      "documents": {
+        "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxa": {
+          "path": "guides/security.md",
+          "revision": 3,
+          "content_digest": "sha256:5391cc3a28c8536d66b48bc8bd97b993b4ea77558a7521e5f5f424d7b0788237",
+          "blob_digest": "sha256:5e7ee71bff71fdd2a8da1e6ce00f596774cfe7c7df2240efec50499b0bf786e8",
+          "collection": "product_documentation",
+          "classification": "internal",
+          "tags": [
+            "agents",
+            "security"
+          ]
+        },
+        "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxc": {
+          "path": "guides/keys.md",
+          "revision": 2,
+          "content_digest": "sha256:65500ce08f19a600e318cada748b4d89b6219659db5f1126c55735082cb3ed2e",
+          "blob_digest": "sha256:e02f9c5c52b59cea52311950cab6a860dc90f6846696a39064b4da56901ea094",
+          "collection": null,
+          "classification": "confidential",
+          "tags": []
+        },
+        "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxd": {
+          "path": "policies/refund-policy.md",
+          "revision": 1,
+          "content_digest": "sha256:daf65ccc2a5c00f106872d4368319b2a0f4cc01ab23b5a63e15412f626d31b23",
+          "blob_digest": "sha256:1cfb123f99d8477a1803cf37d1678f9de4169ae42ebb00cf23b5d7026f4b65f6",
+          "collection": "faq",
+          "classification": "public",
+          "tags": [
+            "billing",
+            "refunds"
+          ]
+        }
+      }
+    }
+  },
+  "expected": {
+    "ok": true,
+    "document_type": "agenomic.knowledge_version_manifest/v1",
+    "canonical": "{\"documents\":{\"kdoc_01hzy8m6k2v9qf7c3n5t0r4wxa\":{\"blob_digest\":\"sha256:5e7ee71bff71fdd2a8da1e6ce00f596774cfe7c7df2240efec50499b0bf786e8\",\"classification\":\"internal\",\"collection\":\"product_documentation\",\"content_digest\":\"sha256:5391cc3a28c8536d66b48bc8bd97b993b4ea77558a7521e5f5f424d7b0788237\",\"path\":\"guides/security.md\",\"revision\":3,\"tags\":[\"agents\",\"security\"]},\"kdoc_01hzy8m6k2v9qf7c3n5t0r4wxc\":{\"blob_digest\":\"sha256:e02f9c5c52b59cea52311950cab6a860dc90f6846696a39064b4da56901ea094\",\"classification\":\"confidential\",\"collection\":null,\"content_digest\":\"sha256:65500ce08f19a600e318cada748b4d89b6219659db5f1126c55735082cb3ed2e\",\"path\":\"guides/keys.md\",\"revision\":2,\"tags\":[]},\"kdoc_01hzy8m6k2v9qf7c3n5t0r4wxd\":{\"blob_digest\":\"sha256:1cfb123f99d8477a1803cf37d1678f9de4169ae42ebb00cf23b5d7026f4b65f6\",\"classification\":\"public\",\"collection\":\"faq\",\"content_digest\":\"sha256:daf65ccc2a5c00f106872d4368319b2a0f4cc01ab23b5a63e15412f626d31b23\",\"path\":\"policies/refund-policy.md\",\"revision\":1,\"tags\":[\"billing\",\"refunds\"]}},\"index_config_digest\":\"sha256:2823980736a4f48c65abb3edd93d8a13741f9f7dc160f3b8ee5c090afcd1c4e6\",\"kb_id\":\"kb_customer_support\",\"parent_version\":3,\"schema\":\"agenomic.knowledge_version_manifest/v1\",\"version\":4,\"workspace_id\":\"0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f\"}",
+    "digest": "sha256:ddb9172866e9cddeeca6798c5d8b9575d057c8372975163c95a10efdfda88187"
+  }
+}

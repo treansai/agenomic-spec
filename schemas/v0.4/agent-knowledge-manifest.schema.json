@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agenomic.dev/spec/v0.4/agent-knowledge-manifest.schema.json",
+  "title": "Agenomic agent knowledge manifest (v0.4)",
+  "description": "The knowledge identity of one agent, `agenomic.agent_knowledge_manifest/v1` (RFC 0014), resolved from its knowledge bindings and hashed whole; its digest is the `knowledge_manifest_digest` that an agent genome may carry. Each base pins one immutable knowledge base version by number and by version manifest digest; a binding that follows the published version is resolved to the version published at resolution time. `collections` is sorted by code point without duplicates, and an empty list means every collection the caller may read. The empty manifest (`enabled: false`, no bases, default retrieval block) has a well-defined digest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "workspace_id", "agent_id", "enabled", "bases", "retrieval"],
+  "properties": {
+    "schema": { "const": "agenomic.agent_knowledge_manifest/v1" },
+    "workspace_id": { "$ref": "knowledge-common.schema.json#/$defs/uuidLower" },
+    "agent_id": { "$ref": "knowledge-common.schema.json#/$defs/uuidLower" },
+    "enabled": { "type": "boolean" },
+    "bases": {
+      "type": "object",
+      "maxProperties": 64,
+      "propertyNames": { "$ref": "knowledge-common.schema.json#/$defs/kbId" },
+      "additionalProperties": { "$ref": "#/$defs/base" }
+    },
+    "retrieval": { "$ref": "knowledge-common.schema.json#/$defs/agentRetrieval" }
+  },
+  "$defs": {
+    "base": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "version_manifest_digest", "index_config_digest", "collections", "max_classification"],
+      "properties": {
+        "version": { "$ref": "knowledge-common.schema.json#/$defs/versionNumber" },
+        "version_manifest_digest": { "$ref": "knowledge-common.schema.json#/$defs/sha256Digest" },
+        "index_config_digest": { "$ref": "knowledge-common.schema.json#/$defs/sha256Digest" },
+        "collections": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "knowledge-common.schema.json#/$defs/collectionId" }
+        },
+        "max_classification": { "$ref": "knowledge-common.schema.json#/$defs/classification" }
+      }
+    }
+  }
+}

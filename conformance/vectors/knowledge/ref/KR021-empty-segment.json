@@ -1,0 +1,22 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "ref",
+  "id": "KR021",
+  "intent": "an empty path segment",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "ref": "kb://0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f//kb_x",
+    "workspace_id": "0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f"
+  },
+  "expected": {
+    "ok": false,
+    "error": {
+      "code": "knowledge_ref_invalid",
+      "reason": "invalid_path"
+    }
+  }
+}

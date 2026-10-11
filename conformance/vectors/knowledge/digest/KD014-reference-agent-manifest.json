@@ -1,0 +1,48 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD014",
+  "intent": "the agent knowledge manifest of the design example with placeholder digests and the default retrieval block",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.agent_knowledge_manifest/v1",
+      "workspace_id": "0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f",
+      "agent_id": "2b1e5c3a-8d4f-4e6a-9b0c-1d2e3f4a5b6c",
+      "enabled": true,
+      "bases": {
+        "kb_customer_support": {
+          "version": 4,
+          "version_manifest_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+          "index_config_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "collections": [
+            "faq",
+            "product_documentation"
+          ],
+          "max_classification": "internal"
+        }
+      },
+      "retrieval": {
+        "strategy": "hybrid",
+        "top_k": 5,
+        "rerank": true,
+        "max_context_tokens": 4000,
+        "require_citations": true,
+        "insufficient_evidence": "abstain",
+        "injection_policy": "annotate",
+        "min_evidence_score_ppm": 0
+      }
+    }
+  },
+  "expected": {
+    "ok": true,
+    "document_type": "agenomic.agent_knowledge_manifest/v1",
+    "canonical": "{\"agent_id\":\"2b1e5c3a-8d4f-4e6a-9b0c-1d2e3f4a5b6c\",\"bases\":{\"kb_customer_support\":{\"collections\":[\"faq\",\"product_documentation\"],\"index_config_digest\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"max_classification\":\"internal\",\"version\":4,\"version_manifest_digest\":\"sha256:6666666666666666666666666666666666666666666666666666666666666666\"}},\"enabled\":true,\"retrieval\":{\"injection_policy\":\"annotate\",\"insufficient_evidence\":\"abstain\",\"max_context_tokens\":4000,\"min_evidence_score_ppm\":0,\"require_citations\":true,\"rerank\":true,\"strategy\":\"hybrid\",\"top_k\":5},\"schema\":\"agenomic.agent_knowledge_manifest/v1\",\"workspace_id\":\"0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f\"}",
+    "digest": "sha256:ab1a9d9784b66abb6c5eaa0ef40801c8d6d50ab8dfb4607f5185cc6de4f3e05d"
+  }
+}

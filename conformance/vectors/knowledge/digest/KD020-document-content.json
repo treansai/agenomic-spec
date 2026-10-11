@@ -1,0 +1,33 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD020",
+  "intent": "the document content digest input of KS010 (an empty document with only its root section)",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.knowledge_document_content/v1",
+      "title": "empty.md",
+      "sections": [
+        {
+          "section_id": "sec_adcdc7e049919271",
+          "parent": null,
+          "heading_path": [],
+          "content_digest": "sha256:ae10e9ab9b0d078558b6e3021fb4c53c840abf9b787347c7d05926b1ce5e676c",
+          "tags": []
+        }
+      ]
+    }
+  },
+  "expected": {
+    "ok": true,
+    "document_type": "agenomic.knowledge_document_content/v1",
+    "canonical": "{\"schema\":\"agenomic.knowledge_document_content/v1\",\"sections\":[{\"content_digest\":\"sha256:ae10e9ab9b0d078558b6e3021fb4c53c840abf9b787347c7d05926b1ce5e676c\",\"heading_path\":[],\"parent\":null,\"section_id\":\"sec_adcdc7e049919271\",\"tags\":[]}],\"title\":\"empty.md\"}",
+    "digest": "sha256:f8e899e0590348b0b729595ef1dd8ccf3a8289aacbbda98c6f90b8b1b4f7fed4"
+  }
+}

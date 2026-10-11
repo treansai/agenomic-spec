@@ -1,0 +1,149 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "section",
+  "id": "KS008",
+  "intent": "a heading containing a slash produces the same path key as a nested heading; the later section takes the next occurrence number",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "sections",
+    "document_id": "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxg",
+    "fallback_title": "root.md",
+    "source": {
+      "format": "markdown",
+      "text": "# Root\n\n## A\n\n### B\n\nUnder A.\n\n## A/B\n\nSlash heading.\n"
+    },
+    "outline": {
+      "title": "Root",
+      "front_matter": {},
+      "blocks": [
+        {
+          "heading": {
+            "level": 1,
+            "text": "Root",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "A",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "heading": {
+            "level": 3,
+            "text": "B",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Under A."
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "A/B",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Slash heading."
+        }
+      ]
+    }
+  },
+  "expected": {
+    "ok": true,
+    "title": "Root",
+    "content_digest": "sha256:20b4234bf12ce11c1bc768c820575c8dfc442da3690239320c25a9091bfca64f",
+    "token_count": 9,
+    "sections": [
+      {
+        "ordinal": 0,
+        "section_id": "sec_4bc6c64650934e3c",
+        "parent_section_id": null,
+        "depth": 0,
+        "heading": "Root",
+        "heading_path": [],
+        "anchor": "",
+        "content": "",
+        "content_digest": "sha256:ae10e9ab9b0d078558b6e3021fb4c53c840abf9b787347c7d05926b1ce5e676c",
+        "tags": [],
+        "token_count": 0
+      },
+      {
+        "ordinal": 1,
+        "section_id": "sec_91106ecbd56bbef1",
+        "parent_section_id": "sec_4bc6c64650934e3c",
+        "depth": 1,
+        "heading": "Root",
+        "heading_path": [
+          "Root"
+        ],
+        "anchor": "root",
+        "content": "",
+        "content_digest": "sha256:a6b10288298ee1aa0cb2c0a0130208edf6324a6280360d0fdc21a8464c106ca1",
+        "tags": [],
+        "token_count": 0
+      },
+      {
+        "ordinal": 2,
+        "section_id": "sec_d9a321e7ea4ca3f1",
+        "parent_section_id": "sec_91106ecbd56bbef1",
+        "depth": 2,
+        "heading": "A",
+        "heading_path": [
+          "Root",
+          "A"
+        ],
+        "anchor": "a",
+        "content": "",
+        "content_digest": "sha256:55b316048842cb214018c923cadc77184ba3b78956ade0f5990c7b979ce87691",
+        "tags": [],
+        "token_count": 0
+      },
+      {
+        "ordinal": 3,
+        "section_id": "sec_c1d51dd4f5186fbf",
+        "parent_section_id": "sec_d9a321e7ea4ca3f1",
+        "depth": 3,
+        "heading": "B",
+        "heading_path": [
+          "Root",
+          "A",
+          "B"
+        ],
+        "anchor": "b",
+        "content": "Under A.",
+        "content_digest": "sha256:2c4ca8534e754c211054628255d0176c6ab61f1bcb76a2dc256a0c38e424e035",
+        "tags": [],
+        "token_count": 4
+      },
+      {
+        "ordinal": 4,
+        "section_id": "sec_7e77805f9e57ce23",
+        "parent_section_id": "sec_91106ecbd56bbef1",
+        "depth": 2,
+        "heading": "A/B",
+        "heading_path": [
+          "Root",
+          "A/B"
+        ],
+        "anchor": "ab",
+        "content": "Slash heading.",
+        "content_digest": "sha256:1a811de830efaee5aab28b412246c79738cad73e73b51254391383ce9cf44a1c",
+        "tags": [],
+        "token_count": 5
+      }
+    ]
+  }
+}

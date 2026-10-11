@@ -1,0 +1,18 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "tokens",
+  "id": "KT009",
+  "intent": "CJK ideographs are alphabetic: five ideographs are two pieces",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "知识库检索"
+  },
+  "expected": {
+    "ok": true,
+    "token_count": 2
+  }
+}

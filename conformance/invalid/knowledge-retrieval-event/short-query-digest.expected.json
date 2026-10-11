@@ -1,0 +1,7 @@
+{
+  "description": "The query digest is a full sha256 digest.",
+  "match": {
+    "keyword": "pattern",
+    "instancePath": "/knowledge_query_digest"
+  }
+}

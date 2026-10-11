@@ -1,0 +1,30 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD003",
+  "intent": "a parent and child chunking variant with its own parent and child budgets",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.knowledge_chunking_config/v1",
+      "strategy": "parent_child",
+      "max_tokens": 512,
+      "overlap_tokens": 64,
+      "min_tokens": 16,
+      "parent_max_tokens": 2048,
+      "child_max_tokens": 384,
+      "token_counter": "approx-v1"
+    }
+  },
+  "expected": {
+    "ok": true,
+    "document_type": "agenomic.knowledge_chunking_config/v1",
+    "canonical": "{\"child_max_tokens\":384,\"max_tokens\":512,\"min_tokens\":16,\"overlap_tokens\":64,\"parent_max_tokens\":2048,\"schema\":\"agenomic.knowledge_chunking_config/v1\",\"strategy\":\"parent_child\",\"token_counter\":\"approx-v1\"}",
+    "digest": "sha256:aeea74329a8cc061ddaefbf62f6f1cde5c8224eab4828cd10c72dbd91d30fd57"
+  }
+}

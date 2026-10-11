@@ -1,0 +1,21 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "lexical",
+  "id": "KL012",
+  "intent": "İ lowercases to i plus a combining dot, which is not alphanumeric",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "İstanbul"
+  },
+  "expected": {
+    "ok": true,
+    "tokens": [
+      "i",
+      "stanbul"
+    ]
+  }
+}

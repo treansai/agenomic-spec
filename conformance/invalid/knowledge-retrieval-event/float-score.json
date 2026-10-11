@@ -1,0 +1,32 @@
+{
+  "schema": "agenomic.knowledge_retrieval_event/v1",
+  "knowledge_base_id": "kb_customer_support",
+  "knowledge_version": 4,
+  "knowledge_manifest_digest": null,
+  "knowledge_query_digest": "sha256:f5c0e807a84882af9aba47bd5e979a13fc9749eaef1ea9438c42fe5368f0b0a8",
+  "knowledge_execution_key": null,
+  "knowledge_refs": [
+    {
+      "kb_id": "kb_customer_support",
+      "version": 4,
+      "version_manifest_digest": "sha256:ddb9172866e9cddeeca6798c5d8b9575d057c8372975163c95a10efdfda88187",
+      "document_id": "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxa",
+      "section_id": "sec_41672fa1b7ad29af",
+      "chunk_id": "chk_c02c3e03aa8d6f27",
+      "content_digest": "sha256:a67cb6a83eba0f959e2a6bf47611a9902f1eb59d03e4499a9df8d4f7917ab599",
+      "rank": 1,
+      "score_ppm": 0.75
+    },
+    {
+      "kb_id": "kb_customer_support",
+      "version": 4,
+      "version_manifest_digest": "sha256:ddb9172866e9cddeeca6798c5d8b9575d057c8372975163c95a10efdfda88187",
+      "document_id": "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxa",
+      "section_id": "sec_e958882299f2bcf0",
+      "chunk_id": "chk_46ad1993ada33f01",
+      "content_digest": "sha256:a0ec79f198b3ace7a66d7f514e34f78d11f47604e16c4dfb1c339b5a7b676841",
+      "rank": 2,
+      "score_ppm": 491803
+    }
+  ]
+}

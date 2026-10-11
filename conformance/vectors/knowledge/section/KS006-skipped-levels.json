@@ -1,0 +1,178 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "section",
+  "id": "KS006",
+  "intent": "skipped heading levels nest under the nearest shallower heading and a new level-1 heading returns to the root",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "sections",
+    "document_id": "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxe",
+    "fallback_title": "handbook.md",
+    "source": {
+      "format": "markdown",
+      "text": "# Handbook\n\n### Deep Detail\n\nDeep text.\n\n## Middle\n\nMiddle text.\n\n#### Deeper\n\nDeeper text.\n\n# Appendix\n\nAppendix text.\n"
+    },
+    "outline": {
+      "title": "Handbook",
+      "front_matter": {},
+      "blocks": [
+        {
+          "heading": {
+            "level": 1,
+            "text": "Handbook",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "heading": {
+            "level": 3,
+            "text": "Deep Detail",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Deep text."
+        },
+        {
+          "heading": {
+            "level": 2,
+            "text": "Middle",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Middle text."
+        },
+        {
+          "heading": {
+            "level": 4,
+            "text": "Deeper",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Deeper text."
+        },
+        {
+          "heading": {
+            "level": 1,
+            "text": "Appendix",
+            "anchor": null,
+            "tags": []
+          }
+        },
+        {
+          "text": "Appendix text."
+        }
+      ]
+    }
+  },
+  "expected": {
+    "ok": true,
+    "title": "Handbook",
+    "content_digest": "sha256:81fe9deb0fef99c80e7c950affce394ea8e6d8668e28e8db643966215d69053c",
+    "token_count": 15,
+    "sections": [
+      {
+        "ordinal": 0,
+        "section_id": "sec_364303ee73f56c90",
+        "parent_section_id": null,
+        "depth": 0,
+        "heading": "Handbook",
+        "heading_path": [],
+        "anchor": "",
+        "content": "",
+        "content_digest": "sha256:ae10e9ab9b0d078558b6e3021fb4c53c840abf9b787347c7d05926b1ce5e676c",
+        "tags": [],
+        "token_count": 0
+      },
+      {
+        "ordinal": 1,
+        "section_id": "sec_9677b2fc6f4899fb",
+        "parent_section_id": "sec_364303ee73f56c90",
+        "depth": 1,
+        "heading": "Handbook",
+        "heading_path": [
+          "Handbook"
+        ],
+        "anchor": "handbook",
+        "content": "",
+        "content_digest": "sha256:40047a4c6547b4b74166ca1e52774732d33940ebbdc824593a536d3b6caad11d",
+        "tags": [],
+        "token_count": 0
+      },
+      {
+        "ordinal": 2,
+        "section_id": "sec_35c459c9353801ef",
+        "parent_section_id": "sec_9677b2fc6f4899fb",
+        "depth": 2,
+        "heading": "Deep Detail",
+        "heading_path": [
+          "Handbook",
+          "Deep Detail"
+        ],
+        "anchor": "deep-detail",
+        "content": "Deep text.",
+        "content_digest": "sha256:4bbd348cd40b3957bf63dc8069ccf92b77f5a89fc55fa2c197cf67eb79b8be00",
+        "tags": [],
+        "token_count": 3
+      },
+      {
+        "ordinal": 3,
+        "section_id": "sec_99508936375dc021",
+        "parent_section_id": "sec_9677b2fc6f4899fb",
+        "depth": 2,
+        "heading": "Middle",
+        "heading_path": [
+          "Handbook",
+          "Middle"
+        ],
+        "anchor": "middle",
+        "content": "Middle text.",
+        "content_digest": "sha256:c3a48de3d8bf1695b95a1b6f95f51fbf23a3f633bae0dea3df0a2a411cabf281",
+        "tags": [],
+        "token_count": 4
+      },
+      {
+        "ordinal": 4,
+        "section_id": "sec_35ffecf1443a8eb7",
+        "parent_section_id": "sec_99508936375dc021",
+        "depth": 3,
+        "heading": "Deeper",
+        "heading_path": [
+          "Handbook",
+          "Middle",
+          "Deeper"
+        ],
+        "anchor": "deeper",
+        "content": "Deeper text.",
+        "content_digest": "sha256:536ee8c53673651eec7fbbe16ed009e7cbd804841c2b7c42e9b0a29ce9002466",
+        "tags": [],
+        "token_count": 4
+      },
+      {
+        "ordinal": 5,
+        "section_id": "sec_9e27357cf35d52e3",
+        "parent_section_id": "sec_364303ee73f56c90",
+        "depth": 1,
+        "heading": "Appendix",
+        "heading_path": [
+          "Appendix"
+        ],
+        "anchor": "appendix",
+        "content": "Appendix text.",
+        "content_digest": "sha256:1c43dc80da0f2a954e96018da1b41b1aff1f1b90d7e67f923518a6825e860f3f",
+        "tags": [],
+        "token_count": 4
+      }
+    ]
+  }
+}

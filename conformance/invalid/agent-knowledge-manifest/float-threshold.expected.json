@@ -1,0 +1,7 @@
+{
+  "description": "Thresholds are integers in parts per million, never fractions.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/retrieval/min_evidence_score_ppm"
+  }
+}

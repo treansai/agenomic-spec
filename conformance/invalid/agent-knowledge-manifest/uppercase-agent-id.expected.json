@@ -1,0 +1,7 @@
+{
+  "description": "Agent ids are lowercase hyphenated uuids.",
+  "match": {
+    "keyword": "pattern",
+    "instancePath": "/agent_id"
+  }
+}

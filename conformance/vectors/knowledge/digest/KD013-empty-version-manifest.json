@@ -1,0 +1,29 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD013",
+  "intent": "a version without documents still has a well-defined digest",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.knowledge_version_manifest/v1",
+      "workspace_id": "0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f",
+      "kb_id": "kb_runbooks",
+      "version": 1,
+      "parent_version": null,
+      "index_config_digest": "sha256:c2bb54d2e6d4c9c93b135f26dae807f034ec6b8a2cc28a350f5ac998b41e16bd",
+      "documents": {}
+    }
+  },
+  "expected": {
+    "ok": true,
+    "document_type": "agenomic.knowledge_version_manifest/v1",
+    "canonical": "{\"documents\":{},\"index_config_digest\":\"sha256:c2bb54d2e6d4c9c93b135f26dae807f034ec6b8a2cc28a350f5ac998b41e16bd\",\"kb_id\":\"kb_runbooks\",\"parent_version\":null,\"schema\":\"agenomic.knowledge_version_manifest/v1\",\"version\":1,\"workspace_id\":\"0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f\"}",
+    "digest": "sha256:2819c946ef7c706417b85e2f736ea41344b2f03fd7d048396efcbbdbf8207e0a"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "description": "kb ids start with kb_.",
+  "match": {
+    "keyword": "pattern",
+    "instancePath": "/kb_id"
+  }
+}

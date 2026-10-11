@@ -1,0 +1,44 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD034",
+  "intent": "a NUL character in a string is outside the subset",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.knowledge_version_manifest/v1",
+      "workspace_id": "0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f",
+      "kb_id": "kb_customer_support",
+      "version": 1,
+      "parent_version": null,
+      "index_config_digest": "sha256:2823980736a4f48c65abb3edd93d8a13741f9f7dc160f3b8ee5c090afcd1c4e6",
+      "documents": {
+        "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxd": {
+          "path": "policies/refund-policy.md",
+          "revision": 1,
+          "content_digest": "sha256:daf65ccc2a5c00f106872d4368319b2a0f4cc01ab23b5a63e15412f626d31b23",
+          "blob_digest": "sha256:1cfb123f99d8477a1803cf37d1678f9de4169ae42ebb00cf23b5d7026f4b65f6",
+          "collection": "faq",
+          "classification": "public",
+          "tags": [
+            "bill\u0000ing"
+          ]
+        }
+      }
+    }
+  },
+  "expected": {
+    "ok": false,
+    "error": {
+      "item": {
+        "code": "nul_character",
+        "value_path": "/documents/kdoc_01hzy8m6k2v9qf7c3n5t0r4wxd/tags/0"
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "description": "Execution keys are bnd:<binding id> or exe:<sha256 hex>.",
+  "match": {
+    "keyword": "pattern",
+    "instancePath": "/knowledge_execution_key"
+  }
+}

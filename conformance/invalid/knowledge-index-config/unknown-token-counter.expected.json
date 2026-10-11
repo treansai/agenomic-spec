@@ -1,0 +1,7 @@
+{
+  "description": "The only token counter is approx-v1.",
+  "match": {
+    "keyword": "const",
+    "instancePath": "/chunking/token_counter"
+  }
+}

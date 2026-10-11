@@ -1,0 +1,10 @@
+{
+  "description": "Unknown members are refused: a signature travels beside the manifest, never inside the hashed document.",
+  "match": {
+    "keyword": "additionalProperties",
+    "instancePath": "",
+    "params": {
+      "additionalProperty": "signature"
+    }
+  }
+}

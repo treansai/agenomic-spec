@@ -1,0 +1,18 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "tokens",
+  "id": "KT015",
+  "intent": "a sentence with a comma",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "Customers receive refunds within fourteen days, élève."
+  },
+  "expected": {
+    "ok": true,
+    "token_count": 16
+  }
+}

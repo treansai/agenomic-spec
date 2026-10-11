@@ -1,0 +1,10 @@
+{
+  "description": "Every member is always present; the first version writes parent_version null.",
+  "match": {
+    "keyword": "required",
+    "instancePath": "",
+    "params": {
+      "missingProperty": "parent_version"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "description": "The payload carries the query digest, never the query text.",
+  "match": {
+    "keyword": "additionalProperties",
+    "instancePath": "",
+    "params": {
+      "additionalProperty": "query"
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "section",
+  "id": "KS011",
+  "intent": "without a parsed title and with an empty fallback the title is Untitled",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "sections",
+    "document_id": "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxk",
+    "fallback_title": "",
+    "source": {
+      "format": "markdown",
+      "text": "Just text.\n"
+    },
+    "outline": {
+      "title": null,
+      "front_matter": {},
+      "blocks": [
+        {
+          "text": "Just text."
+        }
+      ]
+    }
+  },
+  "expected": {
+    "ok": true,
+    "title": "Untitled",
+    "content_digest": "sha256:f3b9f782752bc70f57556f5258b2fef8be0e9b457aa9aa832ea64d639e7ba37f",
+    "token_count": 3,
+    "sections": [
+      {
+        "ordinal": 0,
+        "section_id": "sec_a57838c1281e476d",
+        "parent_section_id": null,
+        "depth": 0,
+        "heading": "Untitled",
+        "heading_path": [],
+        "anchor": "",
+        "content": "Just text.",
+        "content_digest": "sha256:4620d83232240c517ed15e3fbc955c8ff6d30eaffc1ccb8e754bd85965a33cf3",
+        "tags": [],
+        "token_count": 3
+      }
+    ]
+  }
+}

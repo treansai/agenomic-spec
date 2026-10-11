@@ -33,3 +33,4 @@ fi
 
 node scripts/validate.js
 node scripts/vectors.js
+node scripts/knowledge-vectors.js

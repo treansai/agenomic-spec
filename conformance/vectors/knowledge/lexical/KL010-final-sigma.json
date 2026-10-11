@@ -1,0 +1,21 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "lexical",
+  "id": "KL010",
+  "intent": "lowercasing applies the final sigma rule",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "ΟΔΟΣ ΣΟΦΙΑ"
+  },
+  "expected": {
+    "ok": true,
+    "tokens": [
+      "οδος",
+      "σοφια"
+    ]
+  }
+}

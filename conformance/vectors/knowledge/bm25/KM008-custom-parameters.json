@@ -1,0 +1,45 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "bm25",
+  "id": "KM008",
+  "intent": "k1 2.0 and b 0.5 over a five candidate corpus with Unicode tokens",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "query": "élève ﬁnal policy",
+    "candidates": [
+      "Final policy for every ÉLÈVE",
+      "policy policy policy",
+      "élève notes and final grades",
+      "unrelated shipping text",
+      "FINAL final final policy élève"
+    ],
+    "k1": "2.0",
+    "b": "0.5",
+    "corpus": null
+  },
+  "expected": {
+    "ok": true,
+    "ranked": [
+      {
+        "candidate": 4,
+        "score": "1.948225"
+      },
+      {
+        "candidate": 0,
+        "score": "1.520453"
+      },
+      {
+        "candidate": 1,
+        "score": "1.028993"
+      },
+      {
+        "candidate": 2,
+        "score": "1.013635"
+      }
+    ]
+  }
+}

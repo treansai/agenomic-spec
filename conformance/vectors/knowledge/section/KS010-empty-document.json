@@ -1,0 +1,46 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "section",
+  "id": "KS010",
+  "intent": "an empty document has only its root section, titled from the fallback",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "sections",
+    "document_id": "kdoc_01hzy8m6k2v9qf7c3n5t0r4wxj",
+    "fallback_title": "empty.md",
+    "source": {
+      "format": "markdown",
+      "text": ""
+    },
+    "outline": {
+      "title": null,
+      "front_matter": {},
+      "blocks": []
+    }
+  },
+  "expected": {
+    "ok": true,
+    "title": "empty.md",
+    "content_digest": "sha256:f8e899e0590348b0b729595ef1dd8ccf3a8289aacbbda98c6f90b8b1b4f7fed4",
+    "token_count": 0,
+    "sections": [
+      {
+        "ordinal": 0,
+        "section_id": "sec_adcdc7e049919271",
+        "parent_section_id": null,
+        "depth": 0,
+        "heading": "empty.md",
+        "heading_path": [],
+        "anchor": "",
+        "content": "",
+        "content_digest": "sha256:ae10e9ab9b0d078558b6e3021fb4c53c840abf9b787347c7d05926b1ce5e676c",
+        "tags": [],
+        "token_count": 0
+      }
+    ]
+  }
+}

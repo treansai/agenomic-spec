@@ -1,0 +1,7 @@
+{
+  "description": "knowledge_version is set only together with knowledge_base_id.",
+  "match": {
+    "keyword": "type",
+    "instancePath": "/knowledge_version"
+  }
+}

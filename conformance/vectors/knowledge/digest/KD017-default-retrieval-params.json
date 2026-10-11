@@ -1,0 +1,57 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "digest",
+  "id": "KD017",
+  "intent": "the retrieval parameters of a default search: debug never enters the digest",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "operation": "digest",
+    "document": {
+      "schema": "agenomic.knowledge_retrieval_params/v1",
+      "mode": "hybrid",
+      "top_k": 5,
+      "rerank": "none",
+      "max_context_tokens": null,
+      "expand": "none",
+      "include_context": false,
+      "filters": {
+        "collections": [],
+        "document_ids": [],
+        "path_prefix": null,
+        "tags": [],
+        "classification_max": null,
+        "metadata": {}
+      }
+    },
+    "projection": {
+      "rule": "retrieval_params",
+      "from": {
+        "mode": "hybrid",
+        "top_k": 5,
+        "rerank": "none",
+        "max_context_tokens": null,
+        "expand": "none",
+        "filters": {
+          "collections": [],
+          "document_ids": [],
+          "path_prefix": null,
+          "tags": [],
+          "classification_max": null,
+          "metadata": {}
+        },
+        "include_context": false,
+        "debug": false
+      }
+    }
+  },
+  "expected": {
+    "ok": true,
+    "document_type": "agenomic.knowledge_retrieval_params/v1",
+    "canonical": "{\"expand\":\"none\",\"filters\":{\"classification_max\":null,\"collections\":[],\"document_ids\":[],\"metadata\":{},\"path_prefix\":null,\"tags\":[]},\"include_context\":false,\"max_context_tokens\":null,\"mode\":\"hybrid\",\"rerank\":\"none\",\"schema\":\"agenomic.knowledge_retrieval_params/v1\",\"top_k\":5}",
+    "digest": "sha256:a96c949ff9ed60c6c766a539812d596e7207e48c9b382f24c84ff2bf8ef3e162"
+  }
+}

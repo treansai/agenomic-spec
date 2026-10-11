@@ -1,0 +1,18 @@
+{
+  "schema": "agenomic.conformance_vector/v1",
+  "suite": "tokens",
+  "id": "KT005",
+  "intent": "white space only",
+  "consumers": [
+    "rust-cloud",
+    "python",
+    "typescript"
+  ],
+  "input": {
+    "text": "  \n\t "
+  },
+  "expected": {
+    "ok": true,
+    "token_count": 0
+  }
+}

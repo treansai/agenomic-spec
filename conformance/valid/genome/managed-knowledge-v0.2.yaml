@@ -1,0 +1,28 @@
+# A v0.2 genome that pins two managed knowledge base versions (RFC 0014)
+# next to a bundle-declared snapshot. Managed entries are recognized by
+# their kb:// source_uri; the v0.2 schema accepts them unchanged.
+spec_version: agenomic/v0.2
+agent:
+  id: agent://example/support-bot
+  name: Support Bot
+  domain: support
+  criticality: high
+runtime:
+  model_provider: example-llm
+  model_id: example-llm-mini
+tools: []
+skills: []
+knowledge:
+  - name: kb_customer_support
+    snapshot_hash: sha256:ddb9172866e9cddeeca6798c5d8b9575d057c8372975163c95a10efdfda88187
+    source_uri: kb://0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f/kb_customer_support@v4
+  - name: kb_runbooks
+    snapshot_hash: sha256:2819c946ef7c706417b85e2f736ea41344b2f03fd7d048396efcbbdbf8207e0a
+    source_uri: kb://0b6c2f1e-7a44-4c8e-9f1d-2a3b4c5d6e7f/kb_runbooks@v1
+  - name: claim_categories_kb
+    snapshot_hash: blake3:9b0a4c1f2e6d8a7b3c5f0e1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c
+    source_uri: s3://example-knowledge/claim_categories/2026-04-15.jsonl
+policies: []
+memory:
+  design_memory: memory/memory.schema.yaml
+  runtime_memory_schema_version: 0.0.0

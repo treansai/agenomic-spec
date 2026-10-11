@@ -1,0 +1,7 @@
+{
+  "description": "Bases are keyed by kb ids without empty segments.",
+  "match": {
+    "keyword": "propertyNames",
+    "instancePath": "/bases"
+  }
+}

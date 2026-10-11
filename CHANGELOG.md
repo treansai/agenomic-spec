@@ -11,6 +11,43 @@ documented here.
 
 ### Added
 
+- **v0.4 (RFC 0014, Draft): knowledge bases.** Knowledge bases become
+  governed, versioned, content-addressed dependencies of an agent. New
+  schemas in `schemas/v0.4/`: `knowledge-common` (kb, collection, document,
+  section and chunk ids, the server ids `kdoc_`, `ksrc_`, `ksyn_`, `kjob_`,
+  `kbnd_`, `kret_` and `kev_`, the `kb://` reference, classifications, parts
+  per million, the section, document content and retrieval parameter digest
+  inputs), `knowledge-version-manifest` (`agenomic.knowledge_version_manifest/v1`,
+  one immutable version listing every document revision by content digest),
+  `agent-knowledge-manifest` (`agenomic.agent_knowledge_manifest/v1`, the
+  knowledge identity of an agent, whose digest an agent genome may carry as
+  the optional `knowledge_manifest_digest` component), `knowledge-index-config`
+  (chunking configuration, embedding space without credentials or endpoints,
+  text search configuration; `index_config_digest` hashes the document without
+  its `chunking` and `embedding` members), `knowledge-retrieval-event` (the
+  `knowledge.retrieve` payload, references and digests only, never text) and
+  `knowledge-conformance-vector`. The RFC defines the section algorithm
+  (stable `sec_` ids from the document id, the normalized heading path and an
+  occurrence counter), the `chk_` chunk id, the `approx-v1` token counter, the
+  query digest, the informative lexical tokenizer and BM25 parameters, the
+  rule for the v0.3 trace `components.knowledge_version`, the managed form of
+  `genome.yaml` and `agent.lock.yaml` `knowledge[]` entries (versioned `kb://`
+  reference plus version manifest digest, accepted by the existing v0.1 and
+  v0.2 schemas), evidence delimiters and escaping, injection flags, secret
+  redaction and the classification and agent intersection rules. Conformance
+  fixtures under `conformance/{valid,invalid}/` for the four new artifact
+  kinds and managed-form genome (v0.1, v0.2) and lock fixtures.
+  Cross-language vectors under the new `conformance/vectors/knowledge/`
+  (section KS001 to KS012, digest KD001 to KD036, ref KR001 to KR042, tokens
+  KT001 to KT017, informative lexical KL001 to KL013 and bm25 KM001 to KM009)
+  with their own `MANIFEST.json`, generated and checked by the new
+  `scripts/knowledge-vectors.js`, which `npm run validate` runs
+  (`npm run knowledge-vectors` alone). The prompt vectors are unchanged, so no
+  prompt `SPEC_VECTORS.lock` moves; implementations of RFC 0014 vendor the
+  knowledge vectors with a lock of their own. User guide in
+  `docs/knowledge.md`; managed knowledge sections in `docs/genome.md` and
+  `docs/lockfile.md`. The README RFC index now lists RFCs 0010 to 0014.
+
 - **v0.3 (RFC 0013, Draft): coding sessions.** Portable artifacts for
   supervising coding agents (Claude Code, Codex) without replacing their
   loops: `schemas/v0.3/coding-event.schema.json` (closed

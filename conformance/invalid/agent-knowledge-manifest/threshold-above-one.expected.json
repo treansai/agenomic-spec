@@ -1,0 +1,7 @@
+{
+  "description": "A parts per million value is at most 1000000.",
+  "match": {
+    "keyword": "maximum",
+    "instancePath": "/retrieval/min_evidence_score_ppm"
+  }
+}

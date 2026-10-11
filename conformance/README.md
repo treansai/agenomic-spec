@@ -60,6 +60,10 @@ schema:
 | `prompt-file/`        | `schemas/v0.4/prompt-file.schema.json`      |
 | `experiment-case/`    | `schemas/v0.4/experiment-case.schema.json`  |
 | `experiment-spec/`    | `schemas/v0.4/experiment-spec.schema.json`  |
+| `knowledge-version-manifest/` | `schemas/v0.4/knowledge-version-manifest.schema.json` (RFC 0014) |
+| `agent-knowledge-manifest/` | `schemas/v0.4/agent-knowledge-manifest.schema.json` (RFC 0014) |
+| `knowledge-index-config/` | `schemas/v0.4/knowledge-index-config.schema.json` (RFC 0014) |
+| `knowledge-retrieval-event/` | `schemas/v0.4/knowledge-retrieval-event.schema.json` (RFC 0014) |
 | `coding-event/`       | `schemas/v0.3/coding-event.schema.json` (RFC 0013) |
 | `coding-session/`     | `schemas/v0.3/coding-session.schema.json` (RFC 0013) |
 | `coding-capability-manifest/` | `schemas/v0.3/coding-capability-manifest.schema.json` (RFC 0013) |
@@ -83,6 +87,23 @@ by the cross-language vectors under `conformance/vectors/prompts/`, which
 `MANIFEST.json` and every digest. See
 [`vectors/prompts/README.md`](vectors/prompts/README.md) for the file format
 and the matching rules that every implementation applies.
+
+The knowledge base documents of RFC 0014 (`schemas/v0.4/knowledge-*.schema.json`
+and `agent-knowledge-manifest.schema.json`) are validated here for shape: the
+invalid fixtures cover fractional numbers where integers or parts per million
+are required, malformed digests, unknown members (an endpoint inside an
+embedding space, query or evidence text inside a retrieval event) and
+malformed ids. Their semantics (section ids and digests, every document
+digest, chunk ids, the query digest, the `kb://` grammar and the `approx-v1`
+token counter) are pinned by the vectors under `conformance/vectors/knowledge/`,
+a set separate from the prompt vectors with its own `MANIFEST.json`, checked by
+`scripts/knowledge-vectors.js`, which `npm run validate` also runs. See
+[`vectors/knowledge/README.md`](vectors/knowledge/README.md). The managed form
+of a knowledge entry in `genome.yaml` and `agent.lock.yaml` needs no new
+schema: `valid/genome/managed-knowledge.yaml` (v0.1),
+`valid/genome/managed-knowledge-v0.2.yaml` and
+`valid/agent-lock/managed-knowledge.yaml` show that the existing schemas accept
+it.
 
 The coding-session documents of RFC 0013 (`schemas/v0.3/coding-*.schema.json`)
 are validated for shape and for the rules their schemas encode:
